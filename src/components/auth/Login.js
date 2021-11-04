@@ -1,20 +1,33 @@
-import React from 'react';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
-import Container from '@mui/material/Container';
-import Button from '@mui/material/Button';
+import React, { useCallback } from 'react';
+import {
+    Box,
+    Typography,
+    TextField,
+    Container,
+    Button,
+    Grid,
+    Link,
+    CssBaseline
+} from '@mui/material';
+import api from '../../api/APIUtils';
+import { Link as RouterLink } from 'react-router-dom';
+import { Controller, useForm } from 'react-hook-form';
 
 const Login = () => {
+    const { control, handleSubmit } = useForm();
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        const formData = new FormData(event.currentTarget);
-        console.log(formData.get('correo'), formData.get('clave'));
-    };
+    const login = useCallback(async (data) => {
+        console.log(data);
+        return;
+        await api.post('/login', {})
+            .then(res => console.log(res))
+            .catch(err => console.log(err));
+    }, []);
+
 
     return (
         <Container maxWidth="xs">
+            <CssBaseline />
             <Box
                 sx={{
                     marginTop: 7,
@@ -22,34 +35,59 @@ const Login = () => {
                     flexDirection: 'column',
                     alignItems: 'center',
                 }}>
-                <Typography component="h1" variant="h5">
+                <Typography component="h1" variant="h3">
                     Login
                 </Typography>
                 <Box
                     component="form"
-                    onSubmit={handleSubmit}
+                    onSubmit={handleSubmit(login)}
                     noValidate
                     sx={{ mt: 1 }}>
-                    <TextField
-                        margin="normal"
-                        required
-                        fullWidth
-                        id="correo"
-                        label="Correo"
+                    <Controller
                         name="correo"
-                        autoComplete="email"
-                        type="email"
-                        autoFocus
-                    />
-
-                    <TextField
-                        margin="normal"
-                        required
-                        fullWidth
+                        control={control}
+                        rules={{ required: "Este campo es requerido" }}
+                        defaultValue=""
+                        render={({
+                            field: { onChange, value },
+                            fieldState: { error },
+                        }) => (
+                            <TextField
+                                margin="normal"
+                                label="Correo"
+                                autoComplete="email"
+                                required
+                                type="email"
+                                error={!!error}
+                                helperText={error ? error.message : null}
+                                value={value}
+                                onChange={onChange}
+                                fullWidth
+                                autoFocus
+                            />
+                        )} />
+                    <Controller
                         name="clave"
-                        label="Clave"
-                        type="password"
-                        autocomplete="current-password"
+                        control={control}
+                        rules={{ required: "Este campo es requerido" }}
+                        defaultValue=""
+                        render={({
+                            field: { onChange, value },
+                            fieldState: { error }
+                        }) => (
+                            <TextField
+                                margin="normal"
+                                label="Clave"
+                                autoComplete="current-password"
+                                required
+                                type="password"
+                                error={!!error}
+                                helperText={error ? error.message : null}
+                                value={value}
+                                onChange={onChange}
+                                fullWidth
+                            />
+                        )}
                     />
                     <Button
                         type="submit"
@@ -58,11 +96,18 @@ const Login = () => {
                         sx={{ mt: 2, mb: 3 }}>
                         Iniciar Sesion
                     </Button>
+                    <Grid container>
+                        <Grid item xs sx={{ display: 'flex' }}>
+                            <Link component={RouterLink} to="/" underline="hover" variant="body2">¿Olvidaste tu contraseña?</Link>
+                        </Grid>
+                        <Grid item>
+                            <Link component={RouterLink} to="/register" replace underline="hover" variant="body2">Registrarse</Link>
+                        </Grid>
+                    </Grid>
                 </Box>
             </Box>
         </Container>
     );
 };
-
 
 export default Login;
