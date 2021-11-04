@@ -3,18 +3,32 @@ import {
     CssBaseline,
     Typography,
     Box,
+    OutlinedInput,
     TextField,
     Grid,
     Button,
-    Link
+    Link,
+    InputAdornment,
+    IconButton,
+    InputLabel,
+    FormControl,
+    FormHelperText
 } from '@mui/material';
+import {
+    VisibilityOff,
+    Visibility
+} from '@mui/icons-material'
 import { Link as RouterLink } from 'react-router-dom';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 const Register = () => {
-
+    const [claveVisible, setClaveVisible] = useState(false);
     const { control, handleSubmit } = useForm();
+    
+    const handleShowPassword = () => {
+        setClaveVisible(!claveVisible);
+    };
 
     const onSubmit = useCallback(async (data) => {
         console.log(data);
@@ -51,7 +65,7 @@ const Register = () => {
                                         onChange={onChange}
                                         value={value}
                                         error={!!error}
-                                        label="Nombres"
+                                        label="Nombre (s)"
                                         helperText={error ? error.message : null}
                                         required
                                         autoFocus
@@ -115,15 +129,38 @@ const Register = () => {
                                         field: { onChange, value },
                                         fieldState: { error }
                                     }) => (
-                                    <TextField
-                                        onChange={onChange}
-                                        value={value}
-                                        error={!!error}
-                                        label="Clave"
-                                        helperText={error ? error.message : null}
-                                        required
-                                        fullWidth
-                                    />
+                                    <FormControl variant="outlined" fullWidth>
+                                        <InputLabel
+                                            htmlFor="clave"
+                                            required
+                                            error={!!error}
+                                        >Clave</InputLabel>
+                                        <OutlinedInput
+                                            id="clave"
+                                            autoComplete="current-password"
+                                            required
+                                            type={claveVisible ? "text" : "password"}
+                                            error={!!error}
+                                            value={value}
+                                            onChange={onChange}
+                                            endAdornment={
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        aria-label="toogle password visibility"
+                                                        onClick={handleShowPassword}
+                                                        onMouseDown={e => e.preventDefault()}
+                                                        edge="end"
+                                                    >
+                                                        {claveVisible ? <VisibilityOff /> : <Visibility />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            }
+                                            label="Clave"
+                                        />
+                                        <FormHelperText error={!!error} id="clave-error">
+                                            {error ? error.message : null}
+                                        </FormHelperText>
+                                    </FormControl>
                                 )}
                             />
                         </Grid>
