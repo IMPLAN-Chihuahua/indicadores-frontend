@@ -6,7 +6,6 @@ import {
     OutlinedInput,
     Container,
     Button,
-    Grid,
     Link,
     CssBaseline,
     InputAdornment,
@@ -15,30 +14,21 @@ import {
     FormControl,
     FormHelperText
 } from '@mui/material';
-import api from '../../api/APIUtils';
 import {
     VisibilityOff,
-    Visibility
+    Visibility,
 } from '@mui/icons-material'
+import LockIcon from '@mui/icons-material/Lock';
 import { Link as RouterLink } from 'react-router-dom';
 import { Controller, useForm } from 'react-hook-form';
 
 const Login = () => {
     const { control, handleSubmit } = useForm();
     const [claveVisible, setClaveVisible] = useState(false);
-
-    const login = useCallback(async (data) => {
-        console.log(data);
-        return;
-        await api.post('/login', {})
-            .then(res => console.log(res))
-            .catch(err => console.log(err));
-    }, []);
-
     const handleShowPassword = () => {
         setClaveVisible(!claveVisible);
     };
-
+    const onSubmit = data => console.log(data);
 
     return (
         <Container maxWidth="xs">
@@ -50,12 +40,25 @@ const Login = () => {
                     flexDirection: 'column',
                     alignItems: 'center',
                 }}>
+                <Box
+                    sx={{
+                        backgroundColor: 'lightblue',
+                        borderRadius: 50,
+                        height: 80,
+                        width: 80,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                    }}
+                >
+                    <LockIcon fontSize='large' />
+                </Box>
                 <Typography component="h1" variant="h3">
-                    Login
+                    Iniciar Sesión
                 </Typography>
                 <Box
                     component="form"
-                    onSubmit={handleSubmit(login)}
+                    onSubmit={handleSubmit(onSubmit)}
                     noValidate
                     sx={{ mt: 1 }}>
                     <Controller
@@ -68,7 +71,7 @@ const Login = () => {
                             fieldState: { error },
                         }) => (
                             <TextField
-                                margin="normal"
+                                sx={{mb: 2, mt: 2}}
                                 label="Correo"
                                 autoComplete="email"
                                 required
@@ -90,12 +93,12 @@ const Login = () => {
                             field: { onChange, value },
                             fieldState: { error }
                         }) => (
-                            <FormControl variant="outlined" fullWidth>
+                            <FormControl margin="dense" variant="outlined" fullWidth>
                                 <InputLabel
                                     htmlFor="clave"
                                     required
                                     error={!!error}
-                                >Clave</InputLabel>
+                                >Contraseña</InputLabel>
                                 <OutlinedInput
                                     id="clave"
                                     autoComplete="current-password"
@@ -116,7 +119,7 @@ const Login = () => {
                                             </IconButton>
                                         </InputAdornment>
                                     }
-                                    label="Clave"
+                                    label="Contraseña"
                                 />
                                 <FormHelperText error={!!error} id="clave-error">
                                     {error ? error.message : null}
@@ -131,14 +134,7 @@ const Login = () => {
                         sx={{ mt: 2, mb: 3 }}>
                         Iniciar Sesion
                     </Button>
-                    <Grid container>
-                        <Grid item xs sx={{ display: 'flex' }}>
-                            <Link component={RouterLink} to="/" underline="hover" variant="body2">¿Olvidaste tu contraseña?</Link>
-                        </Grid>
-                        <Grid item>
-                            <Link component={RouterLink} to="/register" replace underline="hover" variant="body2">Registrarse</Link>
-                        </Grid>
-                    </Grid>
+                    <Link component={RouterLink} to="/" underline="hover" variant="body2">¿Olvidaste tu contraseña?</Link>
                 </Box>
             </Box>
         </Container>

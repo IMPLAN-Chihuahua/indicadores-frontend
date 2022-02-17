@@ -2,9 +2,9 @@ import { Typography } from '@mui/material';
 import React from 'react';
 
 const Copyright = () => {
-    return(
+    return (
         <Typography>
-            Copyright © Implan
+            Copyright © Implan {new Date().getFullYear()}
         </Typography>
     );
 };
