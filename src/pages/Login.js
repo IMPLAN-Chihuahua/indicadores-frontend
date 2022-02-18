@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import {
     Box,
     Typography,
@@ -12,23 +12,46 @@ import {
     IconButton,
     InputLabel,
     FormControl,
-    FormHelperText
+    FormHelperText,
+    Alert,
+    Snackbar
 } from '@mui/material';
 import {
     VisibilityOff,
     Visibility,
 } from '@mui/icons-material'
 import LockIcon from '@mui/icons-material/Lock';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import { Controller, useForm } from 'react-hook-form';
+import { useAuth } from '../contexts/AuthContext';
 
 const Login = () => {
     const { control, handleSubmit } = useForm();
+    const navigate = useNavigate();
+    const location = useLocation();
+    const from = location.state?.from?.pathname || '/';
     const [claveVisible, setClaveVisible] = useState(false);
+    const [open, setOpen] = useState(false)
+    const [error, setError] = useState('');
     const handleShowPassword = () => {
         setClaveVisible(!claveVisible);
     };
-    const onSubmit = data => console.log(data);
+    const auth = useAuth();
+    const onSubmit = data => {
+        auth.handleLogin(data,
+            () => navigate(from, { replace: true }),
+            (errorMessage) => {
+                setOpen(true)
+                setError(errorMessage)
+            });
+    };
+
+    const handleClose = (e, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpen(false)
+    };
 
     return (
         <Container maxWidth="xs">
@@ -53,7 +76,7 @@ const Login = () => {
                 >
                     <LockIcon fontSize='large' />
                 </Box>
-                <Typography component="h1" variant="h3">
+                <Typography component="h1" variant="h3" mt={2}>
                     Iniciar Sesión
                 </Typography>
                 <Box
@@ -71,10 +94,9 @@ const Login = () => {
                             fieldState: { error },
                         }) => (
                             <TextField
-                                sx={{mb: 2, mt: 2}}
+                                sx={{ mb: 2, mt: 2 }}
                                 label="Correo"
                                 autoComplete="email"
-                                required
                                 type="email"
                                 error={!!error}
                                 helperText={error ? error.message : null}
@@ -96,13 +118,11 @@ const Login = () => {
                             <FormControl margin="dense" variant="outlined" fullWidth>
                                 <InputLabel
                                     htmlFor="clave"
-                                    required
                                     error={!!error}
                                 >Contraseña</InputLabel>
                                 <OutlinedInput
                                     id="clave"
                                     autoComplete="current-password"
-                                    required
                                     type={claveVisible ? "text" : "password"}
                                     error={!!error}
                                     value={value}
@@ -130,6 +150,7 @@ const Login = () => {
                     <Button
                         type="submit"
                         fullWidth
+                        disabled={auth.isLoading}
                         variant="contained"
                         sx={{ mt: 2, mb: 3 }}>
                         Iniciar Sesion
@@ -137,6 +158,16 @@ const Login = () => {
                     <Link component={RouterLink} to="/" underline="hover" variant="body2">¿Olvidaste tu contraseña?</Link>
                 </Box>
             </Box>
+            <Snackbar
+                anchorOrigin={{vertical: 'top', horizontal: 'center'}}
+                open={open}
+                autoHideDuration={6000}
+                onClose={handleClose}>
+                <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }} closeText='Cerrar'>
+                    {error}
+                </Alert>
+            </Snackbar>
+
         </Container>
     );
 };
