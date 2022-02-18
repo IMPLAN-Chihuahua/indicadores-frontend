@@ -1,32 +1,32 @@
 import React, { useState } from 'react';
-import {
-    Box,
-    Typography,
-    TextField,
-    OutlinedInput,
-    Container,
-    Button,
-    Link,
-    CssBaseline,
-    InputAdornment,
-    IconButton,
-    InputLabel,
-    FormControl,
-    FormHelperText,
-    Alert,
-    Snackbar
-} from '@mui/material';
-import {
-    VisibilityOff,
-    Visibility,
-} from '@mui/icons-material'
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import Container from '@mui/material/Container';
+import Button from '@mui/material/Button';
+import Link from '@mui/material/Link';
+import CssBaseline from '@mui/material/CssBaseline';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
+import Alert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import LockIcon from '@mui/icons-material/Lock';
 import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import { Controller, useForm } from 'react-hook-form';
 import { useAuth } from '../contexts/AuthContext';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { loginSchema } from '../utils/validator';
 
 const Login = () => {
-    const { control, handleSubmit } = useForm();
+    const { control, handleSubmit, formState: { errors } } = useForm({
+        resolver: yupResolver(loginSchema)
+    });
     const navigate = useNavigate();
     const location = useLocation();
     const from = location.state?.from?.pathname || '/';
@@ -159,7 +159,7 @@ const Login = () => {
                 </Box>
             </Box>
             <Snackbar
-                anchorOrigin={{vertical: 'top', horizontal: 'center'}}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
                 open={open}
                 autoHideDuration={6000}
                 onClose={handleClose}>
