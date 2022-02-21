@@ -1,9 +1,13 @@
 import "./App.css";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 import Login from "./pages/Login";
-import Home from "./pages/Home";
+import { Featured } from './components/dashboard/components/home/featured/Featured'
+import { Indicators } from './components/dashboard/components/home/Indicators/Indicators'
+import { Modules } from './components/dashboard/components/home/Modules/Modules'
+import { Users } from './components/dashboard/components/home/Users/Users'
 import { AuthProvider } from "./contexts/AuthContext";
-import {PrivateRoute, PublicRoute} from "./components/RequireAuth";
+import { PrivateRoute, PublicRoute } from "./components/RequireAuth";
+import { Dashboard } from "./components/dashboard/Dashboard";
 
 function App() {
   return (
@@ -21,11 +25,12 @@ function App() {
             path="/"
             element={
               <PrivateRoute>
-                <Home />
+                <Dashboard />
               </PrivateRoute>} >
-            <Route
-              path='/indicadores'
-              element={() => <>indicadores</>} />
+            <Route index element={<Featured />} />
+            <Route path='/usuarios' element={<Users />} />
+            <Route path='/modulos' element={<Modules />} />
+            <Route path='/indicadores' element={<Indicators />} />
           </Route>
         </Routes>
       </BrowserRouter>

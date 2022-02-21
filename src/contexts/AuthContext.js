@@ -41,9 +41,13 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  const handleLogOut = () => {
+  const handleLogOut = (callback) => {
+    localStorage.removeItem('user');
     logout();
     setUser(null);
+    if (callback && typeof callback === 'function') {
+      callback()
+    }
   };
 
   return (

@@ -1,11 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import {Dashboard} from './components/dashboard/Dashboard';
 import reportWebVitals from './reportWebVitals';
+import App from './App';
 
 ReactDOM.render(
-    <Dashboard />,
+    <App />,
   document.getElementById('root')
 );
 
