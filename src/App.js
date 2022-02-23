@@ -1,7 +1,7 @@
 import "./App.css";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 import { Indicators } from './components/dashboard/components/home/Indicators/Indicators'
-import { Modules } from './components/dashboard/components/home/Modules/Modules'
+import { Modules } from './pages/Modules'
 import { Users } from './components/dashboard/components/home/Users/Users'
 import { AuthProvider } from "./contexts/AuthContext";
 import { PrivateRoute, PublicRoute } from "./components/RequireAuth";
