@@ -21,20 +21,21 @@ const pieChart = [
 export const Featured = () => {
   return (
     <>
-      <div className='featured-title'>
+    <Box className='margin-top-home'>
+      <Box className='featured-title'>
         Recursos disponibles
         <hr></hr>
-      </div>
+      </Box>
       <Grid container spacing={2}>
       {
         pieChart.map( ({id,title,enable,disable}) => {
           return(
             <Grid item xs={12} md={6} key={id}>
-          <div className='featured-item'>
+          <Box className='featured-item'>
           <span className='featured-title'>{title}</span>
-          <div className='feature-container'>
-          <div className='featured-items'>
-          <div className='featured-pie-chart'>
+          <Box className='feature-container'>
+          <Box className='featured-items'>
+          <Box className='featured-pie-chart'>
             <PieChart
             animate
             animationDuration={500}
@@ -50,18 +51,19 @@ export const Featured = () => {
           radius={50}
           labelPosition={50}
           />
-            </div>
-          </div>
-          </div>
-          <div className='featured-information' >
+            </Box>
+          </Box>
+          </Box>
+          <Box className='featured-information' >
             {enable}/{disable + enable}
-          </div>
-          </div>
+          </Box>
+          </Box>
         </Grid>
           )
         })
       }
     </Grid>
+      </Box>
     
 
     </>

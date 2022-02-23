@@ -4,7 +4,7 @@ import React from 'react';
 const Copyright = () => {
     return (
         <Typography variant='caption'>
-            Copyright © {new Date().getFullYear()} Instituto de Planeación Integral del Municipio de Chihuahua
+            Copyright © {new Date().getFullYear()} IMPLAN
         </Typography>
     );
 };
