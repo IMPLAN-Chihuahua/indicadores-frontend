@@ -6,7 +6,6 @@ import { LastedRecords } from '../components/dashboard/components/home/LastedRec
 export const Home = () => {
   return (
     <>
-
     <UserInformation/>
     <Featured />
     <LastedRecords/>

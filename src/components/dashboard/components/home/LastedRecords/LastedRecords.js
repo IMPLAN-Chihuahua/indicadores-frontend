@@ -1,6 +1,6 @@
 import { Box, Grid } from '@mui/material'
 import React, {useState, useEffect} from 'react'
-import { getIndicators, getModules, getUsers } from '../../../../../services/userService'
+import { getLastedIndicators, getLastedModules, getLastedUsers } from '../../../../../services/userService'
 import './lastedRecords.css'
 
 
@@ -12,7 +12,7 @@ export const LastedRecords = () => {
   const [indicators, setIndicators] = useState([])
 
   useEffect(() => {
-    getUsers()
+    getLastedUsers()
     .then(res  => {
       setUsers(res)
     })
@@ -20,7 +20,7 @@ export const LastedRecords = () => {
       setUsers([])
     });
     
-    getModules()
+    getLastedModules()
     .then(res  => {
       setModules(res)
     })
@@ -28,7 +28,7 @@ export const LastedRecords = () => {
       setModules([])
     });  
 
-    getIndicators()
+    getLastedIndicators()
     .then(res  => {
       setIndicators(res)
     })
@@ -47,10 +47,12 @@ export const LastedRecords = () => {
       <hr/>
     </Box>
 
-    <Grid container spacing={2} className='lasted-grid'>
+    <Grid container spacing={4} className='lasted-grid'>
     <Grid item xs={12} md={6} lg={5} className='lasted-box'>
    
     <Box className='lasted-box-users'> 
+    <Box className='lasted-box-users-container'>
+
     <span className='lasted-item-title'>Usuarios</span>
     <hr/>
 {
@@ -75,8 +77,9 @@ export const LastedRecords = () => {
       </Box>
     )
   })
-    
+  
 }
+  </Box>
   
     </Box>
     </Grid>
