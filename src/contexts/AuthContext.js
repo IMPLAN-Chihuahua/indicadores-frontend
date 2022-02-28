@@ -9,7 +9,7 @@ const AuthProvider = ({ children }) => {
   const [hasError, setHasError] = React.useState(false);
 
   React.useEffect(() => {
-    const currentUser = JSON.parse(localStorage.getItem('user'));
+    const currentUser = JSON.parse(localStorage.getItem('indicadores-user'));
     if (currentUser) {
       setUser(currentUser)
     }
@@ -19,7 +19,7 @@ const AuthProvider = ({ children }) => {
     setIsLoading(true);
     try {
       const currentUser = await login(payload.correo, payload.clave);
-      localStorage.setItem('user', JSON.stringify(currentUser));
+      localStorage.setItem('indicadores-user', JSON.stringify(currentUser));
       setUser(currentUser);
       if (onSuccess && typeof onSuccess === 'function') {
         onSuccess();
@@ -42,7 +42,7 @@ const AuthProvider = ({ children }) => {
   };
 
   const handleLogOut = (callback) => {
-    localStorage.removeItem('user');
+    localStorage.removeItem('indicadores-user');
     logout();
     setUser(null);
     if (callback && typeof callback === 'function') {
