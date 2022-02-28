@@ -1,5 +1,5 @@
 import { Box, Grid } from '@mui/material'
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect,useRef} from 'react'
 import { getIndicators, getModules, getUsers } from '../../../../../services/userService'
 import './lastedRecords.css'
 
@@ -11,30 +11,39 @@ export const LastedRecords = () => {
   const [modules, setModules] = useState([])
   const [indicators, setIndicators] = useState([])
 
-  useEffect(() => {
-    getUsers()
-    .then(res  => {
-      setUsers(res)
-    })
-    .catch(err  => {
-      setUsers([])
-    });
-    
-    getModules()
-    .then(res  => {
-      setModules(res)
-    })
-    .catch(err  => {
-      setModules([])
-    });  
+  const isMounted = useRef(true);
 
-    getIndicators()
-    .then(res  => {
-      setIndicators(res)
-    })
-    .catch(err  => {
-      setIndicators([])
-    });  
+
+useEffect(() => {
+  isMounted.current
+  ?
+  getUsers()
+  .then(res  => {
+    setUsers(res)
+  })
+  .catch(err  => {
+    setUsers([])
+  })
+  : setUsers([])
+    return ()=>{
+    isMounted.current = false;    
+    }
+    
+    // getModules()
+    // .then(res  => {
+    //   setModules(res)
+    // })
+    // .catch(err  => {
+    //   setModules([])
+    // });  
+
+    // getIndicators()
+    // .then(res  => {
+    //   setIndicators(res)
+    // })
+    // .catch(err  => {
+    //   setIndicators([])
+    // });  
 
   }, [])
 
@@ -81,7 +90,7 @@ export const LastedRecords = () => {
     </Box>
     </Grid>
     
-    <Grid item xs={12} md={6} lg={7} className='lasted-right-box'>
+    {/* <Grid item xs={12} md={6} lg={7} className='lasted-right-box'>
     <Box className='lasted-box-modules'> 
     <span className='lasted-item-title'>Modulos</span>
     <hr/>
@@ -130,9 +139,9 @@ export const LastedRecords = () => {
       <span className='lasted-all-name'>{indicator.nombre}</span>
       </Box>
       </Box>
-      {/* <Box className='lasted-status'>
+      <Box className='lasted-status'>
         <span className={`lasted-code-text`}>{modules.codigo}</span>
-      </Box> */}
+      </Box>
     </Box>
       </Box>
     )
@@ -141,7 +150,7 @@ export const LastedRecords = () => {
 }
     </Box>
 
-    </Grid>
+    </Grid> */}
     
     
     
