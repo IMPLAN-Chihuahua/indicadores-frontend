@@ -1,6 +1,6 @@
 import { Box, Grid } from '@mui/material'
-import React, {useState, useEffect,useRef} from 'react'
-import { getIndicators, getModules, getUsers } from '../../../../../services/userService'
+import React, {useState, useEffect} from 'react'
+import { getLastedIndicators, getLastedModules, getLastedUsers } from '../../../../../services/userService'
 import './lastedRecords.css'
 
 
@@ -10,41 +10,31 @@ export const LastedRecords = () => {
   const [users, setUsers] = useState([])
   const [modules, setModules] = useState([])
   const [indicators, setIndicators] = useState([])
-
-  const isMounted = useRef(true);
-
-
-useEffect(() => {
-  isMounted.current
-  ?
-  getUsers()
-  .then(res  => {
-    setUsers(res)
-  })
-  .catch(err  => {
-    setUsers([])
-  })
-  : setUsers([])
-    return ()=>{
-    isMounted.current = false;    
-    }
+  
+  useEffect(() => {
+    getLastedUsers()
+    .then(res  => {
+      setUsers(res)
+    })
+    .catch(err  => {
+      setUsers([])
+    });
     
-    // getModules()
-    // .then(res  => {
-    //   setModules(res)
-    // })
-    // .catch(err  => {
-    //   setModules([])
-    // });  
+    getLastedModules()
+    .then(res  => {
+      setModules(res)
+    })
+    .catch(err  => {
+      setModules([])
+    });  
 
-    // getIndicators()
-    // .then(res  => {
-    //   setIndicators(res)
-    // })
-    // .catch(err  => {
-    //   setIndicators([])
-    // });  
-
+    getLastedIndicators()
+    .then(res  => {
+      setIndicators(res)
+    })
+    .catch(err  => {
+      setIndicators([])
+    });  
   }, [])
 
 
@@ -56,10 +46,12 @@ useEffect(() => {
       <hr/>
     </Box>
 
-    <Grid container spacing={2} className='lasted-grid'>
+    <Grid container spacing={4} className='lasted-grid'>
     <Grid item xs={12} md={6} lg={5} className='lasted-box'>
    
     <Box className='lasted-box-users'> 
+    <Box className='lasted-box-users-container'>
+
     <span className='lasted-item-title'>Usuarios</span>
     <hr/>
 {
@@ -84,8 +76,9 @@ useEffect(() => {
       </Box>
     )
   })
-    
+  
 }
+  </Box>
   
     </Box>
     </Grid>
