@@ -10,7 +10,7 @@ export const LastedRecords = () => {
   const [users, setUsers] = useState([])
   const [modules, setModules] = useState([])
   const [indicators, setIndicators] = useState([])
-
+  
   useEffect(() => {
     getLastedUsers()
     .then(res  => {
@@ -35,7 +35,6 @@ export const LastedRecords = () => {
     .catch(err  => {
       setIndicators([])
     });  
-
   }, [])
 
 
@@ -84,7 +83,7 @@ export const LastedRecords = () => {
     </Box>
     </Grid>
     
-    <Grid item xs={12} md={6} lg={7} className='lasted-right-box'>
+    {/* <Grid item xs={12} md={6} lg={7} className='lasted-right-box'>
     <Box className='lasted-box-modules'> 
     <span className='lasted-item-title'>Modulos</span>
     <hr/>
@@ -133,9 +132,9 @@ export const LastedRecords = () => {
       <span className='lasted-all-name'>{indicator.nombre}</span>
       </Box>
       </Box>
-      {/* <Box className='lasted-status'>
+      <Box className='lasted-status'>
         <span className={`lasted-code-text`}>{modules.codigo}</span>
-      </Box> */}
+      </Box>
     </Box>
       </Box>
     )
@@ -144,7 +143,7 @@ export const LastedRecords = () => {
 }
     </Box>
 
-    </Grid>
+    </Grid> */}
     
     
     
