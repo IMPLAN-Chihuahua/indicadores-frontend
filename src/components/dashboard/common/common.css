@@ -1,0 +1,122 @@
+.dh-container{
+display: flex;
+justify-content: center;
+padding: 20px;
+}
+
+/* .dh-counters{
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    align-content: center;
+} */
+
+.dh-search, .dh-counters, .dh-options{
+display: flex;
+justify-content: center;
+align-items: center;
+align-content: center;
+}
+/* .dh-options{
+display: flex;
+justify-content: right;
+align-items: center;
+align-content: center;
+} */
+
+.dh-count{
+     margin-left: 15px;
+     margin-right: 15px;
+}
+.dh-options-button{
+    height: 40px;
+}
+
+
+.dh-count-container{
+    width: 60px;
+    height: 60px;
+    display: inline-block;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+}
+.dh-count-number{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    text-align: center;
+    border-radius: 50%;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(0,0,0,0.05);
+    color: rgb(0,0,0,0.5);
+    font-weight: 600;
+    font-size: 150%;
+}
+
+.dh-count-text{
+    text-align: center;
+    font-weight: 600;
+}
+.dh-search-input{
+    width: 90%;
+}
+
+.dt-table{
+margin-top:2%;
+}
+
+.dh-options{
+    padding-top: 20px;
+    padding-bottom: 20px;
+    
+}
+
+.dt-table{
+margin-top: 3%;    
+}
+.dt-pagination{
+    position: relative;
+}
+.dt-pagination-options-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    position: absolute;
+    right: 0;
+    bottom: 1;
+    padding-top: 6px;
+    padding-right: 20px;
+    z-index: 999;
+    min-width: 150px;
+    
+}
+.dt-pagination-number{
+    min-width: 100px;
+    text-align: center;
+    margin-bottom: 8px;
+    color: rgb(0,0,0,0.8);
+    font-weight: 600;
+}
+.dt-pagination-option{
+    cursor: pointer;
+    color: #1976D2;
+}
+.dt-loading{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    text-align: center;
+    height: 200px;
+}
+
+.dt-theme--header{
+    background-color: #263044;
+    color: white;
+    font-weight: 600;
+    font-size: 15px;
+}

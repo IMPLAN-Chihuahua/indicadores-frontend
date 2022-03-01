@@ -19,6 +19,8 @@
     "react-minimal-pie-chart": "^8.2.0",
     "react-router-dom": "^6.2.1",
     "react-scripts": "^5.0.0",
+    "react-spinners": "^0.11.0",
+    "swr": "^1.2.2",
     "web-vitals": "^1.0.1",
     "yup": "^0.32.11"
   },

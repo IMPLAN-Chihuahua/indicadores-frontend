@@ -1,4 +1,7 @@
 import { protectedApi } from ".";
+import useSWR from 'swr';
+
+const fetcher = (url) => protectedApi.get(url).then(res => res.data)
 
 const getCurrentUser = async () => {
   try {
@@ -19,7 +22,7 @@ const getCurrentUser = async () => {
   }
 };
 
-export const getUsers = async () => {
+export const getLastedUsers = async () => {
   try {
     const response = await protectedApi.get('/usuarios');
     const { data: users } = response.data;
@@ -38,12 +41,12 @@ export const getUsers = async () => {
   }
 };
 
-export const getModules = async () => {
+export const getLastedModules = async () => {
   try {
     const response = await protectedApi.get('/modulos');
-    const { data: modules } = response.data;
-    if (modules) {
-      return [ ...modules ];
+    const { data: lastedModules } = response.data;
+    if (lastedModules) {
+      return [ ...lastedModules ];
     }
     return {};
   } catch (error) {
@@ -57,7 +60,34 @@ export const getModules = async () => {
   }
 };
 
-export const getIndicators = async () => {
+export const useModules = (page) => {
+  const {data, error} = useSWR(`me/modulos?per_page=10&page=${page}`,fetcher) 
+  return{
+    modulesList: data,
+    isLoading: !error && !data,
+    isError: error,
+  } 
+};
+
+export const getModules = async (page) => {
+  try {
+    const response = await protectedApi.get(`/me/modulos?per_page=10&page=${page}`);
+    if (response.data) {
+      return response.data;
+    }
+    return {};
+  } catch (error) {
+    const message =
+      (error.response &&
+        error.response.data &&
+        error.response.data.message) ||
+      error.message || error.toString()
+    console.log('message', message)
+    Promise.reject(error)
+  }
+};
+
+export const getLastedIndicators = async () => {
   try {
     const response = await protectedApi.get('/modulos/1/indicadores');
     const { data: indicadors } = response.data;
