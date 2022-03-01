@@ -1,4 +1,4 @@
-import { Box, Button } from '@mui/material'
+import { Box, Button, Typography } from '@mui/material'
 import React, { useRef } from 'react'
 import { useState, useEffect } from 'react'
 import DatagridTable from '../components/dashboard/common/DatagridTable'
@@ -8,9 +8,6 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { BeatLoader } from 'react-spinners'
 import { blue } from '@mui/material/colors'
-import { Button, Typography } from '@mui/material'
-import React, { useState } from 'react'
-import DatagridTable from '../components/dashboard/common/DatagridTable'
 import FormModal from '../components/dashboard/common/FormModal'
 
 export const Modules = () => {
