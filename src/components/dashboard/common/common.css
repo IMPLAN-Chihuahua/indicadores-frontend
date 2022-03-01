@@ -64,10 +64,6 @@ align-content: center;
     width: 90%;
 }
 
-.dt-table{
-margin-top:2%;
-}
-
 .dh-options{
     padding-top: 20px;
     padding-bottom: 20px;
@@ -75,8 +71,17 @@ margin-top:2%;
 }
 
 .dt-table{
-margin-top: 3%;    
+margin-top: 3%; 
+width: 1400px;
 }
+
+.dt-table-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+}
+
 .dt-pagination{
     position: relative;
 }
@@ -90,20 +95,27 @@ margin-top: 3%;
     bottom: 1;
     padding-top: 6px;
     padding-right: 20px;
-    z-index: 999;
+    z-index: 777;
     min-width: 150px;
     
 }
 .dt-pagination-number{
-    min-width: 100px;
+    min-width: 130px;
     text-align: center;
     margin-bottom: 8px;
     color: rgb(0,0,0,0.8);
     font-weight: 600;
+    
 }
 .dt-pagination-option{
     cursor: pointer;
     color: #1976D2;
+}
+.dt-pagination-option-corner{
+    cursor: pointer;
+    color: #bbbbbb;
+    margin-right: 10px;
+    margin-left: 10px;
 }
 .dt-loading{
     display: flex;
@@ -115,8 +127,57 @@ margin-top: 3%;
 }
 
 .dt-theme--header{
-    background-color: #263044;
+    background-color: #3d5a80;
     color: white;
     font-weight: 600;
-    font-size: 15px;
+    font-size: 18px;
+
+}
+.params-color{
+    width: 100%;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    text-align: center;
+}
+.params-color--circle{
+    width: 35px;
+    height: 35px;
+    border-radius: 10px;
+}
+.dt-showImage{
+    width: 100%;
+}
+
+.dt-chip-active, .dt-chip-inactive{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    text-align: center;
+    width: 85px;
+    padding: 5px;
+    border-radius: 15px;
+}
+.dt-chip-active{
+   background-color: #C6F9C6;
+}
+.dt-chip-active--text{
+    color: #10A04E;
+    font-size: 13px;
+    font-weight: 600;
+    padding-top: 2px;
+    padding-right: 10px;
+}
+.dt-chip-inactive{
+    background-color: #F0C8C8;
+}
+.dt-chip-inactive--text{
+    color: #9E1010;
+    font-size: 13px;
+    font-weight: 600;
+    padding-top: 2px;
+    padding-right: 10px;
 }

@@ -1,13 +1,17 @@
-import { Box, Button } from '@mui/material'
+import { Box, Button, Chip } from '@mui/material'
 import React, { useRef } from 'react'
 import { useState, useEffect } from 'react'
 import DatagridTable from '../components/dashboard/common/DatagridTable'
 import { DataHeader } from '../components/dashboard/common/DataHeader'
-import { getModules, useModules } from '../services/userService'
+import {useModules } from '../services/userService'
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { BeatLoader } from 'react-spinners'
-import { blue } from '@mui/material/colors'
+import FirstPageIcon from '@mui/icons-material/FirstPage';
+import LastPageIcon from '@mui/icons-material/LastPage';
+import ShowImage from '../components/dashboard/common/ShowImage'
+
+import { Status } from '../components/dashboard/common/Status'
 
 export const Modules = () => {
 
@@ -16,23 +20,32 @@ export const Modules = () => {
   
   const {modulesList,isLoading,isError} = useModules(paginationCounter);
   
+  let totalPages = 1;
   let rowsModules=[];
   let dataModule = {
     topic: 'modulo',
     countEnable: '-',
     countDisable: '-',
   };
-  
+
+  (modulesList) && (totalPages = modulesList.total_pages); 
   (modulesList) && (rowsModules = modulesList.data); 
   
- 
   (modulesList) && (dataModule = {
     topic: 'modulo',
     countEnable: (modulesList.total - modulesList.totalInactivos),
     countDisable: modulesList.totalInactivos,
   });
-
-
+  
+  let rowsModulesEdited = [];
+  rowsModules.map( data =>{
+    rowsModulesEdited = [...rowsModulesEdited,{
+      ...data,
+      createdAt: ((data.createdAt).split('T')[0]),
+      updatedAt: ((data.updatedAt).split('T')[0])
+    }]
+  });
+  console.log(rowsModulesEdited)
   useEffect(() => {
     return () =>{
       isMounted.current = false;
@@ -41,7 +54,7 @@ export const Modules = () => {
   
   
   const nextPage = () => {
-    if(paginationCounter < ((dataModule.countEnable + dataModule.countDisable)/10)){
+    if(paginationCounter < totalPages){
       setPaginationCounter(paginationCounter+1)
     }
   } 
@@ -50,27 +63,73 @@ export const Modules = () => {
       setPaginationCounter(paginationCounter-1)
     }
   } 
-  
+  const firstPage = () => {
+    if(paginationCounter > 1){
+      setPaginationCounter(1)
+    }
+  } 
+  const lastPage = () => {
+    if(paginationCounter < totalPages) {
+      setPaginationCounter(totalPages)
+    }
+  } 
+  const editable = true, headerClassName = 'dt-theme--header',sortable=false, headerAlign='center',align = 'center';
   const columnsModule = [
-    {field: 'id',headerName: 'ID ',width:100,editable: true,headerClassName: 'dt-theme--header'},
-    {field: 'codigo',headerName: 'Codigo ',width:100,editable: true,headerClassName: 'dt-theme--header'},
-    {field: 'temaIndicador',headerName: 'Tema',width:250,editable: true,headerClassName: 'dt-theme--header'},
-    {field: 'createdAt',headerName: 'Creacion',width:200,editable: true,headerClassName: 'dt-theme--header'    },
-    {field: 'updatedAt',headerName: 'Actualizacion',width:200,editable: true,headerClassName: 'dt-theme--header'},
-    {field: 'urlImagen',headerName: 'Imagen',width:200,editable: true,headerClassName: 'dt-theme--header'},
-    {field: 'color',headerName: 'Color',width:70,editable: true,headerClassName: 'dt-theme--header'},
-    {field: 'observaciones',headerName: 'Observaciones',width:400,editable: true,headerClassName: 'dt-theme--header'},
-    {field: 'activo',headerName: 'Estado',width:100,editable: true,headerClassName: 'dt-theme--header'},
+    {field: 'id',headerName: 'ID ',width: 0,editable,headerClassName,sortable,headerAlign, align,align},
+    {field: 'codigo',headerName: 'Codigo ',width:100,editable,headerClassName,sortable,headerAlign, align},
+    {field: 'temaIndicador',headerName: 'Tema',width:150,editable,headerClassName,sortable,headerAlign, align},
+    {field: 'createdAt',headerName: 'Creacion',width:150,editable,headerClassName,sortable,headerAlign, align    },
+    {field: 'updatedAt',headerName: 'Actualizacion',width:150,editable,headerClassName,sortable,headerAlign, align},
+    {field: 'urlImagen',headerName: 'Imagen',width:150,editable,headerClassName,sortable,headerAlign, align,
+    renderCell: (params) => {
+      return (
+        <ShowImage data={{
+          title: params.row.temaIndicador ,
+          url: params.row.urlImagen, 
+        } 
+        }/>
+      )
+    },
+    },
+    {field: 'color',headerName: 'Color',width:100,editable,headerClassName,sortable,headerAlign, align,
+    renderCell: (params) => {
+      return (
+        <div className='params-color'>
+        <div className='params-color--circle' style={{
+          backgroundColor:params.row.color,
+          border: '1px solid rgb(0,0,0,0.2)',
+          }}></div>
+        </div>
+      )
+    },
+    },
+    {field: 'observaciones',headerName: 'Observaciones',width:400,editable,headerClassName,sortable,headerAlign, align},
+    {field: 'activo',headerName: 'Estado',width:150,editable,headerClassName,sortable,headerAlign, align,
+    renderCell: (params) => {
+      return (
+        <div>
+          {
+            (params.row.activo == 'SI')
+            
+            ?<Status status='activo'/>
+            :<Status status='inactivo'/>
+         }
+        </div>
+      )
+    },
+
+    },
   ]
 
   const dataTable = [
     columnsModule,
-    rowsModules
+    rowsModulesEdited
 ]
 
   return (
     <>
     <DataHeader data={dataModule} />
+    <Box className='dt-table-container'>
     <Box className='dt-table'>
     {
       (isLoading)
@@ -79,14 +138,18 @@ export const Modules = () => {
       <>
       <Box className='dt-pagination'>
       <Box className='dt-pagination-options-container'>
+        <span className='dt-pagination-option-corner' onClick={firstPage} ><FirstPageIcon /></span>
         <span className='dt-pagination-option' onClick={previousPage} ><ArrowBackIosIcon fontSize='15px' /></span>
-        <span className='dt-pagination-number'>{`página ${paginationCounter}`}</span>
+        <span className='dt-pagination-number'>{`Página ${paginationCounter}/${totalPages}`}</span>
         <span className='dt-pagination-option' onClick={nextPage}><ArrowForwardIosIcon fontSize='15px'/></span>
+        <span className='dt-pagination-option-corner' onClick={lastPage} ><LastPageIcon /></span>
       </Box>
       </Box>
       <DatagridTable data={dataTable} />
+
       </>
     }
+    </Box>
     </Box>
     </>
   )
