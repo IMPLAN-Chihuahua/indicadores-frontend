@@ -8,8 +8,6 @@ const loginSchema = yup.object({
   clave:
     yup.string()
       .required('Por favor, ingrese su contraseña')
-      .min(8, 'La contraseña debe contener al menos 8 caracteres')
-      .max(32, 'La contraseña debe contener a lo más 32 caracteres')
 });
 
 

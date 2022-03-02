@@ -42,13 +42,7 @@ const ModalModelo = ({ id, open, setOpenModal, children, title }) => {
                         </Typography>
                     </Toolbar>
                 </AppBar>
-                <Container sx={{bgcolor: 'red', maxWidth: {
-                    xs: 'xs',
-                    sm: 'sm',
-                    md: 'md',
-                    lg: 'lg',
-                    xl: 'xl',
-                }}}>{children}</Container>
+                {children}
             </Dialog>
         </>
     )
