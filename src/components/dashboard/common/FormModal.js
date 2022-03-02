@@ -1,6 +1,5 @@
 import {
-    Box,
-    Button,
+    Grid,
     Dialog,
     Typography,
     Slide,
@@ -9,7 +8,7 @@ import {
     IconButton,
     Container,
 } from '@mui/material';
-import React, { useState } from 'react';
+import React from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -42,13 +41,7 @@ const ModalModelo = ({ id, open, setOpenModal, children, title }) => {
                         </Typography>
                     </Toolbar>
                 </AppBar>
-                <Container sx={{bgcolor: 'red', maxWidth: {
-                    xs: 'xs',
-                    sm: 'sm',
-                    md: 'md',
-                    lg: 'lg',
-                    xl: 'xl',
-                }}}>{children}</Container>
+                {children}
             </Dialog>
         </>
     )
