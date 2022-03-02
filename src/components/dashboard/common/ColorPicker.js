@@ -1,3 +1,5 @@
+import { TextField } from '@mui/material';
+import { borderLeft, boxSizing, width } from '@mui/system';
 import React, { useCallback, useRef, useState } from 'react';
 import { useEffect } from 'react';
 import { HexColorPicker, HexColorInput } from "react-colorful";
@@ -38,18 +40,19 @@ const ColorPicker = ({color, onChange}) => {
 
   CloseOnClickOutside(popOver, close);
 
-  const styles = {
+const styles = {
     picker : {
       position: 'relative',
+      display: 'flex',
+      alignItems: 'center',
+      padding: '6px',
     },
     selector: {
-      width: '28px',
-      height: '28px',
-      borderRadius: '8px',
-      border: '1px solid #ccc',
-      boxShadow: '0 0 0 1px rgba(0,0,0,.1)',
+      width: '40px',
+      height: '40px',
       cursor: 'pointer',
-      backgroundColor: '#0000'
+      backgroundColor: '#0000',
+      borderRadius: '10px 0 0 10px',
     },
     popover: {
       position: 'absolute',
@@ -62,20 +65,39 @@ const ColorPicker = ({color, onChange}) => {
       padding: '10px',
       boxSizing: 'border-box',
     },
+    input: {
+      boxSizing:'border-box',
+      width: '20%',
+      height: '40px',
+      padding: '10px',
+      border: '0px solid #ddd',
+      borderRadius: '0 5px 5px 0',
+      outline: '',
+      font: 'inherit',
+      textTransform: 'uppercase',
+      color: '#333',
+      boxShadow: 'inset 0 0 0 1px #ddd',
+    },
+    bo: {
+      width: '100%',
+      pointer: 'cursor',
+    }
   };
 
   return (
-    <div style={styles.picker}>
-      <div 
-        style={{...styles.selector, backgroundColor: color}}
-        onClick={() => setPopState(true)}
-      />
-      {popState && (
-        <div style={styles.popover} ref={popOver}>
-          <HexColorPicker color={color} onChange={onChange} />
-          <HexColorInput color={color} onChange={onChange} />
-        </div>   
-      )}
+    <div style={styles.bo}>
+      <div style={styles.picker}>
+        <div 
+          style={{...styles.selector, backgroundColor: color}}
+          onClick={() => setPopState(true)}
+        />
+        {popState && (
+          <div style={styles.popover} ref={popOver}>
+            <HexColorPicker color={color} onChange={onChange} />
+          </div>   
+        )}
+          <HexColorInput style={styles.input} color={color} onChange={onChange} />
+      </div>
     </div>
   )
 };
