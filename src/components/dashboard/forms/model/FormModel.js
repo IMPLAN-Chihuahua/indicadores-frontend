@@ -6,16 +6,18 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { moduleSchema } from '../../../../utils/validator';
 
 
-const FormModel = (id = 0) => {
-    const defaultValues = {
+const FormModel = ({data = 0}) => {
+
+    let defaultValues = {
         temaIndicador: '',
         codigo: '',
         observaciones: '',
-        activo: '',
+        activo: 'SI' ? true : false,
         imagen: '',
         color: '', 
     };
-
+    defaultValues = data ? data : defaultValues;
+    
     const {control, handleSubmit, formState: {errors}} = useForm({defaultValues, resolver: yupResolver(moduleSchema)});
     const onSubmit = data => alert(JSON.stringify(data));
 
@@ -27,7 +29,6 @@ const FormModel = (id = 0) => {
     const [error, setError] = React.useState('');
     return (
         <Container sx={{mt: 3, pt: 4, pb: 4, border: '1px solid lightgray', maxWidth: {sm: 'sm'}}}>
-        <CssBaseline />
         <Box component='form' onSubmit={handleSubmit(onSubmit)}>
             <Grid container columnSpacing={3} rowSpacing={2}>
                 <Grid item xs={12}>
@@ -57,6 +58,7 @@ const FormModel = (id = 0) => {
                         rules={{required: 'Por favor, ingresa un tema de indicador'}}
                         render={({ field, fieldState: {error} }) => 
                             <TextField 
+                                autoComplete='off'
                                 size='small'
                                 error={!!error}
                                 helperText={error ? error.message : null}
@@ -116,7 +118,9 @@ const FormModel = (id = 0) => {
                             render={({ field }) => (
                                 <FormGroup>
                                     <FormControlLabel 
-                                        control={<Switch defaultChecked={true}/>} 
+                                        control={
+                                            <Switch {...field} defaultChecked={defaultValues.activo === 'SI' ? true : false}/>
+                                        } 
                                         label='Activo'
                                         labelPlacement='end'
                                     />
