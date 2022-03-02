@@ -1,22 +1,20 @@
 import {
-    Box,
-    Button,
+    Grid,
     Dialog,
     Typography,
     Slide,
     AppBar,
     Toolbar,
     IconButton,
-    Container,
 } from '@mui/material';
-import React, { useState } from 'react';
+import React from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const ModalModelo = ({ id, open, setOpenModal, children, title }) => {
+const ModalModelo = ({ open, setOpenModal, children, title }) => {
     const handleClose = () => setOpenModal(false);
 
     return (
