@@ -1,9 +1,10 @@
-import { Box, Button, TextField, Container, Grid, FormGroup, FormControlLabel, Switch, CssBaseline, Typography } from '@mui/material';
+import { Box, Button, TextField, Container, Grid, FormGroup, FormControlLabel, Switch, CssBaseline, Typography, Alert } from '@mui/material';
 import React from 'react';
-import { useState } from 'react';
 import { useForm, Controller } from "react-hook-form";
 import ColorPicker from '../../common/ColorPicker';
-import { HexColorInput } from 'react-colorful';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { moduleSchema } from '../../../../utils/validator';
+
 
 const FormModel = (id = 0) => {
     const defaultValues = {
@@ -15,11 +16,15 @@ const FormModel = (id = 0) => {
         color: '', 
     };
 
-    const {control, handleSubmit} = useForm({defaultValues});
+    const {control, handleSubmit, formState: {errors}} = useForm({defaultValues, resolver: yupResolver(moduleSchema)});
     const onSubmit = data => alert(JSON.stringify(data));
 
     const [color, setColor] = React.useState(defaultValues.color ? defaultValues.color : '#d32f2f');
 
+    const [required, setRequired] = React.useState(false);
+    const handleRequired = () => setRequired(!required);
+
+    const [error, setError] = React.useState('');
     return (
         <Container sx={{mt: 3, pt: 4, pb: 4, border: '1px solid lightgray', maxWidth: {sm: 'sm'}}}>
         <CssBaseline />
@@ -49,15 +54,31 @@ const FormModel = (id = 0) => {
                     <Controller
                         name="temaIndicador"
                         control={control}
-                        render={({ field }) => <TextField variant='outlined' label='Tema indicador' {...field} />}
+                        rules={{required: 'Por favor, ingresa un tema de indicador'}}
+                        render={({ field, fieldState: {error} }) => 
+                            <TextField 
+                                size='small'
+                                error={!!error}
+                                helperText={error ? error.message : null}
+                                variant='outlined' 
+                                label='Tema indicador' 
+                                autoFocus
+                                {...field} 
+                            />}
                     />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                     <Controller
                         name="codigo"
                         control={control}
-                        render={({ field }) => <TextField variant='outlined' label='Código' {...field} 
-                        sx={{maxWidth: '77px'}}
+                        rules={{required: 'Por favor, ingrese el código del indicador'}}
+                        render={({ field, fieldState: {error} }) => <TextField 
+                            size='small'
+                            error={!!error}
+                            helperText={error ? error.message : null}
+                            variant='outlined' 
+                            label='Código' 
+                            {...field} 
                         />}
                     />
                 </Grid>
@@ -74,11 +95,18 @@ const FormModel = (id = 0) => {
                         <Controller
                             name="observaciones"
                             control={control}
-                            render={({ field }) => <TextField 
-                            multiline
-                            rows={3}
-                            sx={{width: '100%'}}
-                            variant='outlined' label='Observaciones' {...field} />}
+                            rules={{required: 'Las observaciones debe contener máximo 255 caracteres'}}
+                            render={({ field, fieldState: {error} }) => 
+                            <TextField 
+                                multiline
+                                error={!!error}
+                                helperText={error ? error.message : null}
+                                rows={3}
+                                sx={{width: '100%'}}
+                                variant='outlined' 
+                                label='Observaciones' 
+                                {...field} 
+                            />}
                         />
                     </Grid>
                     <Grid item xs={1}>
@@ -97,6 +125,7 @@ const FormModel = (id = 0) => {
                     </Grid>
                     <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                         <Button type='submit' variant='contained'>Guardar</Button>
+                        {errors.required && (handleRequired)}
                     </Grid>
             </Grid>
         </Box>
