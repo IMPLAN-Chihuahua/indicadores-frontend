@@ -71,8 +71,8 @@ align-content: center;
 }
 
 .dt-table{
-margin-top: 3%; 
-width: 1400px;
+margin-top: 30px;
+width: 100%;
 }
 
 .dt-table-container{
@@ -83,22 +83,40 @@ width: 1400px;
 }
 
 .dt-pagination{
-    position: relative;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    align-content: center;
+    margin-top: 1%;
+}
+
+.dt-perPage-options--text{
+    margin-left: 10px;
+    font-weight: 500;
+}
+
+.dt-perPage-options-container{
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    align-content: center;
+    margin-top: 7px;
+    z-index: 777;
+    
 }
 .dt-pagination-options-container{
     display: flex;
-    justify-content: center;
+    justify-content: left;
     align-items: center;
     align-content: center;
-    position: absolute;
-    right: 0;
+    right: 1;
     bottom: 1;
-    padding-top: 6px;
+    padding-top: 15px;
     padding-right: 20px;
     z-index: 777;
     min-width: 150px;
-    
 }
+
 .dt-pagination-number{
     min-width: 130px;
     text-align: center;
@@ -131,7 +149,7 @@ width: 1400px;
     color: white;
     font-weight: 600;
     font-size: 18px;
-
+    
 }
 .params-color{
     width: 100%;
@@ -141,6 +159,7 @@ width: 1400px;
     align-items: center;
     align-content: center;
     text-align: center;
+    color: red;
 }
 .params-color--circle{
     width: 35px;
@@ -149,6 +168,8 @@ width: 1400px;
 }
 .dt-showImage{
     width: 100%;
+    min-width: 400px;
+    min-height: 400px;
 }
 
 .dt-chip-active, .dt-chip-inactive{
@@ -162,7 +183,7 @@ width: 1400px;
     border-radius: 15px;
 }
 .dt-chip-active{
-   background-color: #C6F9C6;
+    background-color: #C6F9C6;
 }
 .dt-chip-active--text{
     color: #10A04E;
@@ -180,4 +201,54 @@ width: 1400px;
     font-weight: 600;
     padding-top: 2px;
     padding-right: 10px;
+}
+
+.dt-theme--text{
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dt-btn-container{
+    display: flex;
+    justify-content: space-between;
+    width: 86px;
+}
+.dt-action-delete,.dt-action-edit{
+color: white;
+
+display: flex;
+align-items: center;
+justify-content: center;
+align-content: center;
+
+width: 35px;
+height: 35px;
+
+border-radius: 20%;
+
+cursor: pointer;
+}
+
+.dt-action-delete{
+    background-color: #df4759;
+}
+.dt-action-delete:hover{
+    background-color: #ce3446;
+}
+
+.dt-action-edit{
+    background-color: #467fd0;
+}
+.dt-action-edit:hover{
+    background-color: #396db6;
+}
+@media (max-width: 900px){
+    .dt-pagination{
+        display: inline-block;
+    }
+    .dt-showImage{
+        width: 100%;
+        min-width: 300px;
+        min-height: 250px;
+    }
 }

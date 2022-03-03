@@ -12,14 +12,12 @@ const DatagridTable = ({data}) => {
         disableSelectionOnClick
         hideFooter = {true}
         localeText={esES.components.MuiDataGrid.defaultProps.localeText}
-        components={{ Toolbar: GridToolbar }}
+        // components={{ Toolbar: GridToolbar }}
         sx={{
           border: 'none',
           '& .MuiDataGrid-cell:hover': {
             color: 'primary.main',
-          },
-          
-        
+          },        
         }}
       />
     )
