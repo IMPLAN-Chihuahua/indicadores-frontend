@@ -83,7 +83,7 @@ export const LastedRecords = () => {
     </Box>
     </Grid>
     
-    {/* <Grid item xs={12} md={6} lg={7} className='lasted-right-box'>
+    <Grid item xs={12} md={6} lg={7} className='lasted-right-box'>
     <Box className='lasted-box-modules'> 
     <span className='lasted-item-title'>Modulos</span>
     <hr/>
@@ -143,7 +143,7 @@ export const LastedRecords = () => {
 }
     </Box>
 
-    </Grid> */}
+    </Grid>
     
     
     
