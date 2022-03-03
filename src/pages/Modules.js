@@ -180,9 +180,11 @@ if (activeCounter == 0 && inactiveCounter == 0 && modulesList){
       <DatagridTable data={dataTable} />
       <Box className='dt-pagination'>
       <Box className='dt-pagination-options-container'>
+        <span className='dt-pagination-option-corner' onClick={firstPage} ><FirstPageIcon /></span>
         <span className='dt-pagination-option' onClick={previousPage} ><ArrowBackIosIcon fontSize='15px' /></span>
         <span className='dt-pagination-number'>{`página ${paginationCounter}`}</span>
         <span className='dt-pagination-option' onClick={nextPage}><ArrowForwardIosIcon fontSize='15px'/></span>
+        <span className='dt-pagination-option-corner' onClick={lastPage} ><LastPageIcon /></span>
       </Box>
       <Box className='dt-perPage-options-container'>
         <Dropdown data={{perPaginationCounter, setPerPaginationCounter, setPaginationCounter,perPage}} />
