@@ -7,7 +7,7 @@ import { useModules } from '../services/userService'
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { BeatLoader } from 'react-spinners'
-import FormModal from '../components/dashboard/common/FormModal'
+import FormDialog from '../components/dashboard/common/FormDialog'
 import FormUser from '../components/dashboard/forms/user/FormUser'
 
 export const Users = () => {
@@ -71,14 +71,13 @@ export const Users = () => {
 
   return (
     <>
-
       <Button onClick={handleModal}>Click me</Button>
       <Button onClick={handleModal}>Click me</Button>
-      <FormModal open={openModal} setOpenModal={setOpenModal} title={'Usuario'}>
+      <FormDialog open={openModal} setOpenModal={setOpenModal} title={'Usuario'}>
         <Typography sx={{ color: 'black', fontWeight: 'bold' }}>
           <FormUser />
         </Typography>
-      </FormModal>
+      </FormDialog>
 
       <DataHeader data={dataModule} />
       <Box className='dt-table'>

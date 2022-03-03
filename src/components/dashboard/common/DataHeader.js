@@ -3,7 +3,7 @@ import React, {useState, useEffect} from 'react'
 import './common.css'
 import ClearIcon from '@mui/icons-material/Clear';
 import AddIcon from '@mui/icons-material/Add';
-import FormModal from './FormModal';
+import FormDialog from './FormDialog';
 import FormModel from '../forms/model/FormModel';
 
 export const DataHeader = ({data}) => {
@@ -81,9 +81,9 @@ export const DataHeader = ({data}) => {
                 </Grid>
         </Grid>
         
-        <FormModal open={openModal} setOpenModal={setOpenModal} title={'Crear módulo'}>
+        <FormDialog open={openModal} setOpenModal={setOpenModal} title={'Crear módulo'}>
                 <FormModel />
-        </FormModal> 
+        </FormDialog> 
       </>
   )
 }
