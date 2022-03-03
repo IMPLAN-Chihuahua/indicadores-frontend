@@ -132,9 +132,9 @@ export const LastedRecords = () => {
       <span className='lasted-all-name'>{indicator.nombre}</span>
       </Box>
       </Box>
-      <Box className='lasted-status'>
+      {/* <Box className='lasted-status'>
         <span className={`lasted-code-text`}>{modules.codigo}</span>
-      </Box>
+      </Box> */}
     </Box>
       </Box>
     )
