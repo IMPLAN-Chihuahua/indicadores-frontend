@@ -60,14 +60,15 @@ export const getLastedModules = async () => {
   }
 };
 
-export const useModules = (page) => {
-  const {data, error} = useSWR(`me/modulos?per_page=10&page=${page}`,fetcher) 
+export const useModules = (perPage,page) => {
+  const {data, error} = useSWR(`me/modulos?per_page=${perPage}&page=${page}`,fetcher) 
   return{
     modulesList: data,
     isLoading: !error && !data,
     isError: error,
   } 
 };
+
 
 export const getModules = async (page) => {
   try {
