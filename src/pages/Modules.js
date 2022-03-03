@@ -182,7 +182,7 @@ if (activeCounter == 0 && inactiveCounter == 0 && modulesList){
       <Box className='dt-pagination-options-container'>
         <span className='dt-pagination-option-corner' onClick={firstPage} ><FirstPageIcon /></span>
         <span className='dt-pagination-option' onClick={previousPage} ><ArrowBackIosIcon fontSize='15px' /></span>
-        <span className='dt-pagination-number'>{`página ${paginationCounter}`}</span>
+        <span className='dt-pagination-number'>{`Página ${paginationCounter}/${totalPages}`}</span>
         <span className='dt-pagination-option' onClick={nextPage}><ArrowForwardIosIcon fontSize='15px'/></span>
         <span className='dt-pagination-option-corner' onClick={lastPage} ><LastPageIcon /></span>
       </Box>
