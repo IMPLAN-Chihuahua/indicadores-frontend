@@ -14,7 +14,7 @@ import { Status } from '../components/dashboard/common/Status'
 import Dropdown from '../components/dashboard/common/Dropdown'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
-import FormModal from '../components/dashboard/common/FormModal'
+import FormDialog from '../components/dashboard/common/FormDialog'
 import FormModel from '../components/dashboard/forms/model/FormModel'
 
 export const Modules = () => {
@@ -194,9 +194,9 @@ if (activeCounter == 0 && inactiveCounter == 0 && modulesList){
     </Box>
 
 
-    <FormModal open={openModal} setOpenModal={setOpenModal} title={`Editar módulo ${clickInfo.temaIndicador}`}> 
-    <FormModel data={clickInfo}/>
-    </FormModal>
+    <FormDialog open={openModal} setOpenModal={setOpenModal} title={`Editar módulo ${clickInfo.temaIndicador}`}> 
+      <FormModel data={clickInfo}/>
+    </FormDialog>
 
     </>
   )
