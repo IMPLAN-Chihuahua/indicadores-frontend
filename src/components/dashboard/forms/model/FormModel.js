@@ -1,10 +1,10 @@
 import { Box, Button, TextField, Container, Grid, FormGroup, FormControlLabel, Switch, CssBaseline, Typography, Alert } from '@mui/material';
 import React from 'react';
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, FormProvider } from "react-hook-form";
 import ColorPicker from '../../common/ColorPicker';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { moduleSchema } from '../../../../utils/validator';
-
+import FileInput from '../../../common/FileInput';
 
 const FormModel = ({data = 0}) => {
 
@@ -15,10 +15,15 @@ const FormModel = ({data = 0}) => {
         activo: 'SI' ? true : false,
         imagen: '',
         color: '', 
+        urlImagen: '',
     };
     defaultValues = data ? data : defaultValues;
-    
-    const {control, handleSubmit, formState: {errors}} = useForm({defaultValues, resolver: yupResolver(moduleSchema)});
+    // {control, handleSubmit, formState: {errors}}
+    const methods = useForm({
+        defaultValues, 
+        resolver: yupResolver(moduleSchema),
+        mode: 'onBlur',
+    });
     const onSubmit = data => alert(JSON.stringify(data));
 
     const [color, setColor] = React.useState(defaultValues.color ? defaultValues.color : '#d32f2f');
@@ -26,45 +31,35 @@ const FormModel = ({data = 0}) => {
     const [required, setRequired] = React.useState(false);
     const handleRequired = () => setRequired(!required);
 
-    const [error, setError] = React.useState('');
     return (
         <Container sx={{mt: 3, pt: 4, pb: 4, border: '1px solid lightgray', maxWidth: {sm: 'sm'}}}>
-        <Box component='form' onSubmit={handleSubmit(onSubmit)}>
+        <FormProvider {...methods}> 
+        <Box component='form' onSubmit={methods.handleSubmit(onSubmit)}>
             <Grid container columnSpacing={3} rowSpacing={2}>
                 <Grid item xs={12}>
-                    <Box
-                        backgroundColor='lightgray'
-                        height={250}
-                        display='flex'
-                    >
-                        <Typography variant="h6" component="h3" sx={{
-                            fontWeight: 'bold',
-                            textAlign: 'center',
-                            paddingTop: '1rem',
-                            paddingBottom: '1rem',
-                            flex: 1,
-                            flexDirection: 'column',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}>
-                            Drag and Drop or click to select a file
-                        </Typography>
-                    </Box>
+                    <Grid item xs={12}>
+                        <FileInput
+                            accept='image/png, image/jpg, image/jpeg, image/gif'
+                            name='profileImage'
+                            label='Subir Archivo'
+                            urlImagen={defaultValues.urlImagen ? defaultValues.urlImagen : ''}
+                        />
+                    </Grid>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                     <Controller
                         name="temaIndicador"
-                        control={control}
-                        rules={{required: 'Por favor, ingresa un tema de indicador'}}
+                        control={methods.control}
                         render={({ field, fieldState: {error} }) => 
                             <TextField 
                                 autoComplete='off'
                                 size='small'
+                                required
+                                placeholder='Accesibilidad ciclista'
                                 error={!!error}
                                 helperText={error ? error.message : null}
                                 variant='outlined' 
                                 label='Tema indicador' 
-                                autoFocus
                                 {...field} 
                             />}
                     />
@@ -72,10 +67,11 @@ const FormModel = ({data = 0}) => {
                 <Grid item xs={12} sm={6}>
                     <Controller
                         name="codigo"
-                        control={control}
-                        rules={{required: 'Por favor, ingrese el código del indicador'}}
+                        control={methods.control}
                         render={({ field, fieldState: {error} }) => <TextField 
                             size='small'
+                            required
+                            placeholder='123'
                             error={!!error}
                             helperText={error ? error.message : null}
                             variant='outlined' 
@@ -87,7 +83,7 @@ const FormModel = ({data = 0}) => {
                     <Grid item xs={12}>
                         <Controller
                             name="color"
-                            control={control}
+                            control={methods.control}
                             render={({ field }) => (
                             <ColorPicker color={color} onChange={setColor}/>
                             )}
@@ -96,8 +92,7 @@ const FormModel = ({data = 0}) => {
                     <Grid item xs={12}>
                         <Controller
                             name="observaciones"
-                            control={control}
-                            rules={{required: 'Las observaciones debe contener máximo 255 caracteres'}}
+                            control={methods.control}
                             render={({ field, fieldState: {error} }) => 
                             <TextField 
                                 multiline
@@ -114,7 +109,7 @@ const FormModel = ({data = 0}) => {
                     <Grid item xs={1}>
                         <Controller
                             name="activo"
-                            control={control}
+                            control={methods.control}
                             render={({ field }) => (
                                 <FormGroup>
                                     <FormControlLabel 
@@ -129,10 +124,10 @@ const FormModel = ({data = 0}) => {
                     </Grid>
                     <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                         <Button type='submit' variant='contained'>Guardar</Button>
-                        {errors.required && (handleRequired)}
                     </Grid>
             </Grid>
         </Box>
+        </FormProvider>
         </Container>
     )
 }
