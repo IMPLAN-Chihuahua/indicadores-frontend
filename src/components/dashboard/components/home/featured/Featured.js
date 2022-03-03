@@ -7,14 +7,20 @@ const pieChart = [
   {
     id:'1',
     title: 'Modulos',
-    enable: 60,
-    disable: 9,
+    enable: 20,
+    disable: 1,
   },
   {
     id:'2',
     title: 'Indicadores',
-    enable: 4,
-    disable: 3,
+    enable: 42,
+    disable: 5,
+  },
+  {
+    id:'3',
+    title: 'Usuarios',
+    enable: 10,
+    disable: 2,
   },
 ];
 
@@ -30,7 +36,7 @@ export const Featured = () => {
       {
         pieChart.map( ({id,title,enable,disable}) => {
           return(
-            <Grid item xs={12} md={6} key={id}>
+            <Grid item xs={12} md={4} key={id}>
           <Box className='featured-item'>
           <span className='featured-title'>{title}</span>
           <Box className='feature-container'>
