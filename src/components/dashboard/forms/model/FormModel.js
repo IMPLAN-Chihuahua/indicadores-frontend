@@ -42,7 +42,7 @@ const FormModel = ({data = 0}) => {
                             accept='image/png, image/jpg, image/jpeg, image/gif'
                             name='profileImage'
                             label='Subir Archivo'
-                            urlImagen={defaultValues.urlImagen ? defaultValues.urlImagen : ''}
+                            // urlImagen={defaultValues.urlImagen ? defaultValues.urlImagen : ''}
                         />
                     </Grid>
                 </Grid>

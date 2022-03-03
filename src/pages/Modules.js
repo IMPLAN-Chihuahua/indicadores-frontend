@@ -14,6 +14,9 @@ import { Status } from '../components/dashboard/common/Status'
 import Dropdown from '../components/dashboard/common/Dropdown'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
+import FormModal from '../components/dashboard/common/FormModal'
+import FormModel from '../components/dashboard/forms/model/FormModel'
+
 export const Modules = () => {
   let perPage = 5;
   (localStorage.getItem("perPage")) && (perPage = localStorage.getItem("perPage"));
@@ -29,6 +32,11 @@ export const Modules = () => {
   const isMounted = useRef(true)
   const {modulesList,isLoading,isError} = useModules(perPaginationCounter,paginationCounter);
                   
+  const [openModal, setOpenModal] = React.useState(false);
+  const [clickInfo, setClickInfo] = React.useState({row: {temaIndicador: ''}});
+
+
+
 
 if (activeCounter == 0 && inactiveCounter == 0 && modulesList){
   setActiveCounter(modulesList.total - modulesList.totalInactivos)
@@ -137,7 +145,10 @@ if (activeCounter == 0 && inactiveCounter == 0 && modulesList){
       return (
         <div className='dt-btn-container'>
           <span className='dt-action-delete'> <DeleteOutlineIcon/> </span>
-          <span className='dt-action-edit'> <ModeEditIcon/> </span>
+          <span className='dt-action-edit' onClick={() => {
+            setOpenModal(prev => !prev)
+            setClickInfo(params.row);
+          }}> <ModeEditIcon/> </span>
         </div>
       )
     },
@@ -181,6 +192,12 @@ if (activeCounter == 0 && inactiveCounter == 0 && modulesList){
       </>
     }
     </Box>
+
+
+    <FormModal open={openModal} setOpenModal={setOpenModal} title={`Editar módulo ${clickInfo.temaIndicador}`}> 
+    <FormModel data={clickInfo}/>
+    </FormModal>
+
     </>
   )
 }

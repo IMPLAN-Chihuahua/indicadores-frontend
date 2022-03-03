@@ -81,7 +81,7 @@ export const DataHeader = ({data}) => {
                 </Grid>
         </Grid>
         
-        <FormModal open={openModal} setOpenModal=       {setOpenModal} title={'Editar módulo'}>
+        <FormModal open={openModal} setOpenModal={setOpenModal} title={'Crear módulo'}>
                 <FormModel />
         </FormModal> 
       </>
