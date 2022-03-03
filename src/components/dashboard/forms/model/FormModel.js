@@ -54,11 +54,12 @@ const FormModel = ({data = 0}) => {
                             <TextField 
                                 autoComplete='off'
                                 size='small'
+                                required
+                                placeholder='Accesibilidad ciclista'
                                 error={!!error}
                                 helperText={error ? error.message : null}
                                 variant='outlined' 
                                 label='Tema indicador' 
-                                autoFocus
                                 {...field} 
                             />}
                     />
@@ -69,6 +70,8 @@ const FormModel = ({data = 0}) => {
                         control={methods.control}
                         render={({ field, fieldState: {error} }) => <TextField 
                             size='small'
+                            required
+                            placeholder='123'
                             error={!!error}
                             helperText={error ? error.message : null}
                             variant='outlined' 
