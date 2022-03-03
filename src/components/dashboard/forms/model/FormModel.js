@@ -7,12 +7,12 @@ import { moduleSchema } from '../../../../utils/validator';
 import FileInput from '../../../common/FileInput';
 
 const FormModel = ({data = 0}) => {
-
+    console.log(data);
     let defaultValues = {
         temaIndicador: '',
         codigo: '',
         observaciones: '',
-        activo: 'SI' ? true : false,
+        activo: 'Activo' ? true : false,
         imagen: '',
         color: '', 
         urlImagen: '',
@@ -114,7 +114,7 @@ const FormModel = ({data = 0}) => {
                                 <FormGroup>
                                     <FormControlLabel 
                                         control={
-                                            <Switch {...field} defaultChecked={defaultValues.activo === 'SI' ? true : false}/>
+                                            <Switch {...field} defaultChecked={defaultValues.activo === 'Activo' ? true : false}/>
                                         } 
                                         label='Activo'
                                         labelPlacement='end'
