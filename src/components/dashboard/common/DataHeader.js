@@ -7,24 +7,28 @@ import FormDialog from './FormDialog';
 import FormModel from '../forms/model/FormModel';
 
 export const DataHeader = ({data}) => {
-        const {topic, countEnable , countDisable} = data;
+        const {topic, countEnable , countDisable,setSearchValue} = data;
         const[formState,setFormState] = useState({search:'',})
-       
         const {search} = formState;
+
 
         const handleInputChange = ({target}) => {
                 setFormState({
-                ...formState,
+                        ...formState,
                 [target.name]: target.value,
                 })
         }
-
+        
+        
+        
         const handleInputClear = () => {
                 setFormState({search: '',})
         }
-
+        
         const [openModal, setOpenModal] = useState(false);
         const handleModal = () => setOpenModal(prev => !prev);
+        
+        localStorage.setItem("search",search)
         return (
       <>
         <Grid container className='dh-container'>

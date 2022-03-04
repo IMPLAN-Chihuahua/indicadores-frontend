@@ -20,6 +20,8 @@ export const Modules = () => {
   let totalPages = 1;
   let rowsModules = [];
 
+  
+  const [searchValue, setSearchValue] = useState("");
   const [paginationCounter, setPaginationCounter] = useState(1);
   const [perPaginationCounter, setPerPaginationCounter] = useState(perPage);
 
@@ -204,15 +206,7 @@ export const Modules = () => {
       headerAlign,
       align,
       renderCell: (params) => {
-        return (
-          <div>
-            {params.row.activo == "Activo" ? (
-              <Status status="activo" />
-            ) : (
-              <Status status="inactivo" />
-            )}
-          </div>
-        );
+        return (<Status status={params.row.activo} />);
       },
     },
     {
@@ -220,7 +214,7 @@ export const Modules = () => {
       headerName: "Acciones",
       flex: 0.5,
       editable: false,
-      minWidth: 100,
+      minWidth: 150,
       headerClassName,
       sortable,
       headerAlign,
@@ -256,9 +250,9 @@ export const Modules = () => {
     countEnable: activeCounter,
     countDisable: inactiveCounter,
   };
-
   return (
     <>
+
       <DataHeader data={dataModule} />
       <Box className="dt-table">
         {isLoading ? (
