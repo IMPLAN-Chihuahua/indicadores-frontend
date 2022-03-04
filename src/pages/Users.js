@@ -1,102 +1,279 @@
-import { Box, Button, Typography } from '@mui/material'
-import React, { useRef } from 'react'
-import { useState, useEffect } from 'react'
-import DatagridTable from '../components/dashboard/common/DatagridTable'
-import { DataHeader } from '../components/dashboard/common/DataHeader'
-import { useModules } from '../services/userService'
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import { BeatLoader } from 'react-spinners'
-import FormDialog from '../components/dashboard/common/FormDialog'
-import FormUser from '../components/dashboard/forms/user/FormUser'
+import { Box } from "@mui/material";
+import React, { useRef } from "react";
+import { useState, useEffect } from "react";
+import DatagridTable from "../components/dashboard/common/DatagridTable";
+import { DataHeader } from "../components/dashboard/common/DataHeader";
+import { useUsers } from "../services/userService";
+import { BeatLoader } from "react-spinners";
+import ShowImage from "../components/dashboard/common/ShowImage";
+import { Status } from "../components/dashboard/common/Status";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import ModeEditIcon from "@mui/icons-material/ModeEdit";
+import FormDialog from "../components/dashboard/common/FormDialog";
+import FormModel from "../components/dashboard/forms/model/FormModel";
+import { DataPagination } from "../components/dashboard/common/DataPagination";
 
 export const Users = () => {
-  const [openModal, setOpenModal] = useState(false);
+  let perPage = 5;
+  localStorage.getItem("perPage") &&
+    (perPage = localStorage.getItem("perPage"));
+  let totalPages = 1;
+  let rowsUsers = [];
+
+  
   const [paginationCounter, setPaginationCounter] = useState(1);
-  const handleModal = () => setOpenModal(prev => !prev);
-  const isMounted = useRef(true)
-  const { modulesList, isLoading, isError } = useModules(paginationCounter);
+  const [perPaginationCounter, setPerPaginationCounter] = useState(perPage);
 
-  let rowsModules = [];
-  let dataModule = {
-    topic: 'modulo',
-    countEnable: '-',
-    countDisable: '-',
-  };
+  const [activeCounter, setActiveCounter] = useState(0);
+  const [inactiveCounter, setInactiveCounter] = useState(0);
 
-  (modulesList) && (rowsModules = modulesList.data);
-
-
-  (modulesList) && (dataModule = {
-    topic: 'modulo',
-    countEnable: (modulesList.total - modulesList.totalInactivos),
-    countDisable: modulesList.totalInactivos,
+  const isMounted = useRef(true);
+  const { usersList, isLoading, isError } = useUsers(
+    perPaginationCounter,
+    paginationCounter
+  );
+  const [openModal, setOpenModal] = React.useState(false);
+  const [clickInfo, setClickInfo] = React.useState({
+    row: { temaIndicador: "" },
   });
 
+  if (activeCounter == 0 && inactiveCounter == 0 && usersList) {
+    setActiveCounter(usersList.total - usersList.totalInactivos);
+    setInactiveCounter(usersList.totalInactivos);
+  }
+  usersList && (totalPages = usersList.total_pages);
+  usersList && (rowsUsers = usersList.data);
 
+  let rowsUsersEdited = [];
+  rowsUsers.map((data) => {
+    rowsUsersEdited = [
+      ...rowsUsersEdited,
+      {
+        ...data,
+        createdAt: data.createdAt.split("T")[0],
+        updatedAt: data.updatedAt.split("T")[0],
+        idRol: data.idRol == 1 ? "Administrador" : data.idRol == 2 ? "Usuario" : "N/A",
+        activo: data.activo == "SI" ? "Activo" : "Inactivo",
+        actions: "Acciones",
+      },
+    ];
+  });
+  console.log(rowsUsersEdited)
   useEffect(() => {
     return () => {
       isMounted.current = false;
-    }
-  }, [])
+    };
+  }, []);
 
+  const editable = true,
+    headerClassName = "dt-theme--header",
+    sortable = false,
+    headerAlign = "center",
+    align = "center",
+    filterable = false;
+  const columnsUsers = [
+    {
+      field: "id",
+      headerName: "ID ",
+      flex: 0.1,
+      editable,
+      headerClassName,
+      sortable,
+      headerAlign,
+      align,
+      align,
+    },
+  
+    {
+      field: "nombres",
+      headerName: "Nombre ",
+      flex: 1,
+      minWidth: 160,
+      editable,
+      headerClassName,
+      sortable,
+      headerAlign,
+      align,
+    },
+    {
+      field: "apellidoPaterno",
+      headerName: "Apellido Paterno ",
+      flex: 1,
+      minWidth: 200,
+      editable,
+      headerClassName,
+      sortable,
+      headerAlign,
+      align,
+    },
+    {
+      field: "apellidoMaterno",
+      headerName: "Apellido Materno ",
+      flex: 1,
+      minWidth: 200,
+      editable,
+      headerClassName,
+      sortable,
+      headerAlign,
+      align,
+    },
+    {
+      field: "correo",
+      headerName: "Correo ",
+      flex: 1,
+      minWidth: 300,
+      editable,
+      headerClassName,
+      sortable,
+      headerAlign,
+      align,
+    },
+    {
+      field: "createdAt",
+      headerName: "Creacion",
+      flex: 0.5,
+      minWidth: 150,
+      editable,
+      headerClassName,
+      sortable,
+      headerAlign,
+      align,
+    },
+    {
+      field: "updatedAt",
+      headerName: "Actualizacion",
+      flex: 0.5,
+      minWidth: 150,
+      editable,
+      headerClassName,
+      sortable,
+      headerAlign,
+      align,
+    },
+    {
+      field: "avatar",
+      headerName: "Avatar ",
+      flex: 0.5,
+      minWidth: 100,
+      editable,
+      headerClassName,
+      sortable,
+      headerAlign,
+      align,
+      filterable,
+      renderCell: (params) => {
+        return (
+          <ShowImage
+            data={{
+              title: params.row.correo,
+              url: params.row.avatar,
+            }}
+          />
+        );
+      },
+    },
+    {
+      field: "idRol",
+      headerName: "Rol",
+      flex: 0.5,
+      minWidth: 160,
+      headerClassName,
+      sortable,
+      headerAlign,
+      align,
+      renderCell: (params) => {
+        return (<Status status={params.row.idRol} />);
+      },
+    },
+    {
+      field: "activo",
+      headerName: "Estado",
+      flex: 0.5,
+      editable: true,
+      minWidth: 100,
+      headerClassName,
+      sortable,
+      headerAlign,
+      align,
+      renderCell: (params) => {
+        return (<Status status={params.row.activo}/>)
+      },
+    },
+    {
+      field: "actions",
+      headerName: "Acciones",
+      flex: 0.5,
+      editable: false,
+      minWidth: 150,
+      headerClassName,
+      sortable,
+      headerAlign,
+      align,
+      filterable,
+      renderCell: (params) => {
+        return (
+          <div className="dt-btn-container">
+            <span className="dt-action-delete">
+              {" "}
+              <DeleteOutlineIcon />{" "}
+            </span>
+            <span
+              className="dt-action-edit"
+              onClick={() => {
+                setOpenModal((prev) => !prev);
+                setClickInfo(params.row);
+              }}
+            >
+              {" "}
+              <ModeEditIcon />{" "}
+            </span>
+          </div>
+        );
+      },
+    },
+  ];
 
-  const nextPage = () => {
-    if (paginationCounter < ((dataModule.countEnable + dataModule.countDisable) / 10)) {
-      setPaginationCounter(paginationCounter + 1)
-    }
-  }
-  const previousPage = () => {
-    if (paginationCounter > 1) {
-      setPaginationCounter(paginationCounter - 1)
-    }
-  }
+  const dataTable = [columnsUsers, rowsUsersEdited];
 
-  const columnsModule = [
-    { field: 'id', headerName: 'ID ', width: 100, editable: true, headerClassName: 'dt-theme--header' },
-    { field: 'nombres', headerName: 'Nombres ', width: 100, editable: true, headerClassName: 'dt-theme--header' },
-    { field: 'temaIndicador', headerName: 'Tema', width: 250, editable: true, headerClassName: 'dt-theme--header' },
-    { field: 'createdAt', headerName: 'Creacion', width: 200, editable: true, headerClassName: 'dt-theme--header' },
-    { field: 'updatedAt', headerName: 'Actualizacion', width: 200, editable: true, headerClassName: 'dt-theme--header' },
-    { field: 'urlImagen', headerName: 'Imagen', width: 200, editable: true, headerClassName: 'dt-theme--header' },
-    { field: 'color', headerName: 'Color', width: 70, editable: true, headerClassName: 'dt-theme--header' },
-    { field: 'observaciones', headerName: 'Observaciones', width: 400, editable: true, headerClassName: 'dt-theme--header' },
-    { field: 'activo', headerName: 'Estado', width: 100, editable: true, headerClassName: 'dt-theme--header' },
-  ]
-
-  const dataTable = [
-    columnsModule,
-    rowsModules
-  ]
-
+  const dataUser = {
+    topic: "usuario",
+    countEnable: activeCounter,
+    countDisable: inactiveCounter,
+  };
   return (
     <>
-      <Button onClick={handleModal}>Click me</Button>
-      <Button onClick={handleModal}>Click me</Button>
-      <FormDialog open={openModal} setOpenModal={setOpenModal} title={'Usuario'}>
-        <Typography sx={{ color: 'black', fontWeight: 'bold' }}>
-          <FormUser />
-        </Typography>
-      </FormDialog>
 
-      <DataHeader data={dataModule} />
-      <Box className='dt-table'>
-        {
-          (isLoading)
-            ? <Box className='dt-loading'><BeatLoader size={15} color='#1976D2' /></Box>
-            :
-            <>
-              <Box className='dt-pagination'>
-                <Box className='dt-pagination-options-container'>
-                  <span className='dt-pagination-option' onClick={previousPage} ><ArrowBackIosIcon fontSize='15px' /></span>
-                  <span className='dt-pagination-number'>{`página ${paginationCounter}`}</span>
-                  <span className='dt-pagination-option' onClick={nextPage}><ArrowForwardIosIcon fontSize='15px' /></span>
-                </Box>
-              </Box>
-              <DatagridTable data={dataTable} />
-            </>
-        }
+      <DataHeader data={dataUser} />
+      <Box className="dt-table">
+        {isLoading ? (
+          <Box className="dt-loading">
+            <BeatLoader size={15} color="#1976D2" />
+          </Box>
+        ) : (
+          <>
+            <DatagridTable data={dataTable} />
+            <DataPagination
+              data={{
+                dataRecords: dataUser,
+                paginationCounter,
+                setPaginationCounter,
+                perPaginationCounter,
+                setPerPaginationCounter,
+                totalPages,
+                perPage,
+              }}
+            />
+          </>
+        )}
       </Box>
+
+      <FormDialog
+        open={openModal}
+        setOpenModal={setOpenModal}
+        title={`Editar módulo ${clickInfo.temaIndicador}`}
+      >
+        <FormModel data={clickInfo} />
+      </FormDialog>
     </>
-  )
+  );
 };

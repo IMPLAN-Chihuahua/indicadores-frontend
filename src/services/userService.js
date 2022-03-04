@@ -69,6 +69,15 @@ export const useModules = (perPage,page) => {
   } 
 };
 
+export const useUsers = (perPage,page) => {
+  const {data, error} = useSWR(`usuarios?per_page=${perPage}&page=${page}`,fetcher) 
+  return{
+    usersList: data,
+    isLoading: !error && !data,
+    isError: error,
+  } 
+};
+
 
 export const getModules = async (page) => {
   try {

@@ -3,14 +3,14 @@ import React, { useState } from 'react'
 import Dropdown from './Dropdown'
 import FirstPageIcon from '@mui/icons-material/FirstPage';
 import LastPageIcon from '@mui/icons-material/LastPage';
-import { getModules, useModules } from '../../../services/userService'
+import {useUsers } from '../../../services/userService'
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import './common.css'
 
 export const DataPagination = ({data}) => {
     const 
-        {dataModule,
+        {dataRecords,
         paginationCounter,
         setPaginationCounter,
         perPaginationCounter,
@@ -20,7 +20,7 @@ export const DataPagination = ({data}) => {
      = data;
     
     const nextPage = () => {
-        if(paginationCounter < ((dataModule.countEnable + dataModule.countDisable)/10)){
+        if(paginationCounter < totalPages){
           setPaginationCounter(paginationCounter+1)
         }
       } 
