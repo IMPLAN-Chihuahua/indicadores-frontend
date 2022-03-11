@@ -21,7 +21,7 @@ export const Modules = () => {
   let rowsModules = [];
 
   
-  const [searchValue, setSearchValue] = useState("");
+  const [searchModule, setSearchModule] = useState("");
   const [paginationCounter, setPaginationCounter] = useState(1);
   const [perPaginationCounter, setPerPaginationCounter] = useState(perPage);
 
@@ -31,7 +31,8 @@ export const Modules = () => {
   const isMounted = useRef(true);
   const { modulesList, isLoading, isError } = useModules(
     perPaginationCounter,
-    paginationCounter
+    paginationCounter,
+    searchModule
   );
 
   const [openModal, setOpenModal] = React.useState(false);
@@ -249,6 +250,8 @@ export const Modules = () => {
     topic: "modulo",
     countEnable: activeCounter,
     countDisable: inactiveCounter,
+    setSearch: setSearchModule,
+    searchValue: searchModule
   };
   return (
     <>

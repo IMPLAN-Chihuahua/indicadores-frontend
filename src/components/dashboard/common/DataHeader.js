@@ -1,34 +1,43 @@
 import { Box, Button, Grid, InputAdornment, TextField, Typography } from '@mui/material'
-import React, {useState, useEffect} from 'react'
-import './common.css'
+import React, {useState, useEffect,useMemo} from 'react'
 import ClearIcon from '@mui/icons-material/Clear';
 import AddIcon from '@mui/icons-material/Add';
 import FormDialog from './FormDialog';
 import FormModel from '../forms/model/FormModel';
+import debounce from 'lodash.debounce';
+import { useRef } from 'react/cjs/react.development';
+import SearchIcon from '@mui/icons-material/Search';
+import './common.css'
 
 export const DataHeader = ({data}) => {
-        const {topic, countEnable , countDisable,setSearchValue} = data;
-        const[formState,setFormState] = useState({search:'',})
-        const {search} = formState;
-
-
-        const handleInputChange = ({target}) => {
-                setFormState({
-                        ...formState,
-                [target.name]: target.value,
-                })
-        }
         
-        
+        const {topic, countEnable , countDisable, setSearch, searchValue} = data;
+        const textRef = useRef(null)
+        const [showClear, setShowClear] = useState(false)
         
         const handleInputClear = () => {
-                setFormState({search: '',})
+        textRef.current.value = '';
+        setSearch("")
         }
+        const handleInputChange = (e) => {
+                setSearch(e.target.value)
+        }
+        const debounceInputChange = useMemo(() =>
+        debounce(handleInputChange,300)
+        , [])
+
+        useEffect(() => {
+          return () => {
+                debounceInputChange.cancel()
+          }
+        }, [])
+        
+        
+      
         
         const [openModal, setOpenModal] = useState(false);
         const handleModal = () => setOpenModal(prev => !prev);
-        
-        localStorage.setItem("search",search)
+
         return (
       <>
         <Grid container className='dh-container'>
@@ -60,18 +69,23 @@ export const DataHeader = ({data}) => {
                         <TextField 
                         className='dh-search-input'
                         type='text'
-                        name='search'
-                        value={search}
-                        onChange={handleInputChange}
-                        label={`Buscar ${topic}`}
+                        inputRef={textRef}
+                        onChange={debounceInputChange}
+                        onFocus={() => {setShowClear(true)}}
+                        onBlur={() => {setShowClear(false)}}
+                        placeholder={`Buscar ${topic}`}
                         variant='standard'
                         autoComplete='off'
                         InputProps={{
+                                startAdornment: 
+                                <InputAdornment position='start'><SearchIcon/></InputAdornment>,
                                 endAdornment: (
                                 <span style={{
-                                color:'gray', 
-                                cursor:'pointer'
-                                }} onClick={handleInputClear}>
+                                color: 'gray',
+                                cursor: 'pointer',
+                                opacity: showClear ? 1 : 0
+                                }} 
+                                onClick={handleInputClear}>
                                 <ClearIcon />
                                 </span>
                                 ),
@@ -84,7 +98,6 @@ export const DataHeader = ({data}) => {
                         </Button>
                 </Grid>
         </Grid>
-        
         <FormDialog open={openModal} setOpenModal={setOpenModal} title={'Crear módulo'}>
                 <FormModel />
         </FormDialog> 
