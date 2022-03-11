@@ -20,7 +20,7 @@ align-content: center;
 /* .dh-options{
 display: flex;
 justify-content: right;
-align-items: center;
+align-items: center; 
 align-content: center;
 } */
 
@@ -272,6 +272,13 @@ cursor: pointer;
 .dt-action-edit:hover{
     background-color: #396db6;
 }
+.clear-button{
+color: gray;
+cursor: pointer;
+}
+
+
+
 @media (max-width: 900px){
     .dt-pagination{
         display: inline-block;

@@ -60,8 +60,8 @@ export const getLastedModules = async () => {
   }
 };
 
-export const useModules = (perPage,page) => {
-  const {data, error} = useSWR(`me/modulos?per_page=${perPage}&page=${page}`,fetcher) 
+export const useModules = (perPage,page,search) => {
+  const {data, error} = useSWR(`me/modulos?per_page=${perPage}&page=${page}&searchQuery=${search}`,fetcher) 
   return{
     modulesList: data,
     isLoading: !error && !data,
