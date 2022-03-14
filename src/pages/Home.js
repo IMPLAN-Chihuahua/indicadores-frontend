@@ -10,9 +10,7 @@ export const Home = () => {
     <UserInformation/>
     <Featured />
     <LastedRecords/>
-    <br/>
-    <br/>
-    <MathInput/>
+    
     </>
   )
 }

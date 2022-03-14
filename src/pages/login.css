@@ -1,0 +1,39 @@
+.login{
+    display: flex;
+    background-color: white;
+    height: 100vh;
+}
+.login-container-left{
+    width: 100%;
+    content: url(/public/login_1.jpg);
+    opacity: 0.1;
+}
+.login-container-right{
+    background-color: rgb(255,255,255,0.9);
+    display: inline-block;
+    width: 700px;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+}
+.login-component{
+    margin-top: 130px;
+}
+
+@media (max-width: 900px) {
+    .login-component{
+        margin-top: 40%;
+    }
+    .login-container-left{
+        width: 0%;
+    }
+    .login-container-right{
+        background-color: white;
+        display: inline-block;
+        width: 100%;
+        justify-content: center;
+        align-items: center;
+        align-content: center;
+    }
+    
+}
