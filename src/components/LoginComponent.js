@@ -57,7 +57,6 @@ const LoginComponent = () => {
 
     return (
         <>
-            
             <Container maxWidth="xs">
                 <CssBaseline />
                 <Box

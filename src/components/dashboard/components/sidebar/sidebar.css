@@ -6,7 +6,7 @@
     background-color:rgb(251,251,255);
     position: sticky;
     top: 60px;
-    transition: 0.3s ease-out;
+    /* transition: 0.3s ease-out; */
 }
 
 .sidebar-min{
@@ -15,7 +15,7 @@
     background-color:rgb(251,251,255);
     position: sticky;
     top: 60px;
-    transition: 0.3s ease-in;
+    /* transition: 0.3s ease-in; */
 }
 .sidebar-wrapper{
     padding: 0px 20px;
@@ -45,11 +45,11 @@
 
 .sidebar-title-text{
 opacity: 1;
-transition: opacity 400ms;
+/* transition: opacity 400ms; */
 }
 .sidebar-title-text-min{
     opacity: 0;
-    transition: opacity 400ms;
+    /* transition: opacity 400ms; */
     }
 
 
@@ -96,12 +96,12 @@ background-color: rgb(240,240,255);
 
 .sidebar-list-item-min span{
     opacity: 0;
-    transition: opacity 400ms;
+    /* transition: opacity 400ms; */
 }
 
 .sidebar-list-item span{
     opacity: 1;
-    transition: opacity 400ms;
+    /* transition: opacity 400ms; */
 }
 
 .sidebar-list-item-min.active,
@@ -120,11 +120,11 @@ background-color: rgb(240,240,255);
     background-color:rgb(251,251,255);
     position: sticky;
     top: 60px;
-    transition: 0.3s ease-in;
+    /* transition: 0.3s ease-in; */
 }
 .sidebar-title-text{
     opacity: 0;
-    transition: opacity 400ms;
+    /* transition: opacity 400ms; */
 }
 .sidebar-list{
     list-style: none;
@@ -140,7 +140,7 @@ background-color: rgb(240,240,255);
 }
 .sidebar-list-item span{
     opacity: 0;
-    transition: opacity 400ms;
+    /* transition: opacity 400ms; */
 }
 .sidebar-list-item.active,
 .sidebar-list-item:hover{
