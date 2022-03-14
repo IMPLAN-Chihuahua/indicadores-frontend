@@ -1,17 +1,17 @@
 .login{
     display: flex;
-    background-color: black;
+    background-color: beige;
     height: 100vh;
 }
 .login-container-left{
     width: 100%;
-    background-color: black;
-    /* content: url(/public/login_1.jpg); */
+    content: url(/public/login_1.jpg);
+    opacity: 0.1;
 }
 .login-container-right{
-    background-color: white;
+    background-color: rgb(255,255,255,0.9);
     display: inline-block;
-    width: 650px;
+    width: 700px;
     justify-content: center;
     align-items: center;
     align-content: center;
