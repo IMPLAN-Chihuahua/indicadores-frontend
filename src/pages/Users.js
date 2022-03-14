@@ -20,7 +20,7 @@ export const Users = () => {
   let totalPages = 1;
   let rowsUsers = [];
 
-  
+  const [searchUser, setSearchUser] = useState("");
   const [paginationCounter, setPaginationCounter] = useState(1);
   const [perPaginationCounter, setPerPaginationCounter] = useState(perPage);
 
@@ -30,7 +30,8 @@ export const Users = () => {
   const isMounted = useRef(true);
   const { usersList, isLoading, isError } = useUsers(
     perPaginationCounter,
-    paginationCounter
+    paginationCounter,
+    searchUser
   );
   const [openModal, setOpenModal] = React.useState(false);
   const [clickInfo, setClickInfo] = React.useState({
@@ -58,7 +59,6 @@ export const Users = () => {
       },
     ];
   });
-  console.log(rowsUsersEdited)
   useEffect(() => {
     return () => {
       isMounted.current = false;
@@ -239,6 +239,8 @@ export const Users = () => {
     topic: "usuario",
     countEnable: activeCounter,
     countDisable: inactiveCounter,
+    setSearch: setSearchUser,
+    searchValue: searchUser
   };
   return (
     <>

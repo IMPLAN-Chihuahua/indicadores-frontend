@@ -1,7 +1,11 @@
 .dh-container{
+position: sticky;
+top:60px;
 display: flex;
 justify-content: center;
 padding: 20px;
+background-color: white;
+z-index: 777;
 }
 
 /* .dh-counters{
@@ -271,10 +275,6 @@ cursor: pointer;
 }
 .dt-action-edit:hover{
     background-color: #396db6;
-}
-.clear-button{
-color: gray;
-cursor: pointer;
 }
 
 

@@ -69,8 +69,8 @@ export const useModules = (perPage,page,search) => {
   } 
 };
 
-export const useUsers = (perPage,page) => {
-  const {data, error} = useSWR(`usuarios?per_page=${perPage}&page=${page}`,fetcher) 
+export const useUsers = (perPage,page,search) => {
+  const {data, error} = useSWR(`usuarios?per_page=${perPage}&page=${page}&searchQuery=${search}`,fetcher) 
   return{
     usersList: data,
     isLoading: !error && !data,
