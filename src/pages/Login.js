@@ -3,7 +3,7 @@ import { Box } from '@mui/system'
 import React, { useState, useEffect } from 'react'
 import Copyright from '../components/Copyright'
 import LoginComponent from '../components/LoginComponent'
-
+import './login.css'
 
 export const Login = () => {
     const [showLogin, setShowLogin] = useState(false);
@@ -17,35 +17,17 @@ export const Login = () => {
     
 
   return (
-    <Box sx={{
-        background:'linear-gradient(to top, #005aa7, #fffde4)',
-        height: '110vh',
-        display: 'flex',
-        justifyContent:'center',
-        alignItems: 'top',
-        }}>
+    <div className='login'>
         <Fade in={showLogin} timeout={1500}>
-        <Box sx={
-          theme => ({
-            boxShadow: '0px 2px 3px 1px rgba(255, 255, 255, 0.4)',
-            mt: '5%',
-            height: '480px',
-            width: '420px',
-            backgroundColor: 'rgb(255,255,255,0.90)',
-            p: '1% 1% 1% 1%',
-        
-            
-
-          })
-
-        }>
-            <LoginComponent/>
-        <Box sx={{display: 'flex', justifyContent: 'center', mt:'5%'}}>
-            <Copyright />
-        </Box>
-        </Box>
+          <div className='login-container-left'></div>
         </Fade>
-
-    </Box>
+        <Fade in={showLogin} timeout={1500}>
+          <div className='login-container-right'>
+          <div className='login-component'>
+          <LoginComponent/>
+          </div>
+          </div>
+        </Fade>
+    </div>
   )
 }
