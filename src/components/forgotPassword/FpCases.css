@@ -1,0 +1,19 @@
+.fpc-container{
+    font-size: 18px;
+    text-align: center;
+    padding-left: 10%;
+    padding-right: 10%;
+    width: 100%;
+}
+.fpc-textfield{
+    width: 100%;
+}
+.fp-fotter{
+    margin-top: 5%;
+    width: 100%;
+}
+
+.fp-fotter hr{
+    width: 100%;
+    border: 1px rgba(0, 0, 0, 0.2) dashed;
+}

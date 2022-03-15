@@ -3,7 +3,7 @@ import { Box } from '@mui/system'
 import React, { useState, useEffect } from 'react'
 import Copyright from '../components/Copyright'
 import LoginComponent from '../components/LoginComponent'
-import './login.css'
+import './styles/login.css'
 
 export const Login = () => {
     const [showLogin, setShowLogin] = useState(false);

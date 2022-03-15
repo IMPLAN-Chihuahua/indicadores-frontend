@@ -8,12 +8,14 @@ import { Dashboard } from "./components/dashboard/Dashboard";
 import { Login } from "./pages/Login";
 import { Home } from "./pages/Home";
 import { Users } from "./pages/Users";
+import { ForgotPassword } from "./pages/ForgotPassword";
 
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          <Route path='/recuperacion-de-cuenta' element={<ForgotPassword />} />
           <Route
             path="/login"
             element={
