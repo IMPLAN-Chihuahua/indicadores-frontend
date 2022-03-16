@@ -9,13 +9,26 @@ import './styles/forgotPassword.css'
 
 export const ForgotPassword = () => {
     const [showFP, setShowFP] = useState(false)
-    let opt = 1;
+    const currentUrl = window.location.href;
+    const token = currentUrl.split('/')[4];
+    let opt;
+    /**
+     * opt description:
+     * 1 - initial case, no token
+     * 2 - update case, token valid
+     * 3 - invalid token
+     */
+    (!token)
+    ? opt = 1
+    : opt = 2
+    
     useEffect(() => {
         setShowFP(true)
         return () => {
         setShowFP(false)
        }
       }, [])
+
   return (
       <>
       <Fade in={showFP} timeout={1500}>

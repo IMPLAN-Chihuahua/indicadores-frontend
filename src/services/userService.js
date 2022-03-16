@@ -2,7 +2,6 @@ import { protectedApi } from ".";
 import useSWR from 'swr';
 
 const fetcher = (url) => protectedApi.get(url).then(res => res.data)
-
 const getCurrentUser = async () => {
   try {
     const response = await protectedApi.get('/me');

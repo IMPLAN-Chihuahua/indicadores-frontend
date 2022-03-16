@@ -15,7 +15,7 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path='/recuperacion-de-cuenta' element={<ForgotPassword />} />
+          <Route path='/recuperacion-de-cuenta/*' element={<ForgotPassword />} />
           <Route
             path="/login"
             element={

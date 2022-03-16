@@ -1,9 +1,19 @@
+.fpc-container-all{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    position: relative;
+    
+}
 .fpc-container{
     font-size: 18px;
     text-align: center;
     padding-left: 10%;
     padding-right: 10%;
     width: 100%;
+    position: relative;
+    
 }
 .fpc-textfield{
     width: 100%;
@@ -17,3 +27,8 @@
     width: 100%;
     border: 1px rgba(0, 0, 0, 0.2) dashed;
 }
+
+.loading{
+    position: absolute;
+}
+

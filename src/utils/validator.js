@@ -1,5 +1,9 @@
 import * as yup from 'yup';
 
+const emailSchema = yup.object().shape({
+  correo: yup.string().email().required(),
+});
+
 const loginSchema = yup.object({
   correo:
     yup.string()
@@ -29,4 +33,4 @@ const moduleSchema = yup.object({
 
 });
 
-export { loginSchema, moduleSchema }
+export { loginSchema, moduleSchema, emailSchema}
