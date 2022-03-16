@@ -15,7 +15,7 @@ import { createUserSchema } from '../../../../utils/userValidator';
 
 const FormUser = () => {
   const methods = useForm({
-    mode: 'onBlur',
+    mode: 'all',
     defaultValues: {
       correo: '',
       clave: '',
@@ -31,14 +31,20 @@ const FormUser = () => {
 
   const onSubmit = (data) => {
     const { confirmClave, ...user } = data
-    console.log(user)
+    const formData = new FormData();
+    for (const key in user) {
+      if (key === 'profileImage') {
+        formData.append(key, user[key][0])
+        continue;
+      }
+      formData.append(key, user[key]);
+    }
   }
 
   return (
     <Container sx={{
-      mt: 3, pt: 4, pb: 4, border: '1px solid lightgray', maxWidth: {
-        sm: 'sm',
-      }
+      mt: 3, pt: 4, pb: 4, border: '1px solid lightgray',
+      maxWidth: {sm: 'sm'}
     }}>
       <FormProvider {...methods}>
         <Box
@@ -70,6 +76,8 @@ const FormUser = () => {
                   <TextField
                     label='Correo'
                     type='email'
+                    required
+                    placeholder='johndoe@email.com'
                     error={!!error}
                     helperText={error ? error.message : null}
                     onChange={onChange}
@@ -89,6 +97,7 @@ const FormUser = () => {
                   <TextField
                     label='Contraseña'
                     type='password'
+                    required
                     error={!!error}
                     helperText={error ? error.message : null}
                     onChange={onChange}
@@ -108,6 +117,7 @@ const FormUser = () => {
                   <TextField
                     label='Confirmar Contraseña'
                     type='password'
+                    required
                     error={!!error}
                     helperText={error ? error.message : null}
                     onChange={onChange}
@@ -165,6 +175,7 @@ const FormUser = () => {
                   <TextField
                     label='Nombres'
                     type='text'
+                    required
                     error={!!error}
                     helperText={error ? error.message : null}
                     onChange={onChange}
@@ -184,6 +195,7 @@ const FormUser = () => {
                   <TextField
                     label='Apellido Paterno'
                     type='text'
+                    required
                     error={!!error}
                     helperText={error ? error.message : null}
                     onChange={onChange}
