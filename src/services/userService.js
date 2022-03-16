@@ -2,7 +2,8 @@ import { protectedApi } from ".";
 import useSWR from 'swr';
 
 const fetcher = (url) => protectedApi.get(url).then(res => res.data)
-const getCurrentUser = async () => {
+
+export const getCurrentUser = async () => {
   try {
     const response = await protectedApi.get('/me');
     const { data: user } = response.data;
@@ -11,12 +12,6 @@ const getCurrentUser = async () => {
     }
     return {};
   } catch (error) {
-    const message =
-      (error.response &&
-        error.response.data &&
-        error.response.data.message) ||
-      error.message || error.toString()
-    console.log('message', message)
     Promise.reject(error)
   }
 };
@@ -30,12 +25,6 @@ export const getLastedUsers = async () => {
     }
     return {};
   } catch (error) {
-    const message =
-      (error.response &&
-        error.response.data &&
-        error.response.data.message) ||
-      error.message || error.toString()
-    console.log('message', message)
     Promise.reject(error)
   }
 };
@@ -49,12 +38,6 @@ export const getLastedModules = async () => {
     }
     return {};
   } catch (error) {
-    const message =
-      (error.response &&
-        error.response.data &&
-        error.response.data.message) ||
-      error.message || error.toString()
-    console.log('message', message)
     Promise.reject(error)
   }
 };
@@ -86,12 +69,6 @@ export const getModules = async (page) => {
     }
     return {};
   } catch (error) {
-    const message =
-      (error.response &&
-        error.response.data &&
-        error.response.data.message) ||
-      error.message || error.toString()
-    console.log('message', message)
     Promise.reject(error)
   }
 };
@@ -105,14 +82,10 @@ export const getLastedIndicators = async () => {
     }
     return {};
   } catch (error) {
-    const message =
-      (error.response &&
-        error.response.data &&
-        error.response.data.message) ||
-      error.message || error.toString()
-    console.log('message', message)
     Promise.reject(error)
   }
 };
 
-export { getCurrentUser };
+export const createUser = async(user) => {
+
+}

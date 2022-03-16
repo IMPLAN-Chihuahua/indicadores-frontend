@@ -25,17 +25,11 @@ const AuthProvider = ({ children }) => {
         onSuccess();
       }
     } catch (error) {
-      const message =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message || error.toString()
       setUser(null);
       setHasError(true)
       if (onError && typeof onError === 'function') {
-        onError(message);
+        onError(error);
       }
-
     } finally {
       setIsLoading(false);
     }
