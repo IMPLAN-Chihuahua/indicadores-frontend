@@ -14,6 +14,18 @@ const options = {
 const publicApi = axios.create(options);
 const protectedApi = axios.create(options);
 
+publicApi.interceptors.response.use(
+  res => res,
+  error => {
+    const message =
+      (error.response &&
+        error.response.data &&
+        error.response.data.message) ||
+      error.message || error.toString()
+    return Promise.reject(message)
+  }
+)
+
 protectedApi.interceptors.request.use(
   req => {
     req.headers.common.Authorization = getAuthHeaders();
@@ -30,7 +42,13 @@ protectedApi.interceptors.response.use(
       && error.response.data === 'Invalid or expired token') {
       eventBus.dispatch('logout');
     }
-    return Promise.reject(error)
+    const message =
+      (error.response &&
+        error.response.data &&
+        error.response.data.message) ||
+      error.message || error.toString();
+      console.log(message)
+    return Promise.reject(message)
   }
 )
 
