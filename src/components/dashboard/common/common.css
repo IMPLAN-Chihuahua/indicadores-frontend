@@ -197,7 +197,8 @@ width: 100%;
     border-radius: 15px;
 }
 .dt-chip-active{
-    background-color: #C6F9C6;
+    border: 1px solid #10A04E;
+    /* background-color: #C6F9C6; */
 }
 .dt-chip-active--text{
     color: #10A04E;
@@ -207,7 +208,8 @@ width: 100%;
     padding-right: 10px;
 }
 .dt-chip-inactive{
-    background-color: #F0C8C8;
+    border: 1px solid #9E1010;
+    /* border-color: #F0C8C8; */
 }
 .dt-chip-inactive--text{
     color: #9E1010;
@@ -217,7 +219,8 @@ width: 100%;
     padding-right: 10px;
 }
 .dt-chip-admin{
-    background-color: #bbdefb;
+    border: 1px solid #01579b;
+    /* background-color: #bbdefb; */
 }
 .dt-chip-admin--text{
     color: #01579b;
@@ -227,7 +230,8 @@ width: 100%;
     padding-right: 10px;
 }
 .dt-chip-user{
-    background-color: #eceff1
+    border: 1px solid #546e7a;;
+    /* background-color: #eceff1 */
 }
 .dt-chip-user--text{
     color: #546e7a;
