@@ -22,8 +22,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { useAuth } from '../contexts/AuthContext';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { loginSchema } from '../utils/validator';
-import Copyright from './Copyright';
-
+import { useAlert } from '../contexts/AlertContext';
 
 const LoginComponent = () => {
     const { control, handleSubmit, formState: { errors } } = useForm({
@@ -32,27 +31,17 @@ const LoginComponent = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const from = location.state?.from?.pathname || '/dashboard';
-    const [claveVisible, setClaveVisible] = useState(false);
-    const [open, setOpen] = useState(false)
-    const [error, setError] = useState('');
+    const [passwordIsVisible, setPasswordIsVisible] = useState(false);
     const handleShowPassword = () => {
-        setClaveVisible(!claveVisible);
+        setPasswordIsVisible(prev => !prev);
     };
     const auth = useAuth();
+    const alert = useAlert();
+
     const onSubmit = data => {
         auth.handleLogin(data,
             () => navigate(from, { replace: true }),
-            (errorMessage) => {
-                setOpen(true)
-                setError(errorMessage)
-            });
-    };
-
-    const handleClose = (e, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-        setOpen(false)
+            (errorMessage) => { alert.error(errorMessage) });
     };
 
     return (
@@ -83,7 +72,6 @@ const LoginComponent = () => {
                         INICIAR SESIÓN
                     </Typography>
                     <Box
-                        
                         component="form"
                         onSubmit={handleSubmit(onSubmit)}
                         noValidate
@@ -132,7 +120,7 @@ const LoginComponent = () => {
                                     <OutlinedInput
                                         id="clave"
                                         autoComplete="current-password"
-                                        type={claveVisible ? "text" : "password"}
+                                        type={passwordIsVisible ? "text" : "password"}
                                         error={!!error}
                                         value={value}
                                         onChange={onChange}
@@ -145,7 +133,7 @@ const LoginComponent = () => {
                                                     edge="end"
                                                     
                                                 >
-                                                    {claveVisible ? <VisibilityOff /> : <Visibility />}
+                                                    {passwordIsVisible ? <VisibilityOff /> : <Visibility />}
                                                 </IconButton>
                                             </InputAdornment>
                                             
@@ -169,15 +157,6 @@ const LoginComponent = () => {
                         <Link component={RouterLink} to="/recuperacion-de-cuenta" underline="hover" variant="body2" >¿Olvidaste tu contraseña?</Link>
                     </Box>
                 </Box>
-                <Snackbar
-                    anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-                    open={open}
-                    autoHideDuration={6000}
-                    onClose={handleClose}>
-                    <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }} closeText='Cerrar'>
-                        {error}
-                    </Alert>
-                </Snackbar>
             </Container>
         </>
     );
