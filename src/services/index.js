@@ -8,7 +8,7 @@ const options = {
     "Content-Type": "application/json",
     Accept: "application/json",
   },
-  timeout: 10000,
+  timeout: 20000,
 };
 
 const publicApi = axios.create(options);

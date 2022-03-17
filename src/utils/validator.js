@@ -1,5 +1,10 @@
 import * as yup from 'yup';
 
+const confirmPasswordSchema = yup.object().shape({
+  password: yup.string().min(8).required(),
+  confirmPassword: yup.string().min(8).required()
+});
+
 const emailSchema = yup.object().shape({
   correo: yup.string().email().required(),
 });
@@ -33,4 +38,4 @@ const moduleSchema = yup.object({
 
 });
 
-export { loginSchema, moduleSchema, emailSchema}
+export { loginSchema, moduleSchema, emailSchema,confirmPasswordSchema}

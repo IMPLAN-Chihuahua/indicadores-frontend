@@ -29,21 +29,22 @@ export const InitialCase = () => {
       if(res){
         publicApi.post('/auth/password-reset',JSON.stringify(formData))
         .then(res => {
-          console.log(res);
           setLoading(false)
           setMessage(res.data.message)
         })
         .catch(err => {
           setLoading(false)
-          setMessage('Ocurrio un error '+ err)
+          setMessage(err)
         })
         setValidEmail(true)
       }else{
+        setLoading(false)
         setValidEmail(false)
       }
       })
       .catch(err => {
-        console.log(err) 
+        console.log(err)
+        setLoading(true)
       })
     }
   
@@ -67,8 +68,8 @@ export const InitialCase = () => {
           type="text"
         />
 
-        {(!validEmail) && <p style={{color: 'red'}}>Por favor, ingresa un correo valido</p>}
-        {(message) && <p style={{color: 'black'}}>{message}</p>}
+        {(!validEmail) && <p style={{color: 'rgb(255,0,0,0.7)'}}>Por favor, ingresa un correo valido</p>}
+        {(message) && <p style={{color: 'rgb(0,0,0,0.7)'}}>{message}</p>}
         
         <div className="btn-recover-account">
           <Button 

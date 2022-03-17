@@ -4,7 +4,7 @@
     align-items: center;
     align-content: center;
     position: relative;
-    
+    width: 100%;
 }
 .fpc-container{
     font-size: 18px;
@@ -14,6 +14,10 @@
     width: 100%;
     position: relative;
     
+}
+.fpc-header{
+    line-height: 30px;
+    padding-bottom: 1px;
 }
 .fpc-textfield{
     width: 100%;
@@ -30,5 +34,5 @@
 
 .loading{
     position: absolute;
+    z-index: 999;
 }
-

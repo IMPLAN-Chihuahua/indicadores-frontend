@@ -5,12 +5,13 @@ import { ErrorCase } from '../components/forgotPassword/ErrorCase';
 import { InitialCase } from '../components/forgotPassword/InitialCase'
 import { UpdatedCase } from '../components/forgotPassword/UpdatedCase';
 import './styles/forgotPassword.css'
-
+import jwt from 'jwt-decode'
 
 export const ForgotPassword = () => {
     const [showFP, setShowFP] = useState(false)
     const currentUrl = window.location.href;
     const token = currentUrl.split('/')[4];
+    const [user, serUser] = useState(null)
     let opt;
     /**
      * opt description:
@@ -18,10 +19,28 @@ export const ForgotPassword = () => {
      * 2 - update case, token valid
      * 3 - invalid token
      */
-    (!token)
-    ? opt = 1
-    : opt = 2
-    
+    const tokenIsValid = (params) => {
+        const {sub,iat,exp} = params;
+        const expirationDate = new Date(0).setUTCSeconds(exp)
+        const currentDate = new Date();
+
+        if(expirationDate > currentDate){
+            return true
+        }else{
+            return false
+        }
+    }
+
+    try{
+        (!token)
+        ? opt = 1
+        : (tokenIsValid(jwt(token)))
+        ? opt = 2 
+        : opt = 3
+    }catch{
+        opt = 3
+    }
+        
     useEffect(() => {
         setShowFP(true)
         return () => {
@@ -42,7 +61,7 @@ export const ForgotPassword = () => {
             <InitialCase/>
             </>
             :(opt == 2)
-            ?<UpdatedCase/>
+            ?<UpdatedCase token={token} />
             :(opt == 3)
             ?
             <>
