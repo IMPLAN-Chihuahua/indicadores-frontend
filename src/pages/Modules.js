@@ -20,7 +20,7 @@ export const Modules = () => {
   let totalPages = 1;
   let rowsModules = [];
 
-  
+
   const [searchModule, setSearchModule] = useState("");
   const [paginationCounter, setPaginationCounter] = useState(1);
   const [perPaginationCounter, setPerPaginationCounter] = useState(perPage);
@@ -36,6 +36,9 @@ export const Modules = () => {
   );
 
   const [openModal, setOpenModal] = React.useState(false);
+  const handleOpenModal = () => setOpenModal(true);
+  const handleCloseModal = () => setOpenModal(false);
+
   const [clickInfo, setClickInfo] = React.useState({
     row: { temaIndicador: "" },
   });
@@ -256,7 +259,10 @@ export const Modules = () => {
   return (
     <>
 
-      <DataHeader data={dataModule} />
+      <DataHeader
+        data={dataModule}
+        handleOpenModal={handleOpenModal}
+      />
       <Box className="dt-table">
         {isLoading ? (
           <Box className="dt-loading">
@@ -285,7 +291,7 @@ export const Modules = () => {
         setOpenModal={setOpenModal}
         title={`Editar módulo ${clickInfo.temaIndicador}`}
       >
-        <FormModel data={clickInfo} />
+        <FormModel data={clickInfo} handleCloseModal={handleCloseModal} />
       </FormDialog>
     </>
   );
