@@ -1,9 +1,8 @@
-import { useState } from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
-import { Alert, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, Snackbar, Switch } from '@mui/material';
+import { DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, Switch } from '@mui/material';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Typography from '@mui/material/Typography';
@@ -12,8 +11,10 @@ import FileInput from '../../../common/FileInput';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { createUserSchema } from '../../../../utils/userValidator';
 import { createUser } from '../../../../services/userService';
+import { useAlert } from '../../../../contexts/AlertContext';
 
 const FormUser = ({ handleCloseModal }) => {
+  const alert = useAlert();
   const methods = useForm({
     defaultValues: {
       correo: '',
@@ -28,7 +29,7 @@ const FormUser = ({ handleCloseModal }) => {
     resolver: yupResolver(createUserSchema),
     mode: 'onBlur'
   });
-
+  
   const onSubmit = async (data) => {
     const { confirmClave, ...user } = data
     const formData = new FormData();
@@ -49,22 +50,12 @@ const FormUser = ({ handleCloseModal }) => {
     }
     try {
       await createUser(formData);
+      alert.success('Usuario creado exitosamente');
       handleCloseModal();
-      setSeverity('success');
-      setAlertMessage('Usuario creado exitosamente');
     } catch (err) {
-      setSeverity('error')
-      setAlertMessage(err);
-    } finally {
-      setOpenSnack(true);
+      alert.error(err);
     }
   };
-
-  const [openSnack, setOpenSnack] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
-  const [severity, setSeverity] = useState('');
-
-  const handleCloseSnack = () => setOpenSnack(false);
 
   return (
     <>
@@ -253,15 +244,6 @@ const FormUser = ({ handleCloseModal }) => {
           </DialogActions>
         </Box>
       </FormProvider>
-      <Snackbar
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        open={openSnack}
-        autoHideDuration={6000}
-        onClose={handleCloseSnack}>
-        <Alert onClose={handleCloseSnack} severity={severity} sx={{ width: '100%' }} closeText='Cerrar'>
-          {alertMessage}
-        </Alert>
-      </Snackbar>
     </>
   );
 }
