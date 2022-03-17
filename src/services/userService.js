@@ -87,5 +87,11 @@ export const getLastedIndicators = async () => {
 };
 
 export const createUser = async(user) => {
-
+  try {
+    const response = await protectedApi.post('/usuarios', user)
+    const { data: createdUser } = response.data;
+    return createdUser ? createdUser : {};
+  } catch (error) {
+    throw error;
+  }
 }

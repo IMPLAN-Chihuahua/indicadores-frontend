@@ -10,13 +10,11 @@ import { Status } from "../components/dashboard/common/Status";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import FormDialog from "../components/dashboard/common/FormDialog";
-import FormModel from "../components/dashboard/forms/model/FormModel";
 import { DataPagination } from "../components/dashboard/common/DataPagination";
+import FormUser from "../components/dashboard/forms/user/FormUser";
 
 export const Users = () => {
-  let perPage = 5;
-  localStorage.getItem("perPage") &&
-    (perPage = localStorage.getItem("perPage"));
+  let perPage = localStorage.getItem("perPage") || 5;
   let totalPages = 1;
   let rowsUsers = [];
 
@@ -34,11 +32,14 @@ export const Users = () => {
     searchUser
   );
   const [openModal, setOpenModal] = React.useState(false);
+  const handleOpenModal = () => setOpenModal(true);
+  const handleCloseModal = () => setOpenModal(false);
+
   const [clickInfo, setClickInfo] = React.useState({
     row: { temaIndicador: "" },
   });
 
-  if (activeCounter == 0 && inactiveCounter == 0 && usersList) {
+  if (activeCounter === 0 && inactiveCounter === 0 && usersList) {
     setActiveCounter(usersList.total - usersList.totalInactivos);
     setInactiveCounter(usersList.totalInactivos);
   }
@@ -53,8 +54,8 @@ export const Users = () => {
         ...data,
         createdAt: data.createdAt.split("T")[0],
         updatedAt: data.updatedAt.split("T")[0],
-        idRol: data.idRol == 1 ? "Administrador" : data.idRol == 2 ? "Usuario" : "N/A",
-        activo: data.activo == "SI" ? "Activo" : "Inactivo",
+        idRol: data.idRol === 1 ? "Administrador" : data.idRol === 2 ? "Usuario" : "N/A",
+        activo: data.activo === "SI" ? "Activo" : "Inactivo",
         actions: "Acciones",
       },
     ];
@@ -80,10 +81,9 @@ export const Users = () => {
       headerClassName,
       sortable,
       headerAlign,
-      align,
-      align,
+      align
     },
-  
+
     {
       field: "nombres",
       headerName: "Nombre ",
@@ -196,7 +196,7 @@ export const Users = () => {
       headerAlign,
       align,
       renderCell: (params) => {
-        return (<Status status={params.row.activo}/>)
+        return (<Status status={params.row.activo} />)
       },
     },
     {
@@ -244,8 +244,10 @@ export const Users = () => {
   };
   return (
     <>
-
-      <DataHeader data={dataUser} />
+      <DataHeader
+        data={dataUser}
+        handleOpenModal={handleOpenModal}
+      />
       <Box className="dt-table">
         {isLoading ? (
           <Box className="dt-loading">
@@ -272,9 +274,9 @@ export const Users = () => {
       <FormDialog
         open={openModal}
         setOpenModal={setOpenModal}
-        title={`Editar módulo ${clickInfo.temaIndicador}`}
+        title={`Editar Usuario`}
       >
-        <FormModel data={clickInfo} />
+        <FormUser handleCloseModal={handleCloseModal}/>
       </FormDialog>
     </>
   );
