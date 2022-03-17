@@ -47,7 +47,7 @@ export const Modules = () => {
     setActiveCounter(modulesList.total - modulesList.totalInactivos);
     setInactiveCounter(modulesList.totalInactivos);
   }
-  modulesList && (totalPages = modulesList.total_pages);
+  modulesList && (totalPages = modulesList.totalPages);
   modulesList && (rowsModules = modulesList.data);
 
   let rowsModulesEdited = [];

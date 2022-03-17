@@ -31,6 +31,7 @@ export const Users = () => {
     paginationCounter,
     searchUser
   );
+  console.log(usersList)
   const [openModal, setOpenModal] = React.useState(false);
   const handleOpenModal = () => setOpenModal(true);
   const handleCloseModal = () => setOpenModal(false);
@@ -43,7 +44,7 @@ export const Users = () => {
     setActiveCounter(usersList.total - usersList.totalInactivos);
     setInactiveCounter(usersList.totalInactivos);
   }
-  usersList && (totalPages = usersList.total_pages);
+  usersList && (totalPages = usersList.totalPages);
   usersList && (rowsUsers = usersList.data);
 
   let rowsUsersEdited = [];
