@@ -2,7 +2,7 @@ import { publicApi } from '.';
 import { getCurrentUser } from './userService';
 
 const login = async (email, password) => {
-  const response = await publicApi.post('/login', { correo: email, clave: password });
+  const response = await publicApi.post('/auth/login', { correo: email, clave: password });
   const token = response.data.token;
   if (token) {
     setJwtToken(token);
