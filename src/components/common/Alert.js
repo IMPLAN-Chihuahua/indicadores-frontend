@@ -4,7 +4,7 @@ import { useAlert } from "../../contexts/AlertContext"
 
 export const Alert = () => {
     const alert = useAlert();
-    const [open, setOpen] = useState(true);
+    const [open, setOpen] = useState(false);
     const handleClose = (_, reason) => {
         if (reason === 'clickaway') {
             return;
@@ -12,6 +12,10 @@ export const Alert = () => {
         setOpen(false);
         alert.clear();
     }
+
+    useEffect(() => {
+        setOpen(alert.message !== '')
+    }, [alert.message]);
 
     if (alert.message !== '') {
         return (
