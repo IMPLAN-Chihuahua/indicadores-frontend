@@ -5,6 +5,7 @@ import { Navbar } from './components/navbar/Navbar'
 import { Sidebar } from './components/sidebar/Sidebar'
 import eventBus from '../../utils/EventBus'
 import './dashboard.css'
+import { Alert } from '../common/Alert'
 
 export const Dashboard = () => {
   const { handleLogOut } = useAuth();
@@ -28,6 +29,7 @@ export const Dashboard = () => {
           <Outlet />
         </div>
       </div>
+      <Alert />
     </>
   )
 }
