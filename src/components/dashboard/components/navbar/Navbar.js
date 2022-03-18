@@ -2,7 +2,7 @@ import React from 'react'
 import './navbar.css'
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import { Box, IconButton } from '@mui/material';
+import { Box, IconButton, Avatar} from '@mui/material';
 import { useAuth } from '../../../../contexts/AuthContext';
 export const Navbar = () => {
   const { user, handleLogOut } = useAuth();
@@ -18,7 +18,7 @@ export const Navbar = () => {
             <Box className='navbar-rigth-options'>
 
               <Box className='navbar-option'>
-                <AccountCircleIcon className='navbar-option-icon' />
+                <Avatar className='navbar-option-icon' src={user.avatar} sx={{width: 25, height: 25}}/>
                 <span className='navbar-option-text'>{`${user.nombres} ${user.apellidoPaterno}`}</span>
               </Box>
 
