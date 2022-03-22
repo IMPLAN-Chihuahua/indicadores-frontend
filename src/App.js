@@ -1,6 +1,5 @@
 import "./App.css";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
-import { Indicators } from './components/dashboard/components/home/Indicators/Indicators'
 import { Modules } from './pages/Modules'
 import { AuthProvider } from "./contexts/AuthContext";
 import { PrivateRoute, PublicRoute } from "./components/RequireAuth";
@@ -10,6 +9,7 @@ import { Home } from "./pages/Home";
 import { Users } from "./pages/Users";
 import { ForgotPassword } from "./pages/ForgotPassword";
 import { AlertProvider } from "./contexts/AlertContext";
+import { Indicators } from "./pages/Indicators";
 
 function App() {
   return (

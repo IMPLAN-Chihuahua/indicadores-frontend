@@ -1,24 +1,27 @@
 import { Box } from "@mui/material";
 import React, { useRef } from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import DatagridTable from "../components/dashboard/common/DatagridTable";
 import { DataHeader } from "../components/dashboard/common/DataHeader";
-import { useUsers } from "../services/userService";
+import { useIndicators } from "../services/userService";
 import { BeatLoader } from "react-spinners";
 import ShowImage from "../components/dashboard/common/ShowImage";
 import { Status } from "../components/dashboard/common/Status";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import FormDialog from "../components/dashboard/common/FormDialog";
+import FormModel from "../components/dashboard/forms/model/FormModel";
 import { DataPagination } from "../components/dashboard/common/DataPagination";
-import FormUser from "../components/dashboard/forms/user/FormUser";
 
-export const Users = () => {
-  let perPage = localStorage.getItem("perPage") || 5;
+export const Indicators = () => {
+  let perPage = 5;
+  localStorage.getItem("perPage") &&
+    (perPage = localStorage.getItem("perPage"));
   let totalPages = 1;
-  let rowsUsers = [];
+  let rowsIndicators = [];
 
-  const [searchUser, setSearchUser] = useState("");
+
+  const [searchIndicator, setSearchIndicator] = useState("");
   const [paginationCounter, setPaginationCounter] = useState(1);
   const [perPaginationCounter, setPerPaginationCounter] = useState(perPage);
 
@@ -26,12 +29,12 @@ export const Users = () => {
   const [inactiveCounter, setInactiveCounter] = useState(0);
 
   const isMounted = useRef(true);
-  const { usersList, isLoading, isError } = useUsers(
+  const { IndicatorsList, isLoading, isError } = useIndicators(
     perPaginationCounter,
     paginationCounter,
-    searchUser
+    searchIndicator
   );
-  
+
   const [openModal, setOpenModal] = React.useState(false);
   const handleOpenModal = () => setOpenModal(true);
   const handleCloseModal = () => setOpenModal(false);
@@ -40,27 +43,29 @@ export const Users = () => {
     row: { temaIndicador: "" },
   });
 
-  if (activeCounter === 0 && inactiveCounter === 0 && usersList) {
-    setActiveCounter(usersList.total - usersList.totalInactivos);
-    setInactiveCounter(usersList.totalInactivos);
+  if (activeCounter == 0 && inactiveCounter == 0 && IndicatorsList) {
+    setActiveCounter(IndicatorsList.total - IndicatorsList.totalInactivos);
+    setInactiveCounter(IndicatorsList.totalInactivos);
   }
-  usersList && (totalPages = usersList.totalPages);
-  usersList && (rowsUsers = usersList.data);
+  IndicatorsList && (totalPages = IndicatorsList.totalPages);
+  IndicatorsList && (rowsIndicators = IndicatorsList.data);
 
-  let rowsUsersEdited = [];
-  rowsUsers.map((data) => {
-    rowsUsersEdited = [
-      ...rowsUsersEdited,
-      {
-        ...data,
-        createdAt: data.createdAt.split("T")[0],
-        updatedAt: data.updatedAt.split("T")[0],
-        idRol: data.idRol === 1 ? "Administrador" : data.idRol === 2 ? "Usuario" : "N/A",
-        activo: data.activo === "SI" ? "Activo" : "Inactivo",
-        actions: "Acciones",
-      },
-    ];
+  let rowsIndicatorsEdited = [];
+  useMemo ( () => {
+    rowsIndicators.map((data) => {
+      rowsIndicatorsEdited = [
+        ...rowsIndicatorsEdited,
+        {
+          ...data,
+          createdAt: data.createdAt.split("T")[0],
+          updatedAt: data.updatedAt.split("T")[0],
+          activo: data.activo == "SI" ? "Activo" : "Inactivo",
+          actions: "Acciones",
+        },
+      ];
+  })
   });
+
   useEffect(() => {
     return () => {
       isMounted.current = false;
@@ -73,7 +78,7 @@ export const Users = () => {
     headerAlign = "center",
     align = "center",
     filterable = false;
-  const columnsUsers = [
+  const columnsIndicator =  [
     {
       field: "id",
       headerName: "ID ",
@@ -82,53 +87,101 @@ export const Users = () => {
       headerClassName,
       sortable,
       headerAlign,
-      align
+      align,
+      hide: true,
     },
+    {
+      field: "codigo",
+      headerName: "#",
+      flex: 0.5,
+      minWidth: 50,
+      editable,
+      headerClassName,
+      sortable,
+      headerAlign,
+      align,
+    },
+    {
+      field: "codigoObjeto",
+      headerName: "#S",
+      flex: 1,
+      minWidth: 50,
+      editable,
+      headerClassName,
+      sortable,
+      headerAlign,
+      align,
+    },
+    {
+        field: "nombre",
+        headerName: "Nombre",
+        flex: 1,
+        minWidth: 150,
+        editable,
+        headerClassName,
+        sortable,
+        headerAlign,
+        align,
+        renderCell: (params) => {
+          return (
+            <span className="dt-theme--text">{params.row.nombre}</span>
+          );
+        },
+      },
+      
+      {
+        field: "ultimoValorDisponible",
+        headerName: "Valor actual",
+        flex: 1,
+        minWidth: 150,
+        editable,
+        headerClassName,
+        sortable,
+        headerAlign,
+        align,
+      },
 
-    {
-      field: "nombres",
-      headerName: "Nombre (s)",
-      flex: 1,
-      minWidth: 130,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-    },
-    {
-      field: "apellidoPaterno",
-      headerName: "Apellido Paterno ",
-      flex: 1,
-      minWidth: 160,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-    },
-    {
-      field: "apellidoMaterno",
-      headerName: "Apellido Materno ",
-      flex: 1,
-      minWidth: 160,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-    },
-    {
-      field: "correo",
-      headerName: "Correo ",
-      flex: 1,
-      minWidth: 200,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-    },
+      {
+        field: "tendenciaActual",
+        headerName: "Actual",
+        flex: 1,
+        minWidth: 100,
+        editable,
+        headerClassName,
+        sortable,
+        headerAlign,
+        align,
+        renderCell:(params) => {
+            return (<Status status={params.row.tendenciaActual} />);
+        },
+      },
+      {
+        field: "tendenciaDeseada",
+        headerName: "Deseado",
+        flex: 1,
+        minWidth: 100,
+        editable,
+        headerClassName,
+        sortable,
+        headerAlign,
+        align,
+        renderCell:(params) => {
+            return (<Status status={params.row.tendenciaDeseada} />);
+        },
+      },
+      {
+        field: "urlImagen",
+        headerName: "Imagen",
+        flex: 0.5,
+        minWidth: 100,
+        editable,
+        headerClassName,
+        sortable,
+        headerAlign,
+        align,
+        filterable,
+        hide: true,
+      },    
     {
       field: "createdAt",
       headerName: "Creacion",
@@ -152,51 +205,17 @@ export const Users = () => {
       align,
     },
     {
-      field: "avatar",
-      headerName: "Avatar ",
-      flex: 0.5,
-      minWidth: 80,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-      filterable,
-      renderCell: (params) => {
-        return (
-          <ShowImage
-            data={{
-              title: params.row.correo,
-              url: params.row.avatar,
-            }}
-          />
-        );
-      },
-    },
-    {
-      field: "idRol",
-      headerName: "Rol",
-      flex: 0.5,
-      minWidth: 150,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-      renderCell: (params) => {
-        return (<Status status={params.row.idRol} />);
-      },
-    },
-    {
       field: "activo",
       headerName: "Estado",
       flex: 0.5,
+      editable: true,
       minWidth: 100,
       headerClassName,
       sortable,
       headerAlign,
       align,
       renderCell: (params) => {
-        return (<Status status={params.row.activo} />)
+        return (<Status status={params.row.activo} />);
       },
     },
     {
@@ -204,7 +223,7 @@ export const Users = () => {
       headerName: "Acciones",
       flex: 0.5,
       editable: false,
-      minWidth: 100,
+      minWidth: 120,
       headerClassName,
       sortable,
       headerAlign,
@@ -233,19 +252,22 @@ export const Users = () => {
     },
   ];
 
-  const dataTable = [columnsUsers, rowsUsersEdited];
+  const dataTable = [columnsIndicator, rowsIndicatorsEdited,'indicador'];
 
-  const dataUser = {
-    topic: "usuario",
-    countEnable: activeCounter,
-    countDisable: inactiveCounter,
-    setSearch: setSearchUser,
-    searchValue: searchUser
+  const dataIndicator = {
+    topic: "indicador",
+    // countEnable: activeCounter,
+    // countDisable: inactiveCounter,
+    countEnable: 100,
+    countDisable: 10,
+    setSearch: setSearchIndicator,
+    searchValue: searchIndicator
   };
   return (
     <>
+
       <DataHeader
-        data={dataUser}
+        data={dataIndicator}
         handleOpenModal={handleOpenModal}
       />
       <Box className="dt-table">
@@ -258,7 +280,7 @@ export const Users = () => {
             <DatagridTable data={dataTable} />
             <DataPagination
               data={{
-                dataRecords: dataUser,
+                dataIndicator,
                 paginationCounter,
                 setPaginationCounter,
                 perPaginationCounter,
@@ -274,9 +296,9 @@ export const Users = () => {
       <FormDialog
         open={openModal}
         setOpenModal={setOpenModal}
-        title={`Editar Usuario`}
+        title={`Editar módulo ${clickInfo.temaIndicador}`}
       >
-        <FormUser handleCloseModal={handleCloseModal}/>
+        <FormModel data={clickInfo} handleCloseModal={handleCloseModal} />
       </FormDialog>
     </>
   );
