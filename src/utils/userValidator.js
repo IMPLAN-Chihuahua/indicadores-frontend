@@ -19,6 +19,10 @@ const createUserSchema = yup.object({
     yup.string()
       .required('Por favor, ingrese el nombre del usuario'),
 
+  idRol:
+    yup.string()
+      .required('Por favor, seleccione algún rol'),
+
   apellidoPaterno:
     yup.string()
       .required('Por favor, ingrese el apellido paterno del usuario')

@@ -2,7 +2,7 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
-import { DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, Switch } from '@mui/material';
+import { DialogActions, DialogContent, DialogTitle, FormControl, FormHelperText, InputLabel, MenuItem, Select, Switch } from '@mui/material';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Typography from '@mui/material/Typography';
@@ -12,8 +12,11 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { createUserSchema } from '../../../../utils/userValidator';
 import { createUser } from '../../../../services/userService';
 import { useAlert } from '../../../../contexts/AlertContext';
+import { getRoles } from '../../../../services/roleService';
+import { useEffect, useState } from 'react';
 
 const FormUser = ({ handleCloseModal }) => {
+  const [roles, setRoles] = useState([]);
   const alert = useAlert();
   const methods = useForm({
     defaultValues: {
@@ -21,7 +24,7 @@ const FormUser = ({ handleCloseModal }) => {
       clave: '',
       confirmClave: '',
       activo: true,
-      idRol: 2,
+      idRol: '',
       nombres: '',
       apellidoPaterno: '',
       apellidoMaterno: ''
@@ -29,7 +32,7 @@ const FormUser = ({ handleCloseModal }) => {
     resolver: yupResolver(createUserSchema),
     mode: 'onBlur'
   });
-  
+
   const onSubmit = async (data) => {
     const { confirmClave, ...user } = data
     const formData = new FormData();
@@ -57,6 +60,19 @@ const FormUser = ({ handleCloseModal }) => {
     }
   };
 
+  const defineRoles = async () => {
+    try {
+      const { data: roles } = await getRoles();
+      setRoles(roles.data);
+    } catch (err) {
+      alert.error(err);
+    }
+  }
+
+  useEffect(() => {
+    defineRoles();
+  }, []);
+
   return (
     <>
       <DialogTitle>Usuario</DialogTitle>
@@ -65,6 +81,7 @@ const FormUser = ({ handleCloseModal }) => {
           component='form'
           onSubmit={methods.handleSubmit(onSubmit)}
           noValidate
+          onReset={methods.reset}
         >
           <DialogContent>
             <Grid container columnSpacing={2} rowSpacing={2}>
@@ -143,20 +160,29 @@ const FormUser = ({ handleCloseModal }) => {
               <Grid item xs={12} sm={6}>
                 <Controller
                   name="idRol"
-                  defaultValue={2}
                   control={methods.control}
-                  render={({ field }) => (
-                    <FormControl fullWidth>
-                      <InputLabel id='rol-label'>Rol</InputLabel>
+                  defaultValue=""
+                  render={({ field, fieldState: { error } }) => (
+                    <FormControl fullWidth required>
+                      <InputLabel
+                        id='rol-label'
+                        error={!!error}
+                        htmlFor='id-rol'
+                      >
+                        Rol
+                      </InputLabel>
                       <Select
                         id='id-rol'
                         labelId='rol-label'
                         label='Rol'
+                        error={!!error}
                         {...field}
                       >
-                        <MenuItem value={1}>Administrador</MenuItem>
-                        <MenuItem value={2}>Usuario</MenuItem>
+                        {roles.map(rol => <MenuItem key={rol.id} value={rol.id}>{rol.rol}</MenuItem>)}
                       </Select>
+                      <FormHelperText error={!!error} id="rol-error">
+                        {error ? error.message : null}
+                      </FormHelperText>
                     </FormControl>
                   )}
                 />
