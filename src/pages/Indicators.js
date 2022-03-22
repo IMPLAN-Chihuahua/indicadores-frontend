@@ -3,7 +3,7 @@ import React, { useRef } from "react";
 import { useState, useEffect, useMemo } from "react";
 import DatagridTable from "../components/dashboard/common/DatagridTable";
 import { DataHeader } from "../components/dashboard/common/DataHeader";
-import { useModules } from "../services/userService";
+import { useIndicators } from "../services/userService";
 import { BeatLoader } from "react-spinners";
 import ShowImage from "../components/dashboard/common/ShowImage";
 import { Status } from "../components/dashboard/common/Status";
@@ -13,15 +13,15 @@ import FormDialog from "../components/dashboard/common/FormDialog";
 import FormModel from "../components/dashboard/forms/model/FormModel";
 import { DataPagination } from "../components/dashboard/common/DataPagination";
 
-export const Modules = () => {
+export const Indicators = () => {
   let perPage = 5;
   localStorage.getItem("perPage") &&
     (perPage = localStorage.getItem("perPage"));
   let totalPages = 1;
-  let rowsModules = [];
+  let rowsIndicators = [];
 
 
-  const [searchModule, setSearchModule] = useState("");
+  const [searchIndicator, setSearchIndicator] = useState("");
   const [paginationCounter, setPaginationCounter] = useState(1);
   const [perPaginationCounter, setPerPaginationCounter] = useState(perPage);
 
@@ -29,10 +29,10 @@ export const Modules = () => {
   const [inactiveCounter, setInactiveCounter] = useState(0);
 
   const isMounted = useRef(true);
-  const { modulesList, isLoading, isError } = useModules(
+  const { IndicatorsList, isLoading, isError } = useIndicators(
     perPaginationCounter,
     paginationCounter,
-    searchModule
+    searchIndicator
   );
 
   const [openModal, setOpenModal] = React.useState(false);
@@ -43,18 +43,18 @@ export const Modules = () => {
     row: { temaIndicador: "" },
   });
 
-  if (activeCounter == 0 && inactiveCounter == 0 && modulesList) {
-    setActiveCounter(modulesList.total - modulesList.totalInactivos);
-    setInactiveCounter(modulesList.totalInactivos);
+  if (activeCounter == 0 && inactiveCounter == 0 && IndicatorsList) {
+    setActiveCounter(IndicatorsList.total - IndicatorsList.totalInactivos);
+    setInactiveCounter(IndicatorsList.totalInactivos);
   }
-  modulesList && (totalPages = modulesList.totalPages);
-  modulesList && (rowsModules = modulesList.data);
+  IndicatorsList && (totalPages = IndicatorsList.totalPages);
+  IndicatorsList && (rowsIndicators = IndicatorsList.data);
 
-  let rowsModulesEdited = [];
+  let rowsIndicatorsEdited = [];
   useMemo ( () => {
-    rowsModules.map((data) => {
-      rowsModulesEdited = [
-        ...rowsModulesEdited,
+    rowsIndicators.map((data) => {
+      rowsIndicatorsEdited = [
+        ...rowsIndicatorsEdited,
         {
           ...data,
           createdAt: data.createdAt.split("T")[0],
@@ -78,7 +78,7 @@ export const Modules = () => {
     headerAlign = "center",
     align = "center",
     filterable = false;
-  const columnsModule =  [
+  const columnsIndicator =  [
     {
       field: "id",
       headerName: "ID ",
@@ -102,21 +102,86 @@ export const Modules = () => {
       align,
     },
     {
-      field: "temaIndicador",
-      headerName: "Tema",
+      field: "codigoObjeto",
+      headerName: "#S",
       flex: 1,
-      minWidth: 150,
+      minWidth: 50,
       editable,
       headerClassName,
       sortable,
       headerAlign,
       align,
-      renderCell: (params) => {
-        return (
-          <span className="dt-theme--text">{params.row.temaIndicador}</span>
-        );
-      },
     },
+    {
+        field: "nombre",
+        headerName: "Nombre",
+        flex: 1,
+        minWidth: 150,
+        editable,
+        headerClassName,
+        sortable,
+        headerAlign,
+        align,
+        renderCell: (params) => {
+          return (
+            <span className="dt-theme--text">{params.row.nombre}</span>
+          );
+        },
+      },
+      
+      {
+        field: "ultimoValorDisponible",
+        headerName: "Valor actual",
+        flex: 1,
+        minWidth: 150,
+        editable,
+        headerClassName,
+        sortable,
+        headerAlign,
+        align,
+      },
+
+      {
+        field: "tendenciaActual",
+        headerName: "Actual",
+        flex: 1,
+        minWidth: 100,
+        editable,
+        headerClassName,
+        sortable,
+        headerAlign,
+        align,
+        renderCell:(params) => {
+            return (<Status status={params.row.tendenciaActual} />);
+        },
+      },
+      {
+        field: "tendenciaDeseada",
+        headerName: "Deseado",
+        flex: 1,
+        minWidth: 100,
+        editable,
+        headerClassName,
+        sortable,
+        headerAlign,
+        align,
+        renderCell:(params) => {
+            return (<Status status={params.row.tendenciaDeseada} />);
+        },
+      },
+      {
+        field: "urlImagen",
+        headerName: "Imagen",
+        flex: 0.5,
+        minWidth: 100,
+        editable,
+        headerClassName,
+        sortable,
+        headerAlign,
+        align,
+        filterable,
+        hide: true,
+      },    
     {
       field: "createdAt",
       headerName: "Creacion",
@@ -140,68 +205,6 @@ export const Modules = () => {
       align,
     },
     {
-      field: "urlImagen",
-      headerName: "Imagen",
-      flex: 0.5,
-      minWidth: 100,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-      filterable,
-      renderCell: (params) => {
-        return (
-          <ShowImage
-            data={{
-              title: params.row.temaIndicador,
-              url: params.row.urlImagen,
-            }}
-          />
-        );
-      },
-    },
-    {
-      field: "color",
-      headerName: "Color",
-      flex: 0.5,
-      minWidth: 80,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-      renderCell: (params) => {
-        return (
-          <div className="params-color">
-            <div
-              className="params-color--circle"
-              style={{
-                backgroundColor: params.row.color,
-                border: "1px solid rgb(0,0,0,0.2)",
-              }}
-            ></div>
-          </div>
-        );
-      },
-    },
-    {
-      field: "observaciones",
-      headerName: "Observaciones",
-      flex: 1,
-      minWidth: 200,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-      renderCell: (params) => {
-        return (
-          <span className="dt-theme--text">{params.row.observaciones}</span>
-        );
-      },
-    },
-    {
       field: "activo",
       headerName: "Estado",
       flex: 0.5,
@@ -220,7 +223,7 @@ export const Modules = () => {
       headerName: "Acciones",
       flex: 0.5,
       editable: false,
-      minWidth: 100,
+      minWidth: 120,
       headerClassName,
       sortable,
       headerAlign,
@@ -249,20 +252,22 @@ export const Modules = () => {
     },
   ];
 
-  const dataTable = [columnsModule, rowsModulesEdited];
+  const dataTable = [columnsIndicator, rowsIndicatorsEdited,'indicador'];
 
-  const dataModule = {
-    topic: "modulo",
-    countEnable: activeCounter,
-    countDisable: inactiveCounter,
-    setSearch: setSearchModule,
-    searchValue: searchModule
+  const dataIndicator = {
+    topic: "indicador",
+    // countEnable: activeCounter,
+    // countDisable: inactiveCounter,
+    countEnable: 100,
+    countDisable: 10,
+    setSearch: setSearchIndicator,
+    searchValue: searchIndicator
   };
   return (
     <>
 
       <DataHeader
-        data={dataModule}
+        data={dataIndicator}
         handleOpenModal={handleOpenModal}
       />
       <Box className="dt-table">
@@ -275,7 +280,7 @@ export const Modules = () => {
             <DatagridTable data={dataTable} />
             <DataPagination
               data={{
-                dataModule,
+                dataIndicator,
                 paginationCounter,
                 setPaginationCounter,
                 perPaginationCounter,

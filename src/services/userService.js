@@ -43,7 +43,7 @@ export const getLastedModules = async () => {
 };
 
 export const useModules = (perPage,page,search) => {
-  const {data, error} = useSWR(`me/modulos?per_page=${perPage}&page=${page}&searchQuery=${search}`,fetcher) 
+  const {data, error} = useSWR(`me/modulos?perPage=${perPage}&page=${page}&searchQuery=${search}`,fetcher) 
   return{
     modulesList: data,
     isLoading: !error && !data,
@@ -51,8 +51,17 @@ export const useModules = (perPage,page,search) => {
   } 
 };
 
+export const useIndicators = (perPage,page,search) => {
+  const {data, error} = useSWR(`indicadores?perPage=${perPage}&page=${page}&searchQuery=${search}`,fetcher) 
+  return{
+    IndicatorsList: data,
+    isLoading: !error && !data,
+    isError: error,
+  } 
+};
+
 export const useUsers = (perPage,page,search) => {
-  const {data, error} = useSWR(`usuarios?per_page=${perPage}&page=${page}&searchQuery=${search}`,fetcher) 
+  const {data, error} = useSWR(`usuarios?perPage=${perPage}&page=${page}&searchQuery=${search}`,fetcher) 
   return{
     usersList: data,
     isLoading: !error && !data,
