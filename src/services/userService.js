@@ -21,7 +21,7 @@ export const getLastedUsers = async () => {
     const response = await protectedApi.get('/usuarios');
     const { data: users } = response.data;
     if (users) {
-      return [ ...users ];
+      return [...users];
     }
     return {};
   } catch (error) {
@@ -34,7 +34,7 @@ export const getLastedModules = async () => {
     const response = await protectedApi.get('/modulos');
     const { data: lastedModules } = response.data;
     if (lastedModules) {
-      return [ ...lastedModules ];
+      return [...lastedModules];
     }
     return {};
   } catch (error) {
@@ -42,22 +42,22 @@ export const getLastedModules = async () => {
   }
 };
 
-export const useModules = (perPage,page,search) => {
-  const {data, error} = useSWR(`me/modulos?per_page=${perPage}&page=${page}&searchQuery=${search}`,fetcher) 
-  return{
+export const useModules = (perPage, page, search) => {
+  const { data, error } = useSWR(`me/modulos?per_page=${perPage}&page=${page}&searchQuery=${search}`, fetcher)
+  return {
     modulesList: data,
     isLoading: !error && !data,
     isError: error,
-  } 
+  }
 };
 
-export const useUsers = (perPage,page,search) => {
-  const {data, error} = useSWR(`usuarios?per_page=${perPage}&page=${page}&searchQuery=${search}`,fetcher) 
-  return{
+export const useUsers = (perPage, page, search) => {
+  const { data, error } = useSWR(`usuarios?per_page=${perPage}&page=${page}&searchQuery=${search}`, fetcher)
+  return {
     usersList: data,
     isLoading: !error && !data,
     isError: error,
-  } 
+  }
 };
 
 
@@ -78,7 +78,7 @@ export const getLastedIndicators = async () => {
     const response = await protectedApi.get('/modulos/1/indicadores');
     const { data: indicadors } = response.data;
     if (indicadors) {
-      return [ ...indicadors ];
+      return [...indicadors];
     }
     return {};
   } catch (error) {
@@ -86,12 +86,21 @@ export const getLastedIndicators = async () => {
   }
 };
 
-export const createUser = async(user) => {
+export const createUser = async (user) => {
   try {
     const response = await protectedApi.post('/usuarios', user)
     const { data: createdUser } = response.data;
     return createdUser ? createdUser : {};
   } catch (error) {
     throw error;
+  }
+}
+
+export const updateUser = async (user) => {
+  try {
+    const response = await protectedApi.put('/usuarios', user);
+    
+  } catch(err) {
+    throw err;
   }
 }
