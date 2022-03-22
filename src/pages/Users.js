@@ -31,6 +31,7 @@ export const Users = () => {
     paginationCounter,
     searchUser
   );
+  
   const [openModal, setOpenModal] = React.useState(false);
   const handleOpenModal = () => setOpenModal(true);
   const handleCloseModal = () => setOpenModal(false);
