@@ -18,6 +18,7 @@ export const Sidebar = () => {
     const [activeUsers, setActiveUsers] = useState('');
     const [activeModules, setActiveModules] = useState('');
     const [activeIndicators, setActiveIndicators] = useState('');
+    const [activeIndicator, setActiveIndicator] = useState('');
 
     const handleShow = () => {setShow(!show);}
     
@@ -26,6 +27,7 @@ export const Sidebar = () => {
         setActiveUsers('');
         setActiveModules('');
         setActiveIndicators('');
+        setActiveIndicator('');
     }
 
     useEffect(() => {
@@ -47,7 +49,10 @@ export const Sidebar = () => {
               setActiveIndicators('active');
               break;
         
-      
+          case '/indicadores/:id':
+              setActiveIndicator('active');
+              break;
+          
           default:
               break;
       }
@@ -91,6 +96,13 @@ export const Sidebar = () => {
                         <li className={show?`sidebar-list-item ${activeIndicators}`:`sidebar-list-item-min ${activeIndicators}`}>
                             <BubbleChartIcon className='sidebar-icon'/> 
                             <span>Indicadores</span>
+                        </li>
+                        </Link>
+
+                        <Link to='indicadores/:id' className='link'>
+                        <li className={show?`sidebar-list-item ${activeIndicator}`:`sidebar-list-item-min ${activeIndicator}`}>
+                            <BubbleChartIcon className='sidebar-icon'/> 
+                            <span>Indicador</span>
                         </li>
                         </Link>
                         </ul>

@@ -1,0 +1,38 @@
+.nav-indicator {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color:rgb(143, 144, 146);
+    color: white;
+    font-weight: bold;
+    height: 7%;
+}
+
+.nav-arrows {
+    border-radius: 100%;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.indicators {
+    color: white;
+}
+
+.image-indicator {
+    width: 150px;
+    height: 150px;
+    border-radius: 15%;
+
+}
+
+.body-upper-left {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.body-mid-left {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
