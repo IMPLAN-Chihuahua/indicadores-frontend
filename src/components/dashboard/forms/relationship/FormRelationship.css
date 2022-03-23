@@ -1,0 +1,12 @@
+.auth-container{
+height: 300px;
+width: 100%;
+}
+.auth-assign{
+display: flex;
+flex-direction: column;
+align-items: center;
+}
+.auth-date{
+    
+}

@@ -6,7 +6,6 @@ import './common.css'
 const DatagridTable = ({data}) => {
     const [columns,rows,topic] = data;
     const navigate = useNavigate();
-
     return (
       <>
       <DataGrid

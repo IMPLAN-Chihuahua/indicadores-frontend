@@ -10,6 +10,7 @@ import { Users } from "./pages/Users";
 import { ForgotPassword } from "./pages/ForgotPassword";
 import { AlertProvider } from "./contexts/AlertContext";
 import { Indicators } from "./pages/Indicators";
+import { Relationship } from "./pages/Relationship";
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
               <Route path='/usuarios' element={<Users />} />
               <Route path='/modulos' element={<Modules />} />
               <Route path='/indicadores' element={<Indicators />} />
+              <Route path='/autorizacion' element={<Relationship />} />
             </Route>
           </Routes>
         </BrowserRouter>
