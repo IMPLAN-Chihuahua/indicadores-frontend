@@ -1,37 +1,39 @@
-import { Autocomplete, Box, FormControl, Grid, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
-import { useEffect } from "react";
-import { Controller, useFormContext } from "react-hook-form";
+import {
+  Autocomplete, Box, FormControl,
+  Grid, InputLabel, MenuItem,
+  Select, TextField, Button
+} from "@mui/material";
+import { Controller, useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
+import { addFormData } from "../../../../features/indicador/indicadorSlice";
 
-export const FormIndicador = ({ formContent }) => {
-  const methods = useFormContext();
-  const { control, reset } = methods;
-
-  useEffect(() => {
-    reset({ ...formContent.indicador }, { keepErrors: true })
-  }, []);
+export const FormIndicador = () => {
+  const methods = useForm();
+  const { control, reset, handleSubmit } = methods;
+  const dispatch = useDispatch();
+  const onSubmit = data => {
+    dispatch(addFormData(data))
+  }
 
   return (
     <>
       <Box
         component='form'
         noValidate
+        onSubmit={handleSubmit(onSubmit)}
+        onReset={reset}
       >
         <Grid
           container
           columnSpacing={2}
           rowSpacing={2}
           direction="row"
-          xs={6}
         >
-          <Grid item xs={12} >
-            <Typography variant="subtitle1" component="h4">
-              General
-            </Typography>
-          </Grid>
           <Grid item xs={12}>
             <Controller
               name="nombre"
               control={control}
+              defaultValue=''
               render={({
                 field: { onChange, value },
                 fieldState: { error }
@@ -110,6 +112,7 @@ export const FormIndicador = ({ formContent }) => {
             <Controller
               name='tendenciaDeseada'
               control={control}
+              defaultValue='NA'
               render={({ field, fieldState: { error } }) => (
                 <FormControl fullWidth>
                   <InputLabel
@@ -164,6 +167,7 @@ export const FormIndicador = ({ formContent }) => {
             />
           </Grid>
         </Grid>
+        <Button variant='contained' type='submit'>Aceptar</Button>
       </Box>
     </>
   );

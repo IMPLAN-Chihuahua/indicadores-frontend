@@ -12,6 +12,9 @@ import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import FormDialog from "../components/dashboard/common/FormDialog";
 import FormModel from "../components/dashboard/forms/model/FormModel";
 import { DataPagination } from "../components/dashboard/common/DataPagination";
+import { FormIndicador } from "../components/dashboard/forms/indicador/FormIndicador";
+import { HorizontalStepper } from "../components/dashboard/forms/indicador/HorizontalStepper";
+import { FormProvider, useForm } from "react-hook-form";
 
 export const Indicators = () => {
   let perPage = 5;
@@ -51,7 +54,7 @@ export const Indicators = () => {
   IndicatorsList && (rowsIndicators = IndicatorsList.data);
 
   let rowsIndicatorsEdited = [];
-  useMemo ( () => {
+  useMemo(() => {
     rowsIndicators.map((data) => {
       rowsIndicatorsEdited = [
         ...rowsIndicatorsEdited,
@@ -63,7 +66,7 @@ export const Indicators = () => {
           actions: "Acciones",
         },
       ];
-  })
+    })
   });
 
   useEffect(() => {
@@ -78,7 +81,7 @@ export const Indicators = () => {
     headerAlign = "center",
     align = "center",
     filterable = false;
-  const columnsIndicator =  [
+  const columnsIndicator = [
     {
       field: "id",
       headerName: "ID ",
@@ -113,75 +116,75 @@ export const Indicators = () => {
       align,
     },
     {
-        field: "nombre",
-        headerName: "Nombre",
-        flex: 1,
-        minWidth: 150,
-        editable,
-        headerClassName,
-        sortable,
-        headerAlign,
-        align,
-        renderCell: (params) => {
-          return (
-            <span className="dt-theme--text">{params.row.nombre}</span>
-          );
-        },
+      field: "nombre",
+      headerName: "Nombre",
+      flex: 1,
+      minWidth: 150,
+      editable,
+      headerClassName,
+      sortable,
+      headerAlign,
+      align,
+      renderCell: (params) => {
+        return (
+          <span className="dt-theme--text">{params.row.nombre}</span>
+        );
       },
-      
-      {
-        field: "ultimoValorDisponible",
-        headerName: "Valor actual",
-        flex: 1,
-        minWidth: 150,
-        editable,
-        headerClassName,
-        sortable,
-        headerAlign,
-        align,
-      },
+    },
 
-      {
-        field: "tendenciaActual",
-        headerName: "Actual",
-        flex: 1,
-        minWidth: 100,
-        editable,
-        headerClassName,
-        sortable,
-        headerAlign,
-        align,
-        renderCell:(params) => {
-            return (<Status status={params.row.tendenciaActual} />);
-        },
+    {
+      field: "ultimoValorDisponible",
+      headerName: "Valor actual",
+      flex: 1,
+      minWidth: 150,
+      editable,
+      headerClassName,
+      sortable,
+      headerAlign,
+      align,
+    },
+
+    {
+      field: "tendenciaActual",
+      headerName: "Actual",
+      flex: 1,
+      minWidth: 100,
+      editable,
+      headerClassName,
+      sortable,
+      headerAlign,
+      align,
+      renderCell: (params) => {
+        return (<Status status={params.row.tendenciaActual} />);
       },
-      {
-        field: "tendenciaDeseada",
-        headerName: "Deseado",
-        flex: 1,
-        minWidth: 100,
-        editable,
-        headerClassName,
-        sortable,
-        headerAlign,
-        align,
-        renderCell:(params) => {
-            return (<Status status={params.row.tendenciaDeseada} />);
-        },
+    },
+    {
+      field: "tendenciaDeseada",
+      headerName: "Deseado",
+      flex: 1,
+      minWidth: 100,
+      editable,
+      headerClassName,
+      sortable,
+      headerAlign,
+      align,
+      renderCell: (params) => {
+        return (<Status status={params.row.tendenciaDeseada} />);
       },
-      {
-        field: "urlImagen",
-        headerName: "Imagen",
-        flex: 0.5,
-        minWidth: 100,
-        editable,
-        headerClassName,
-        sortable,
-        headerAlign,
-        align,
-        filterable,
-        hide: true,
-      },    
+    },
+    {
+      field: "urlImagen",
+      headerName: "Imagen",
+      flex: 0.5,
+      minWidth: 100,
+      editable,
+      headerClassName,
+      sortable,
+      headerAlign,
+      align,
+      filterable,
+      hide: true,
+    },
     {
       field: "createdAt",
       headerName: "Creacion",
@@ -252,7 +255,7 @@ export const Indicators = () => {
     },
   ];
 
-  const dataTable = [columnsIndicator, rowsIndicatorsEdited,'indicador'];
+  const dataTable = [columnsIndicator, rowsIndicatorsEdited, 'indicador'];
 
   const dataIndicator = {
     topic: "indicador",
@@ -263,9 +266,9 @@ export const Indicators = () => {
     setSearch: setSearchIndicator,
     searchValue: searchIndicator
   };
+
   return (
     <>
-
       <DataHeader
         data={dataIndicator}
         handleOpenModal={handleOpenModal}
@@ -292,13 +295,12 @@ export const Indicators = () => {
           </>
         )}
       </Box>
-
       <FormDialog
         open={openModal}
         setOpenModal={setOpenModal}
         title={`Editar módulo ${clickInfo.temaIndicador}`}
       >
-        <FormModel data={clickInfo} handleCloseModal={handleCloseModal} />
+        <HorizontalStepper />
       </FormDialog>
     </>
   );
