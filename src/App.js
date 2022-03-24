@@ -1,6 +1,5 @@
 import "./App.css";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
-import { Indicators } from './components/dashboard/components/home/Indicators/Indicators'
 import { Indicator } from './components/dashboard/components/home/Indicators/Indicator'
 import { Modules } from './pages/Modules'
 import { AuthProvider } from "./contexts/AuthContext";
@@ -11,6 +10,7 @@ import { Home } from "./pages/Home";
 import { Users } from "./pages/Users";
 import { ForgotPassword } from "./pages/ForgotPassword";
 import { AlertProvider } from "./contexts/AlertContext";
+import { Indicators } from "./pages/Indicators";
 
 function App() {
   return (
@@ -37,7 +37,7 @@ function App() {
               <Route path='/usuarios' element={<Users />} />
               <Route path='/modulos' element={<Modules />} />
               <Route path='/indicadores' element={<Indicators />} />
-              <Route path='/indicadores/*' element={<Indicator />} />
+              <Route path='/indicadores/:id' element={<Indicator />} />
             </Route>
           </Routes>
         </BrowserRouter>

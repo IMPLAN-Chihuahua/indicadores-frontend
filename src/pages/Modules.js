@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import React, { useRef } from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import DatagridTable from "../components/dashboard/common/DatagridTable";
 import { DataHeader } from "../components/dashboard/common/DataHeader";
 import { useModules } from "../services/userService";
@@ -51,17 +51,19 @@ export const Modules = () => {
   modulesList && (rowsModules = modulesList.data);
 
   let rowsModulesEdited = [];
-  rowsModules.map((data) => {
-    rowsModulesEdited = [
-      ...rowsModulesEdited,
-      {
-        ...data,
-        createdAt: data.createdAt.split("T")[0],
-        updatedAt: data.updatedAt.split("T")[0],
-        activo: data.activo == "SI" ? "Activo" : "Inactivo",
-        actions: "Acciones",
-      },
-    ];
+  useMemo ( () => {
+    rowsModules.map((data) => {
+      rowsModulesEdited = [
+        ...rowsModulesEdited,
+        {
+          ...data,
+          createdAt: data.createdAt.split("T")[0],
+          updatedAt: data.updatedAt.split("T")[0],
+          activo: data.activo == "SI" ? "Activo" : "Inactivo",
+          actions: "Acciones",
+        },
+      ];
+  })
   });
 
   useEffect(() => {
@@ -76,7 +78,7 @@ export const Modules = () => {
     headerAlign = "center",
     align = "center",
     filterable = false;
-  const columnsModule = [
+  const columnsModule =  [
     {
       field: "id",
       headerName: "ID ",
@@ -86,13 +88,13 @@ export const Modules = () => {
       sortable,
       headerAlign,
       align,
-      align,
+      hide: true,
     },
     {
       field: "codigo",
-      headerName: "Codigo ",
+      headerName: "#",
       flex: 0.5,
-      minWidth: 100,
+      minWidth: 50,
       editable,
       headerClassName,
       sortable,
@@ -119,7 +121,7 @@ export const Modules = () => {
       field: "createdAt",
       headerName: "Creacion",
       flex: 0.5,
-      minWidth: 150,
+      minWidth: 100,
       editable,
       headerClassName,
       sortable,
@@ -128,9 +130,9 @@ export const Modules = () => {
     },
     {
       field: "updatedAt",
-      headerName: "Actualizacion",
+      headerName: "Edicion",
       flex: 0.5,
-      minWidth: 150,
+      minWidth: 100,
       editable,
       headerClassName,
       sortable,
@@ -163,7 +165,7 @@ export const Modules = () => {
       field: "color",
       headerName: "Color",
       flex: 0.5,
-      minWidth: 100,
+      minWidth: 80,
       editable,
       headerClassName,
       sortable,
@@ -218,7 +220,7 @@ export const Modules = () => {
       headerName: "Acciones",
       flex: 0.5,
       editable: false,
-      minWidth: 150,
+      minWidth: 100,
       headerClassName,
       sortable,
       headerAlign,

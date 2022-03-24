@@ -98,13 +98,6 @@ export const Sidebar = () => {
                             <span>Indicadores</span>
                         </li>
                         </Link>
-
-                        <Link to='indicadores/:id' className='link'>
-                        <li className={show?`sidebar-list-item ${activeIndicator}`:`sidebar-list-item-min ${activeIndicator}`}>
-                            <BubbleChartIcon className='sidebar-icon'/> 
-                            <span>Indicador</span>
-                        </li>
-                        </Link>
                         </ul>
                      </Box>
                 </Box>

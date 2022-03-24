@@ -19,10 +19,8 @@
 }
 
 .image-indicator {
-    width: 150px;
-    height: 150px;
+    width: 180px;
     border-radius: 15%;
-
 }
 
 .body-upper-left {
@@ -35,4 +33,49 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+}
+
+.body-upper-right {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.body-down {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.indicator-observaciones {
+    width: 100%;
+}
+
+.body-mid-right {
+    background-color: rgba(127, 255, 212, 0.363);
+    height: 85%;
+}
+
+.body-down-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1%;
+}
+
+.indicator-mapa {
+    width: 90%;
+}
+
+.indicator-map-image {
+    border: 2px solid black;
+    border-radius: 1%;
+}
+
+.indicator-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1%;
 }
