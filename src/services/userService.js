@@ -50,7 +50,6 @@ export const useModules = (perPage,page,search) => {
     isError: error,
   } 
 };
-
 export const useIndicators = (perPage,page,search) => {
   const {data, error} = useSWR(`indicadores?perPage=${perPage}&page=${page}&searchQuery=${search}`,fetcher) 
   return{
@@ -68,6 +67,38 @@ export const useUsers = (perPage,page,search) => {
     isError: error,
   } 
 };
+
+export const useSelector = (topic, perPage,page,search) => {
+  const {data, error} = useSWR(
+    (topic == 'Indicadores')
+    ?
+    `indicadores?perPage=${perPage}&page=${page}&searchQuery=${search}`
+    :
+    `usuarios?perPage=${perPage}&page=${page}&searchQuery=${search}`
+    ,fetcher
+    ) 
+  return{
+    itemList: data,
+    isLoading: !error && !data,
+    isError: error,
+  } 
+};
+export const useAutocompleteInput = (topic) => {
+  const {data, error} = useSWR(
+    (topic == 'Indicadores')
+    ?
+    `usuarios`
+    :
+    `indicadores`
+    ,fetcher
+    ) 
+  return{
+    itemList: data,
+    isLoading: !error && !data,
+    isError: error,
+  } 
+};
+
 
 
 export const getModules = async (page) => {

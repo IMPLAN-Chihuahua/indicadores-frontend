@@ -8,7 +8,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import './sidebar.css'
 import { Link, useLocation } from 'react-router-dom';
 import { Box } from '@mui/material';
-import {Lock } from '@mui/icons-material';
+import {Circle, Lock } from '@mui/icons-material';
 
 export const Sidebar = () => {
 
@@ -104,6 +104,11 @@ export const Sidebar = () => {
                         <li className={show?`sidebar-list-item ${activeRelationship}`:`sidebar-list-item-min ${activeRelationship}`}>
                             <Lock className='sidebar-icon'/> 
                             <span>Autorizacion</span>
+                        </li>
+                        </Link>
+                        <Link to='myComponents'>
+                        <li>
+                            <span>Miau</span>
                         </li>
                         </Link>
                         </ul>

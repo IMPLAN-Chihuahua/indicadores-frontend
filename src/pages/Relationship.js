@@ -209,9 +209,7 @@ export const Relationship = () => {
       },
     },
   ];
-
   const dataTable = [columnsIndicator, rowsIndicatorsEdited,''];
-
   const dataIndicator = {
     topic: "registro",
     // countEnable: activeCounter,
@@ -255,7 +253,7 @@ export const Relationship = () => {
         open={openModal}
         setOpenModal={setOpenModal}
         title={`Editar módulo ${clickInfo.temaIndicador}`}
-        
+        maxWidth={'lg'}
       >
         <FormRelationship data={clickInfo} handleCloseModal={handleCloseModal} />
       </FormDialog>

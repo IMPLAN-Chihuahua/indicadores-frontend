@@ -1,12 +1,24 @@
 .auth-container{
-height: 300px;
-width: 100%;
-}
-.auth-assign{
 display: flex;
-flex-direction: column;
+justify-content: center;
 align-items: center;
+align-content: center;
+}
+.auth-content{
+    display: flex;
+    flex-direction: column;    
+}
+.auth-header{
+display: flex;
+justify-content: space-between;
+margin-bottom: 50px;
+margin-top: 30px;
+
+}
+
+.auth-one{
+    width: 75%;
 }
 .auth-date{
-    
+    width: 20%;
 }

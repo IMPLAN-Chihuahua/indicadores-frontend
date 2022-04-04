@@ -1,5 +1,5 @@
-import { Box, Button, TextField, Container, Grid, FormGroup, FormControlLabel, Switch, CssBaseline, Typography, Alert, DialogTitle, DialogContent, DialogActions, Autocomplete, Checkbox } from '@mui/material';
-import React from 'react';
+import { Box, Button, TextField, Container, Grid, FormGroup, FormControlLabel, Switch, CssBaseline, Typography, Alert, DialogTitle, DialogContent, DialogActions, Autocomplete, Checkbox, ListItem } from '@mui/material';
+import React, { useEffect, useState } from 'react';
 import { useForm, Controller, FormProvider } from "react-hook-form";
 import ColorPicker from '../../common/ColorPicker';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -9,92 +9,113 @@ import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 import './FormRelationship.css'
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox'
+import { height } from '@mui/system';
+import { DataSelector } from '../../../common/dataSelector/DataSelector';
+import { useAutocompleteInput } from '../../../../services/userService';
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
-
-
 const FormRelationship = ({ data = 0, handleCloseModal }) => {
-    let defaultValues = {
-        temaIndicador: '',
-        codigo: '',
-        observaciones: '',
-        activo: 'Activo' ? true : false,
-        imagen: '',
-        color: '',
-        urlImagen: '',
-    };
-    defaultValues = data ? data : defaultValues;
-    const methods = useForm({
-        defaultValues,
-        resolver: yupResolver(moduleSchema),
-        mode: 'onBlur',
-    });
+  /*
+  mode: 
+  UI = Usuario a indicadores
+  IU = Indicador a usuarios
+  */
     const onSubmit = data => alert(JSON.stringify(data));
-    const [color, setColor] = React.useState(defaultValues.color ? defaultValues.color : '#d32f2f');
+    const [mode, setMode] = useState('Indicadores');
+    
+    const handleChangeMode = (mode) => {
+      setMode(mode)
+    }
 
+    let itemListFull = []
+    const {itemList, isLoading, isError} = useAutocompleteInput(
+      mode
+    );
+
+    (itemList && mode == 'Indicadores') 
+    ? itemList?.data.map((item)=>{
+      itemListFull = [...itemListFull,{
+        label: `${item.id}-${item.nombres} ${item.apellidoPaterno} ${item.apellidoMaterno}`
+      }]
+    })
+    : itemList?.data.map((item)=>{
+      itemListFull = [...itemListFull,{
+        label: `${item.id}-${item.nombre}`
+      }]
+    })
+
+    const [placeholderMode, setPlaceholderMode] = useState('Selecciona un usuario')
+    
+    useEffect(() => {
+      itemListFull = []
+    if (mode == 'Indicadores') {
+      setPlaceholderMode('Selecciona un usuario')
+    }else{
+      setPlaceholderMode('Selecciona un indicador') 
+    } 
+
+    }, [mode])
+    
     return (
         <>
-            <DialogTitle>Autorizacion</DialogTitle>
-            <FormProvider {...methods}>
+            <DialogTitle>
+            <div className='auth-title'>
+              <div className='auth-title-left'>
+              Autorizacion
+              </div>
+              <div className='auth-title-right'>
+              <button className={`auth-title-btn${(mode == 'Indicadores')?'-active':``}`} onClick={() => handleChangeMode('Indicadores')}>Usuario a indicadores</button>
+              <button className={`auth-title-btn${(mode == 'Usuarios')?'-active':``}`} onClick={() => handleChangeMode('Usuarios')}>Indicador a usuarios</button>
+              </div>
+
+            </div>
+            </DialogTitle>
+            <FormProvider >
                 <Box
-                    component='form'
-                    onSubmit={methods.handleSubmit(onSubmit)}
+                    // component='form'
+                    // onSubmit={(e) => e.preventDefault()}
                 >
-                    <DialogContent>
+                    <DialogContent
+                    >
                     <div className='auth-container'>
-                    <div className='auth-date'>
+                    <div className='auth-content'>
+                    <div className='auth-header'>
+
+
+                     {
+                  
+                        <Autocomplete
+                          disablePortal
+                          className='auth-one'
+                          options={itemListFull}
+                 
+                          renderInput={(params) => <TextField {...params} label={placeholderMode} />}
+                        />
+                   
+                      }
+
                     <TextField
-                    id="date"
-                    label="Birthday"
+                    className='auth-date'
+                    label="Fecha de expiracion"
                     type="date"
                     defaultValue="2017-05-24"
-                    sx={{ width: 220 }}
                     InputLabelProps={{
                       shrink: true,
                     }}
-                  />
+
+                  
+                  />                    
                     </div>
-                    <div className='auth-assign'>
-
-                    <Autocomplete
-                    disablePortal
-                    options={[
-                        { label: 'The Shawshank Redemption', year: 1994 },
-                        { label: 'The Godfather', year: 1972 },
-                        { label: 'The Godfather: Part II', year: 1974 },
-                      ]}
-                    sx={{ width: 500 }}
-                    renderInput={(params) => <TextField {...params} label="Usuario" />}
-                    />
-                    
-                    <br/>
-
-                    <Autocomplete
-                        className='auth-multiple'
-                        multiple
-                        options={top100Films}
-                        disableCloseOnSelect
-                        getOptionLabel={(option) => option.title}
-                        renderOption={(props, option, { selected }) => (
-                            <li {...props}>
-                            <Checkbox
-                                icon={icon}
-                                checkedIcon={checkedIcon}
-                                style={{ marginRight: 8 }}
-                                checked={selected}
-                            />
-                            {option.title}
-                            </li>
-                        )}
-                        style={{ width: 500 }}
-                        renderInput={(params) => (
-                            <TextField {...params} label="Indicadores"  />
-                        )}
-                        />
+                    <div className='auth-selection'>
+                      {
+                        (mode == 'Indicadores')
+                        ?
+                        <DataSelector topic={'Indicadores'}/>
+                        :
+                        <DataSelector topic={'Usuarios'}/>
+                      }
                     </div>
-            
-                    
-
+                      </div>
                     </div>
                     </DialogContent>
                     <DialogActions>
@@ -107,54 +128,5 @@ const FormRelationship = ({ data = 0, handleCloseModal }) => {
     )
 }
 
-
-const top100Films = [
-    { title: 'The Shawshank Redemption', year: 1994 },
-    { title: 'The Godfather', year: 1972 },
-    { title: 'The Godfather: Part II', year: 1974 },
-    { title: 'The Dark Knight', year: 2008 },
-    { title: '12 Angry Men', year: 1957 },
-    { title: "Schindler's List", year: 1993 },
-    { title: 'Pulp Fiction', year: 1994 },
-    {
-      title: 'The Lord of the Rings: The Return of the King',
-      year: 2003,
-    },
-    { title: 'The Good, the Bad and the Ugly', year: 1966 },
-    { title: 'Fight Club', year: 1999 },
-    {
-      title: 'The Lord of the Rings: The Fellowship of the Ring',
-      year: 2001,
-    },
-    {
-      title: 'Star Wars: Episode V - The Empire Strikes Back',
-      year: 1980,
-    },
-    { title: 'Forrest Gump', year: 1994 },
-    { title: 'Inception', year: 2010 },
-    {
-      title: 'The Lord of the Rings: The Two Towers',
-      year: 2002,
-    },
-    { title: "One Flew Over the Cuckoo's Nest", year: 1975 },
-    { title: 'Goodfellas', year: 1990 },
-    { title: 'The Matrix', year: 1999 },
-    { title: 'Seven Samurai', year: 1954 },
-    {
-      title: 'Star Wars: Episode IV - A New Hope',
-      year: 1977,
-    },
-    { title: 'City of God', year: 2002 },
-    { title: 'Se7en', year: 1995 },
-    { title: 'The Silence of the Lambs', year: 1991 },
-    { title: "It's a Wonderful Life", year: 1946 },
-    { title: 'Life Is Beautiful', year: 1997 },
-    { title: 'The Usual Suspects', year: 1995 },
-    { title: 'Léon: The Professional', year: 1994 },
-    { title: 'Spirited Away', year: 2001 },
-    { title: 'Saving Private Ryan', year: 1998 },
-    { title: 'Once Upon a Time in the West', year: 1968 },
-    { title: 'American History X', year: 1998 },
-    { title: 'Interstellar', year: 2014 },
-  ];
 export default FormRelationship;
+
