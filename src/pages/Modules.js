@@ -51,7 +51,7 @@ export const Modules = () => {
   modulesList && (rowsModules = modulesList.data);
 
   let rowsModulesEdited = [];
-  useMemo ( () => {
+  useMemo(() => {
     rowsModules.map((data) => {
       rowsModulesEdited = [
         ...rowsModulesEdited,
@@ -63,7 +63,7 @@ export const Modules = () => {
           actions: "Acciones",
         },
       ];
-  })
+    })
   });
 
   useEffect(() => {
@@ -78,7 +78,7 @@ export const Modules = () => {
     headerAlign = "center",
     align = "center",
     filterable = false;
-  const columnsModule =  [
+  const columnsModule = [
     {
       field: "id",
       headerName: "ID ",
