@@ -298,6 +298,9 @@ export const Indicators = () => {
       <FormDialog
         open={openModal}
         setOpenModal={setOpenModal}
+        fullWidth
+        keepMounted
+        maxWidth='lg'
         title={`Editar módulo ${clickInfo.temaIndicador}`}
       >
         <HorizontalStepper />

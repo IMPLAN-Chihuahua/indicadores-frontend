@@ -8,7 +8,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="down" ref={ref} {...props} />;
 });
 
-const ModalModelo = ({ open, setOpenModal, children, title }) => {
+const ModalModelo = ({ open, setOpenModal, children, ...props }) => {
     const handleClose = () => setOpenModal(false);
 
     return (
@@ -17,6 +17,7 @@ const ModalModelo = ({ open, setOpenModal, children, title }) => {
                 open={open}
                 onClose={handleClose}
                 TransitionComponent={Transition}
+                {...props}
             >
                 {children}
             </Dialog>
