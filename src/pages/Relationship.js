@@ -12,8 +12,9 @@ import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import FormDialog from "../components/dashboard/common/FormDialog";
 import FormModel from "../components/dashboard/forms/model/FormModel";
 import { DataPagination } from "../components/dashboard/common/DataPagination";
+import FormRelationship from "../components/dashboard/forms/relationship/FormRelationship";
 
-export const Indicators = () => {
+export const Relationship = () => {
   let perPage = 5;
   localStorage.getItem("perPage") &&
     (perPage = localStorage.getItem("perPage"));
@@ -90,31 +91,9 @@ export const Indicators = () => {
       align,
       hide: true,
     },
-    {
-      field: "codigo",
-      headerName: "#",
-      flex: 0.5,
-      minWidth: 50,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-    },
-    {
-      field: "codigoObjeto",
-      headerName: "#S",
-      flex: 1,
-      minWidth: 50,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-    },
-    {
-        field: "nombre",
-        headerName: "Nombre",
+      {
+        field: "usuario",
+        headerName: "Usuario",
         flex: 1,
         minWidth: 150,
         editable,
@@ -128,10 +107,9 @@ export const Indicators = () => {
           );
         },
       },
-      
       {
-        field: "ultimoValorDisponible",
-        headerName: "Valor actual",
+        field: "correo",
+        headerName: "Correo",
         flex: 1,
         minWidth: 150,
         editable,
@@ -139,51 +117,32 @@ export const Indicators = () => {
         sortable,
         headerAlign,
         align,
-      },
-      {
-        field: "tendenciaActual",
-        headerName: "Actual",
-        flex: 1,
-        minWidth: 100,
-        editable,
-        headerClassName,
-        sortable,
-        headerAlign,
-        align,
-        renderCell:(params) => {
-            return (<Status status={params.row.tendenciaActual} />);
+        renderCell: (params) => {
+          return (
+            <span className="dt-theme--text">{params.row.nombre}</span>
+          );
         },
       },
       {
-        field: "tendenciaDeseada",
-        headerName: "Deseado",
+        field: "indicador",
+        headerName: "Indicador",
         flex: 1,
-        minWidth: 100,
+        minWidth: 150,
         editable,
         headerClassName,
         sortable,
         headerAlign,
         align,
-        renderCell:(params) => {
-            return (<Status status={params.row.tendenciaDeseada} />);
+        renderCell: (params) => {
+          return (
+            <span className="dt-theme--text">{params.row.nombre}</span>
+          );
         },
       },
-      {
-        field: "urlImagen",
-        headerName: "Imagen",
-        flex: 0.5,
-        minWidth: 100,
-        editable,
-        headerClassName,
-        sortable,
-        headerAlign,
-        align,
-        filterable,
-        hide: true,
-      },    
+          
     {
       field: "createdAt",
-      headerName: "Creacion",
+      headerName: "Asignación",
       flex: 0.5,
       minWidth: 100,
       editable,
@@ -194,7 +153,7 @@ export const Indicators = () => {
     },
     {
       field: "updatedAt",
-      headerName: "Edicion",
+      headerName: "Expiración",
       flex: 0.5,
       minWidth: 100,
       editable,
@@ -250,11 +209,9 @@ export const Indicators = () => {
       },
     },
   ];
-
-  const dataTable = [columnsIndicator, rowsIndicatorsEdited,'indicador'];
-
+  const dataTable = [columnsIndicator, rowsIndicatorsEdited,''];
   const dataIndicator = {
-    topic: "indicador",
+    topic: "registro",
     // countEnable: activeCounter,
     // countDisable: inactiveCounter,
     countEnable: 100,
@@ -296,9 +253,11 @@ export const Indicators = () => {
         open={openModal}
         setOpenModal={setOpenModal}
         title={`Editar módulo ${clickInfo.temaIndicador}`}
+        maxWidth={'lg'}
       >
-        <FormModel data={clickInfo} handleCloseModal={handleCloseModal} />
+        <FormRelationship data={clickInfo} handleCloseModal={handleCloseModal} />
       </FormDialog>
+
     </>
   );
 };

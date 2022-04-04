@@ -8,6 +8,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import './sidebar.css'
 import { Link, useLocation } from 'react-router-dom';
 import { Box } from '@mui/material';
+import {Circle, Lock } from '@mui/icons-material';
 
 export const Sidebar = () => {
 
@@ -18,6 +19,7 @@ export const Sidebar = () => {
     const [activeUsers, setActiveUsers] = useState('');
     const [activeModules, setActiveModules] = useState('');
     const [activeIndicators, setActiveIndicators] = useState('');
+    const [activeRelationship, setActiveRelationship] = useState('');
 
     const handleShow = () => {setShow(!show);}
     
@@ -26,6 +28,7 @@ export const Sidebar = () => {
         setActiveUsers('');
         setActiveModules('');
         setActiveIndicators('');
+        setActiveRelationship('');
     }
 
     useEffect(() => {
@@ -47,6 +50,9 @@ export const Sidebar = () => {
               setActiveIndicators('active');
               break;
         
+          case '/autorizacion':
+                setActiveRelationship('active');
+                break;
       
           default:
               break;
@@ -91,6 +97,18 @@ export const Sidebar = () => {
                         <li className={show?`sidebar-list-item ${activeIndicators}`:`sidebar-list-item-min ${activeIndicators}`}>
                             <BubbleChartIcon className='sidebar-icon'/> 
                             <span>Indicadores</span>
+                        </li>
+                        </Link>
+                        
+                        <Link to='autorizacion' className='link'>
+                        <li className={show?`sidebar-list-item ${activeRelationship}`:`sidebar-list-item-min ${activeRelationship}`}>
+                            <Lock className='sidebar-icon'/> 
+                            <span>Autorizacion</span>
+                        </li>
+                        </Link>
+                        <Link to='myComponents'>
+                        <li>
+                            <span>Miau</span>
                         </li>
                         </Link>
                         </ul>
