@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Button, TextField } from '@mui/material';
+import { Button, IconButton, Input, InputAdornment, OutlinedInput, TextField } from '@mui/material';
 import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
 import ImageListItemBar from '@mui/material/ImageListItemBar';
 import ListSubheader from '@mui/material/ListSubheader';
 import Popover from '@mui/material/Popover';
+import MenuIcon from '@mui/icons-material/Menu';
 
 const itemData = [
 	{
@@ -99,12 +100,21 @@ const OdsPicker = ({ odsId = 0 }) => {
 
 	return (
 		<>
-			<TextField size='small' value={image.title} placeholder='Seleccione un ODS'>
-			</TextField>
+			<OutlinedInput
+				size='small'
+				style={{ width: '90%' }}
+				value={image.title}
+				placeholder='Seleccione un ODS'
+				endAdornment={
+					<InputAdornment position='end'>
+						<IconButton aria-describedby={id} onClick={handleClick} edge='end'>
+							<MenuIcon />
+						</IconButton>
+					</InputAdornment>
+				}
+			>
+			</OutlinedInput>
 
-			<Button aria-describedby={id} variant='contained' onClick={handleClick}>
-				Seleccionar
-			</Button>
 			<Popover
 				id={id}
 				open={open}

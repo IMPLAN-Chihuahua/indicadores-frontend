@@ -20,6 +20,7 @@ import { getIndicator } from '../../../../../services/indicatorService';
 
 import ImageUploader from '../../../common/ImageUploader';
 import OdsPicker from '../../../common/OdsPicker';
+import CatalogPicker from '../../../common/CatalogPicker';
 
 
 
@@ -73,10 +74,6 @@ export const Indicator = () => {
 
 	return (
 		<Box className='indicator'>
-			<Box className='indicator-buttons'>
-				<Button type='submit' variant='contained'>Cancelar</Button>
-				<Button type='' variant='contained'>Guardar</Button>
-			</Box>
 			<Box>
 				<Grid container className='nav-indicator'>
 					<Grid item xs={12} md={3}>
@@ -95,29 +92,6 @@ export const Indicator = () => {
 										<CheckCircleRoundedIcon />
 									</Avatar>
 								</Box>
-
-								{/* 								
-								<Controller
-									name="ultimoValorDisponible"
-									control={methods.control}
-									render={({
-										field: { onChange, value },
-										fieldState: { error }
-									}) => (
-										<TextField
-											label='Ultimo valor disponible'
-											size='small'
-											type='number'
-											required
-											placeholder='700'
-											error={!!error}
-											helperText={error ? error.message : null}
-											onChange={onChange}
-											value={value}
-										/>
-									)}
-								/> */}
-
 							</CardContent>
 						</Card>
 					</Grid>
@@ -316,19 +290,36 @@ export const Indicator = () => {
 									</Box>
 								</Box>
 								<Box className='body-right-content'>
+									<Box className='body-right-content-title'>
+										<Typography variant="h6" component="div">
+											Componentes del indicador
+										</Typography>
+									</Box>
 									<Box container>
-										<Box item xs={12} md={12} className='body-right-catalogos'>
-											<Typography sx={{ fontSize: 14 }} gutterBottom>
-												ODS del indicador
-											</Typography>
-											<OdsPicker odsId={1} />
-										</Box>
+										<Grid container className='body-right-catalogos'>
+											<Grid item xs={12} md={4}>
+												<OdsPicker odsId={1} />
+											</Grid>
+											<Grid item xs={12} md={4}>
+												<CatalogPicker />
+											</Grid>
+											<Grid item xs={12} md={4}>
+												<CatalogPicker />
+											</Grid>
+										</Grid>
 										<Box item xs={12} md={12} className='body-right-mapa'>
-											<Typography sx={{ fontSize: 14 }} gutterBottom>
-												Mapa
-											</Typography>
+											<Box className='body-right-content-title'>
+												<Typography variant="h6" component="div">
+													Mapa
+												</Typography>
+											</Box>
 											<div className='mapa-container'>
 												<img src={`https://res.cloudinary.com/davzo6qf4/image/upload/v1644535117/mapa_mwlhkq.png`} alt='mapa' className='indicator-map' />
+												<IconButton className='mapa-button'>
+													<Avatar>
+														<EditOutlinedIcon />
+													</Avatar>
+												</IconButton>
 											</div>
 											<Controller
 												name="mapa.url"
@@ -356,96 +347,12 @@ export const Indicator = () => {
 							</Box>
 						</Grid>
 					</Grid>
-
-					{/* <Grid container spacing={1}>
-						<Grid item xs={12} md={6}>
-							<Box className='body-upper-right-title'>
-								<Typography variant="subtitle1" component="h4">
-									Identificadores
-								</Typography>
-							</Box>
-							<Box className='body-upper-right'>
-								<Controller
-									name="codigo"
-									control={methods.control}
-									render={({
-										field: { onChange, value },
-										fieldState: { error }
-									}) => (
-										<TextField
-											label='Código tema'
-											type='text'
-											required
-											size='small'
-											placeholder='013'
-											error={!!error}
-											helperText={error ? error.message : null}
-											onChange={onChange}
-											value={value}
-										/>
-									)}
-								/>
-								<Controller
-									name="codigoObjeto"
-									control={methods.control}
-									render={({
-										field: { onChange, value },
-										fieldState: { error }
-									}) => (
-										<TextField
-											label='Código indicador'
-											type='text'
-											required
-											size='small'
-											placeholder='013-123-456'
-											error={!!error}
-											helperText={error ? error.message : null}
-											onChange={onChange}
-											value={value}
-										/>
-									)}
-								/>
-								<Switch />
-							</Box>
-							<br />
-							<Box className='body-down-title'>
-								<Typography variant="subtitle1" component="h4">
-									Mapa
-								</Typography>
-								<img src='https://res.cloudinary.com/davzo6qf4/image/upload/v1644535117/mapa_mwlhkq.png' alt='mapa' className='indicator-map-image' />
-								<br />
-								<Controller
-									name="mapa.url"
-									control={methods.control}
-									render={({
-										field: { onChange, value },
-										fieldState: { error }
-									}) => (
-										<TextField
-											label='Mapa'
-											size='small'
-											type='text'
-											placeholder='URL del mapa'
-											error={!!error}
-											className='indicator-mapa'
-											helperText={error ? error.message : null}
-											onChange={onChange}
-											value={value}
-										/>
-									)}
-								/>
-							</Box>
-						</Grid>
-						<Grid item xs={12} md={12}>
-							<Box className='body-down-title'>
-							</Box>
-							<Box className='body-down'>
-							</Box>
-						</Grid>
-					</Grid>*/}
-					<br />
 					<br />
 
+				</Box>
+				<Box className='indicator-buttons'>
+					<Button type='submit' variant='contained'>Cancelar</Button>
+					<Button type='' variant='contained'>Guardar</Button>
 				</Box>
 			</FormProvider >
 		</Box >
