@@ -5,14 +5,17 @@ import {
 } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
-import { addFormData } from "../../../../features/indicador/indicadorSlice";
+import { addBasicData } from "../../../../features/indicador/indicadorSlice";
+
 
 export const FormIndicador = () => {
   const methods = useForm();
+  let dummyOptions = [{ id: 1, unidad: 'u-1' }, { id: 2, unidad: 'u-2' }];
   const { control, reset, handleSubmit } = methods;
+
   const dispatch = useDispatch();
   const onSubmit = data => {
-    dispatch(addFormData(data))
+    dispatch(addBasicData(data))
   }
 
   return (
@@ -56,6 +59,7 @@ export const FormIndicador = () => {
             <Controller
               name="codigo"
               control={control}
+              defaultValue=''
               render={({
                 field: { onChange, value },
                 fieldState: { error }
@@ -78,6 +82,7 @@ export const FormIndicador = () => {
             <Controller
               name="codigoObjeto"
               control={control}
+              defaultValue=''
               render={({
                 field: { onChange, value },
                 fieldState: { error }
@@ -97,14 +102,29 @@ export const FormIndicador = () => {
             />
           </Grid>
           <Grid item xs={12}>
-            <Autocomplete
-              options={['something', 'something 2']}
-              renderInput={(params) => <TextField {...params} required label="Unidad Medida" />}
+            <Controller
+              render={({ field: { onChange } }) => (
+                <Autocomplete
+                  autoHighlight
+                  options={dummyOptions}
+                  getOptionLabel={option => option.unidad}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Unidad Medida"
+                      required
+                    />
+                  )}
+                  onChange={(_, data) => onChange(data)}
+                />
+              )}
+              name="medida"
+              control={control}
             />
           </Grid>
           <Grid item xs={12}>
             <Autocomplete
-              options={['something']}
+              options={['dummyOptions']}
               renderInput={(params) => <TextField {...params} required label="Cobertura Geografica" />}
             />
           </Grid>
@@ -146,6 +166,7 @@ export const FormIndicador = () => {
           <Grid item xs={12}>
             <Controller
               name="definicion"
+              defaultValue=''
               control={control}
               render={({
                 field: { onChange, value },
