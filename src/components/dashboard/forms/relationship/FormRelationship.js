@@ -1,5 +1,5 @@
 import { Box, Button, TextField, Container, Grid, FormGroup, FormControlLabel, Switch, CssBaseline, Typography, Alert, DialogTitle, DialogContent, DialogActions, Autocomplete, Checkbox, ListItem } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useForm, Controller, FormProvider } from "react-hook-form";
 import ColorPicker from '../../common/ColorPicker';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -14,15 +14,15 @@ import { DataSelector } from '../../../common/dataSelector/DataSelector';
 import { useAutocompleteInput } from '../../../../services/userService';
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
+/*
+mode: 
+UI = Usuario a indicadores
+IU = Indicador a usuarios
+*/
 const FormRelationship = ({ data = 0, handleCloseModal }) => {
-  /*
-  mode: 
-  UI = Usuario a indicadores
-  IU = Indicador a usuarios
-  */
     const onSubmit = data => alert(JSON.stringify(data));
     const [mode, setMode] = useState('Indicadores');
-    
+
     const handleChangeMode = (mode) => {
       setMode(mode)
     }
@@ -54,7 +54,9 @@ const FormRelationship = ({ data = 0, handleCloseModal }) => {
       setPlaceholderMode('Selecciona un indicador') 
     } 
 
+
     }, [mode])
+
     
     return (
         <>
@@ -80,15 +82,12 @@ const FormRelationship = ({ data = 0, handleCloseModal }) => {
                     <div className='auth-container'>
                     <div className='auth-content'>
                     <div className='auth-header'>
-
-
                      {
-                  
                         <Autocomplete
+                          key={mode}
                           disablePortal
                           className='auth-one'
                           options={itemListFull}
-                 
                           renderInput={(params) => <TextField {...params} label={placeholderMode} />}
                         />
                    
