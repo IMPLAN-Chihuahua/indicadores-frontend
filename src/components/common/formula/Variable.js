@@ -62,6 +62,7 @@ export const Variable = (props) => {
             field: { onChange, value }
           }) => (
             <TextField
+              label='Dato'
               placeholder='123'
               onChange={onChange}
               value={value}
@@ -79,14 +80,14 @@ export const Variable = (props) => {
           }) => (
             <TextField
               label='Año'
-              placeholder='2022'
+              placeholder={'2022'}
               onChange={onChange}
               value={value}
             />
           )}
         />
       </Grid>
-      <Grid item xs={2}>
+      <Grid item xs={3}>
         <Autocomplete
           options={options}
           renderInput={(params) => <TextField {...params} required label="Unidad Medida" />}

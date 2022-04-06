@@ -7,7 +7,9 @@ export const indicadorSlice = createSlice({
 		formula: {
 			ecuacion: "",
 			variables: []
-		}
+		},
+		mapa: {},
+		extra: {}
 	},
 	reducers: {
 		addBasicData: (state, action) => {
@@ -18,10 +20,10 @@ export const indicadorSlice = createSlice({
 			state.formula.ecuacion = ecuacion;
 			state.formula.variables = [];
 			variables.map(v => state.formula.variables.push({ ...v }));
-		}
+		},
 	}
 });
 
-export const { addBasicData, addFormulaData } = indicadorSlice.actions;
+export const { addBasicData, addFormulaData, handleBack, handleNext } = indicadorSlice.actions;
 
 export default indicadorSlice.reducer;

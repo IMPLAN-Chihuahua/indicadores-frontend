@@ -15,6 +15,8 @@ import { DataPagination } from "../components/dashboard/common/DataPagination";
 import { FormIndicador } from "../components/dashboard/forms/indicador/FormIndicador";
 import { HorizontalStepper } from "../components/dashboard/forms/indicador/HorizontalStepper";
 import { FormProvider, useForm } from "react-hook-form";
+import { Provider } from "react-redux";
+import { indicadorStore } from "../components/dashboard/forms/indicador/store";
 
 export const Indicators = () => {
   let perPage = 5;
@@ -301,9 +303,10 @@ export const Indicators = () => {
         fullWidth
         keepMounted
         maxWidth='lg'
-        title={`Editar módulo ${clickInfo.temaIndicador}`}
       >
-        <HorizontalStepper />
+        <Provider store={indicadorStore}>
+          <HorizontalStepper />
+        </Provider>
       </FormDialog>
     </>
   );
