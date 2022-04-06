@@ -37,7 +37,6 @@ export const LastedRecords = () => {
     });  
   }, [])
 
-
   return (
     <>
     <Box className='margin-top-home'>

@@ -1,6 +1,8 @@
 import {
     Dialog,
     Slide,
+    useMediaQuery,
+    useTheme,
 } from '@mui/material';
 import React from 'react';
 
@@ -10,7 +12,8 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 const ModalModelo = ({ open, setOpenModal, children, ...props }) => {
     const handleClose = () => setOpenModal(false);
-
+    const theme = useTheme();
+    const fullScreen = useMediaQuery(theme.breakpoints.down('xl'));
     return (
         <>
             <Dialog
@@ -18,6 +21,12 @@ const ModalModelo = ({ open, setOpenModal, children, ...props }) => {
                 onClose={handleClose}
                 TransitionComponent={Transition}
                 {...props}
+                sx={{
+                    maxWidth: '1000px',
+                    margin: 'auto'
+                }}
+            
+                
             >
                 {children}
             </Dialog>

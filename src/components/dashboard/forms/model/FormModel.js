@@ -22,6 +22,7 @@ const FormModel = ({ data = 0, handleCloseModal }) => {
         resolver: yupResolver(moduleSchema),
         mode: 'onBlur',
     });
+    
     const onSubmit = data => alert(JSON.stringify(data));
     const [color, setColor] = React.useState(defaultValues.color ? defaultValues.color : '#d32f2f');
 
