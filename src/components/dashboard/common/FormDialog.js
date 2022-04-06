@@ -10,7 +10,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="down" ref={ref} {...props} />;
 });
 
-const ModalModelo = ({ open, setOpenModal, children, title , maxWidth}) => {
+const ModalModelo = ({ open, setOpenModal, children, ...props }) => {
     const handleClose = () => setOpenModal(false);
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('xl'));
@@ -20,8 +20,7 @@ const ModalModelo = ({ open, setOpenModal, children, title , maxWidth}) => {
                 open={open}
                 onClose={handleClose}
                 TransitionComponent={Transition}
-                fullWidth
-                maxWidth={maxWidth}
+                {...props}
                 sx={{
                     maxWidth: '1000px',
                     margin: 'auto'

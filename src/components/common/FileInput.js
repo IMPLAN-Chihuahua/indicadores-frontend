@@ -5,7 +5,7 @@ import { useFormContext } from "react-hook-form";
 
 
 const FileInput = (props) => {
-  const { name, label } = props;
+  const { name, label, height } = props;
   const { register, unregister, setValue, watch } = useFormContext();
   const files = watch(name);
 
@@ -61,7 +61,7 @@ const FileInput = (props) => {
                           src={URL.createObjectURL(file)}
                           alt={file.name}
                           style={{
-                            height: '150px'
+                            height: height || '150px'
                           }} />
                       </div>
                     )
