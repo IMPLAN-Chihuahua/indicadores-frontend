@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
 import './indicator.css'
 
-import { Avatar, Badge, Button, Card, CardContent, FormControl, Grid, IconButton, Modal, Switch, TextField, Typography, Backdrop, Fade, Select, MenuItem } from '@mui/material';
+import { Avatar, Button, Card, CardContent, FormControl, Grid, IconButton, TextField, Typography, Backdrop, Fade, Select, MenuItem } from '@mui/material';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import TodayRoundedIcon from '@mui/icons-material/TodayRounded';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
@@ -11,22 +11,23 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import FmdGoodIcon from '@mui/icons-material/FmdGood';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import { useAlert } from '../../../../../contexts/AlertContext';
 
 import { yupResolver } from '@hookform/resolvers/yup';
 
 
 import { createIndicatorSchema } from '../../../../../utils/indicatorValidator';
-import { getIndicator } from '../../../../../services/indicatorService';
+import { getIndicator, updateIndicator } from '../../../../../services/indicatorService';
 
 import ImageUploader from '../../../common/ImageUploader';
 import OdsPicker from '../../../common/OdsPicker';
 import CatalogPicker from '../../../common/CatalogPicker';
-
-
+import { getCatalogos } from '../../../../../services/cataloguesService';
 
 export const Indicator = () => {
-
+	const alert = useAlert();
 	const { id } = useParams();
+
 	let defaultValues = {
 		anioUltimoValorDisponible: '',
 		definicion: '',
@@ -46,7 +47,9 @@ export const Indicator = () => {
 			url: '',
 		}
 	}
+
 	const [indicator, setIndicator] = useState(defaultValues);
+	const [catalogues, setCatalogues] = useState([]);
 
 	useEffect(() => {
 		getIndicator(id).then(res => {
@@ -65,12 +68,30 @@ export const Indicator = () => {
 		}
 	}, [indicator])
 
+	useEffect(() => {
+		getCatalogos()
+			.then(res => {
+				setCatalogues(res);
+			})
+			.catch(err => {
+				setCatalogues([])
+			})
+			;
+	}, [0])
 	const methods = useForm({
 		defaultValues,
 		resolver: yupResolver(createIndicatorSchema),
 		mode: 'all',
 	});
-	const onSubmit = indicator => alert(indicator);
+
+	const onSubmit = async (data) => {
+		try {
+			await updateIndicator(id, data);
+			alert.success('Indicador actualizado exitosamente');
+		} catch (error) {
+			alert.error(error);
+		}
+	};
 
 	return (
 		<Box className='indicator'>
@@ -171,6 +192,8 @@ export const Indicator = () => {
 				<Box
 					component='form'
 					onSubmit={methods.handleSubmit(onSubmit)}
+					noValidate
+					onReset={methods.reset}
 					className='body-indicator'
 				>
 					<Grid container>
@@ -300,12 +323,15 @@ export const Indicator = () => {
 											<Grid item xs={12} md={4}>
 												<OdsPicker odsId={1} />
 											</Grid>
-											<Grid item xs={12} md={4}>
-												<CatalogPicker />
-											</Grid>
-											<Grid item xs={12} md={4}>
-												<CatalogPicker />
-											</Grid>
+											{
+												catalogues.map((catalog, index) => (
+													catalog.nombre === 'ODS' ? null : (
+														<Grid item xs={12} md={4} key={index}>
+															<CatalogPicker idCatalog={catalog.id} Catalog={catalog.nombre} idIndicatorCatalog={id} />
+														</Grid>
+													)
+												))
+											}
 										</Grid>
 										<Box item xs={12} md={12} className='body-right-mapa'>
 											<Box className='body-right-content-title'>
@@ -348,11 +374,10 @@ export const Indicator = () => {
 						</Grid>
 					</Grid>
 					<br />
-
-				</Box>
-				<Box className='indicator-buttons'>
-					<Button type='submit' variant='contained'>Cancelar</Button>
-					<Button type='' variant='contained'>Guardar</Button>
+					<Box className='indicator-buttons'>
+						<Button variant='contained'>Cancelar</Button>
+						<Button type='submit' variant='contained'>Guardar</Button>
+					</Box>
 				</Box>
 			</FormProvider >
 		</Box >

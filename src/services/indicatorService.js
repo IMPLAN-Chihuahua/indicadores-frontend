@@ -10,6 +10,17 @@ const getIndicator = async (id) => {
     }
 };
 
+const updateIndicator = async (id, data) => {
+    console.log(data);
+    try {
+        const patch = await protectedApi.patch(`/indicadores/${id}`, data);
+        return 1;
+    } catch (error) {
+        throw (error);
+    }
+}
+
 export {
     getIndicator,
+    updateIndicator,
 };
