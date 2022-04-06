@@ -2,9 +2,22 @@ import React, { useEffect, useState } from 'react';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { getCatalogosDetails, getCatalogosFromIndicador } from '../../../services/cataloguesService';
-
+import OdsPicker from './OdsPicker';
 
 const CatalogPicker = ({ idCatalog, Catalog, idIndicatorCatalog = 0 }) => {
+    if (Catalog !== 'ODS') {
+        return <RegularCatalogs idCatalog={idCatalog} Catalog={Catalog} idIndicatorCatalog={idIndicatorCatalog} />
+    } else {
+        return <OdsCatalog />
+    }
+};
+
+const OdsCatalog = (odsId = 1) => {
+    //TODO: Receive ods id from DB
+    return <OdsPicker odsId={odsId} />
+};
+
+const RegularCatalogs = ({ idCatalog, Catalog, idIndicatorCatalog }) => {
 
     const [value, setValue] = useState('');
     const [options, setOptions] = useState([{ id: 0, nombre: 'Seleccione una opción', idCatalogo: 0 }]);
@@ -60,6 +73,5 @@ const CatalogPicker = ({ idCatalog, Catalog, idIndicatorCatalog = 0 }) => {
             )}
         />
     );
-};
-
+}
 export default CatalogPicker;
