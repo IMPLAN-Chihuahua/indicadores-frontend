@@ -132,13 +132,15 @@ const OdsPicker = ({ odsId = 0 }) => {
 					{itemData.map((item) => (
 						<ImageListItem key={item.img} sx={{
 							cursor: 'pointer',
-						}}>
+						}}
+							onClick={() => handleImageSelected(item)}
+						>
 							<img
 								src={`${item.img}?w=248&fit=crop&auto=format`}
 								srcSet={`${item.img}?w=248&fit=crop&auto=format&dpr=2 2x`}
 								alt={item.title}
 								loading="lazy"
-								onClick={() => handleImageSelected(item)}
+
 							/>
 							<ImageListItemBar
 								title={item.title}

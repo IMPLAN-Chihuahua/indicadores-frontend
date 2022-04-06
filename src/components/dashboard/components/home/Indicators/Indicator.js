@@ -203,7 +203,6 @@ export const Indicator = () => {
 									Información	del indicador
 								</Typography>
 								<ImageUploader imageSource={indicator.urlImagen} altDefinition={`Fotografía de indicador: ${indicator.nombre}`} />
-
 								{
 									indicator.mapa ?
 										(
@@ -320,16 +319,11 @@ export const Indicator = () => {
 									</Box>
 									<Box container>
 										<Grid container className='body-right-catalogos'>
-											<Grid item xs={12} md={4}>
-												<OdsPicker odsId={1} />
-											</Grid>
 											{
 												catalogues.map((catalog, index) => (
-													catalog.nombre === 'ODS' ? null : (
-														<Grid item xs={12} md={4} key={index}>
-															<CatalogPicker idCatalog={catalog.id} Catalog={catalog.nombre} idIndicatorCatalog={id} />
-														</Grid>
-													)
+													<Grid item xs={12} md={4} key={index}>
+														<CatalogPicker idCatalog={catalog.id} Catalog={catalog.nombre} idIndicatorCatalog={id} />
+													</Grid>
 												))
 											}
 										</Grid>
