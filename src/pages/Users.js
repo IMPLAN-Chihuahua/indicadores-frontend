@@ -48,7 +48,7 @@ export const Users = () => {
   usersList && (rowsUsers = usersList.data);
 
   let rowsUsersEdited = [];
-  rowsUsers.map((data) => {
+  rowsUsers.forEach((data) => {
     rowsUsersEdited = [
       ...rowsUsersEdited,
       {
@@ -61,6 +61,7 @@ export const Users = () => {
       },
     ];
   });
+  
   useEffect(() => {
     return () => {
       isMounted.current = false;
