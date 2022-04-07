@@ -13,8 +13,9 @@ const PrivateRoute = ({ children }) => {
 const PublicRoute = ({ children }) => {
   const auth = useAuth();
   const location = useLocation();
+  const from = location.state?.from?.pathname || '/';
   if (auth.user) {
-    return <Navigate to="/" state={{ from: location }} replace />
+    return <Navigate to={from} replace />
   }
   return children;
 }
