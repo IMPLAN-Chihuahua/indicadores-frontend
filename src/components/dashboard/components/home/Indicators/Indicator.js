@@ -22,6 +22,7 @@ import { getIndicator, updateIndicator } from '../../../../../services/indicator
 import ImageUploader from '../../../common/ImageUploader';
 import CatalogPicker from '../../../common/CatalogPicker';
 import { BeatLoader } from 'react-spinners';
+import MapInput from '../../../../common/mapInput/MapInput';
 
 
 export const Indicator = () => {
@@ -357,51 +358,7 @@ export const Indicator = () => {
 																<CatalogPicker idIndicatorCatalog={1} control={methods.control} />
 															</Grid>
 															<Box item xs={12} md={12} className='body-right-mapa'>
-																<Box className='body-right-content-title'>
-																	<Typography variant="h6" component="div">
-																		Mapa
-																	</Typography>
-																</Box>
-																<div className='mapa-container'>
-																	<img src={`https://res.cloudinary.com/davzo6qf4/image/upload/v1644535117/mapa_mwlhkq.png`} alt='mapa' className='indicator-map' />
-																	<IconButton className='mapa-button'>
-																		<Avatar>
-																			<EditOutlinedIcon />
-																		</Avatar>
-																	</IconButton>
-																</div>
-																<Controller
-																	name="mapa.url"
-																	control={methods.control}
-																	render={({
-																		field: { onChange, value },
-																		fieldState: { error }
-																	}) => (
-																		value ?
-																			<TextField
-																				label='Url ArcGIS'
-																				size='small'
-																				type='text'
-																				placeholder='URL del mapa'
-																				error={!!error}
-																				className='indicator-mapa'
-																				helperText={error ? error.message : null}
-																				onChange={onChange}
-																				value={value}
-																			/>
-																			:
-																			<TextField
-																				label='Url ArcGIS'
-																				size='small'
-																				type='text'
-																				placeholder='URL del mapa'
-																				error={!!error}
-																				className='indicator-mapa'
-																				helperText={error ? error.message : null}
-																				onChange={onChange}
-																			/>
-																	)}
-																/>
+																<MapInput altInput='mapita' value='ww.google.com' />
 															</Box>
 														</Box>
 													</Box>
