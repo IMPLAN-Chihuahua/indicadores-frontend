@@ -14,6 +14,7 @@ import FormModel from "../components/dashboard/forms/model/FormModel";
 import { DataPagination } from "../components/dashboard/common/DataPagination";
 
 export const Modules = () => {
+
   let perPage = 5;
   localStorage.getItem("perPage") &&
     (perPage = localStorage.getItem("perPage"));

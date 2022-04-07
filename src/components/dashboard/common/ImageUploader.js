@@ -8,6 +8,7 @@ const ImageUploader = ({ imageSource = 'https://pbs.twimg.com/media/Efso_-yUwAAJ
 	const [open, setOpen] = useState(false);
 	const handleOpen = () => setOpen(true);
 	const handleClose = () => setOpen(false);
+	imageSource = 'http://localhost:8080' + imageSource;
 
 	const style = {
 		position: 'absolute',
@@ -22,6 +23,12 @@ const ImageUploader = ({ imageSource = 'https://pbs.twimg.com/media/Efso_-yUwAAJ
 		bgcolor: 'white',
 	};
 
+	const [image, setImage] = useState(imageSource);
+
+	const handleImageUpload = (e) => {
+		console.log(e.target);
+	};
+
 	return (
 		<Badge
 			overlap="circular"
@@ -34,7 +41,7 @@ const ImageUploader = ({ imageSource = 'https://pbs.twimg.com/media/Efso_-yUwAAJ
 				</IconButton>
 			}
 		>
-			<Avatar sx={{ width: 160, height: 160 }} className='image-indicator' src={imageSource} alt={altDefinition} />
+			<Avatar sx={{ width: 160, height: 160 }} className='image-indicator' src={`${imageSource}`} alt={altDefinition} />
 
 			<Modal
 				open={open}
@@ -48,19 +55,18 @@ const ImageUploader = ({ imageSource = 'https://pbs.twimg.com/media/Efso_-yUwAAJ
 						<FileInput
 							accept='image/png, image/jpg, image/jpeg, image/gif'
 							name='profileImage'
-							label='Subir Archivo'
+							onChange={handleImageUpload}
 						/>
 						<Box className='modal-footer'>
 							<Button
-								type='submit'
 								variant='contained'
 								color='primary'
 								className='modal-footer-button'
+								onClick={handleImageUpload}
 							>
 								Guardar
 							</Button>
 							<Button
-								type='submit'
 								variant='contained'
 								color='primary'
 								className='modal-footer-button'

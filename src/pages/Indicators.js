@@ -19,6 +19,7 @@ import { Provider } from "react-redux";
 import { indicadorStore } from "../components/dashboard/forms/indicador/store";
 
 export const Indicators = () => {
+
   let perPage = 5;
   localStorage.getItem("perPage") &&
     (perPage = localStorage.getItem("perPage"));
