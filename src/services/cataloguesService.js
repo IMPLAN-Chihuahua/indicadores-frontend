@@ -1,5 +1,8 @@
 import { publicApi } from '.';
 import { protectedApi } from '.';
+import useSWR from 'swr';
+
+const fetcher = (url) => protectedApi.get(url).then(res => res.data);
 
 const getCatalogos = async () => {
     try {
@@ -18,6 +21,7 @@ const getCatalogosDetails = async (id) => {
         Promise.reject(error);
     }
 };
+
 
 const getCatalogosFromIndicador = async (id) => {
     try {

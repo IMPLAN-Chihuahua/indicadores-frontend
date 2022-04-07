@@ -4,7 +4,7 @@ import { useDropzone } from "react-dropzone";
 import { useFormContext } from "react-hook-form";
 
 
-const FileInput = (props) => {
+const FileInput = (props, onChange) => {
   const { name, label } = props;
   const { register, unregister, setValue, watch } = useFormContext();
   const files = watch(name);

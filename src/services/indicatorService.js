@@ -1,5 +1,8 @@
 import { publicApi } from '.';
 import { protectedApi } from '.';
+import useSWR from 'swr';
+
+const fetcher = (url) => protectedApi.get(url).then(res => res.data);
 
 const getIndicator = async (id) => {
     try {
@@ -9,6 +12,15 @@ const getIndicator = async (id) => {
         Promise.reject(error);
     }
 };
+
+const useIndicadorWithSWR = (id) => {
+    const { data, error } = useSWR(`/me/indicadores/${id}`, fetcher);
+    return {
+        indicator: data,
+        isLoading: !error && !data,
+        isError: error,
+    }
+}
 
 const updateIndicator = async (id, data) => {
     console.log(data);
@@ -23,4 +35,5 @@ const updateIndicator = async (id, data) => {
 export {
     getIndicator,
     updateIndicator,
+    useIndicadorWithSWR,
 };

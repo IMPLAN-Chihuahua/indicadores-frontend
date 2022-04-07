@@ -1,15 +1,47 @@
 import React, { useEffect, useState } from 'react';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
-import { getCatalogosDetails, getCatalogosFromIndicador } from '../../../services/cataloguesService';
+import { getCatalogos, getCatalogosDetails, getCatalogosFromIndicador, useCatalogos } from '../../../services/cataloguesService';
 import OdsPicker from './OdsPicker';
+import { Controller } from 'react-hook-form';
+import { Grid } from '@mui/material';
+import { BeatLoader } from 'react-spinners';
 
-const CatalogPicker = ({ idCatalog, Catalog, idIndicatorCatalog = 0 }) => {
-    if (Catalog !== 'ODS') {
-        return <RegularCatalogs idCatalog={idCatalog} Catalog={Catalog} idIndicatorCatalog={idIndicatorCatalog} />
-    } else {
-        return <OdsCatalog />
-    }
+const CatalogPicker = ({ idIndicatorCatalog = 0, control, xs = 12, md = 4 }) => {
+    const [catalogos, setCatalogos] = useState([]);
+    // const { catalogos, loading } = useCatalogos();
+
+    useEffect(() => {
+        getCatalogos()
+            .then(res => {
+                setCatalogos(res);
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    }, []);
+
+    return (
+        <>
+            {
+                catalogos.map(catalog => {
+                    if (catalog.nombre !== 'ODS') {
+                        return (
+                            <Grid item xs={xs} md={md} key={catalog.id}>
+                                <RegularCatalogs idCatalog={catalog.id} Catalog={catalog.nombre} idIndicatorCatalog={idIndicatorCatalog} control={control} />
+                            </Grid>
+                        )
+                    } else {
+                        return (
+                            <Grid item xs={xs} md={md} key={catalog.id}>
+                                <OdsCatalog odsId={1} />
+                            </Grid>
+                        )
+                    }
+                })
+            }
+        </>
+    )
 };
 
 const OdsCatalog = (odsId = 1) => {
@@ -17,8 +49,7 @@ const OdsCatalog = (odsId = 1) => {
     return <OdsPicker odsId={odsId} />
 };
 
-const RegularCatalogs = ({ idCatalog, Catalog, idIndicatorCatalog }) => {
-
+const RegularCatalogs = ({ idCatalog, Catalog, idIndicatorCatalog, control }) => {
     const [value, setValue] = useState('');
     const [options, setOptions] = useState([{ id: 0, nombre: 'Seleccione una opción', idCatalogo: 0 }]);
     const [indicatorCatalogues, setIndicatorCatalogues] = useState([{ id: 0, nombre: 'Seleccione una opción', idCatalogo: 0 }]);
@@ -38,40 +69,53 @@ const RegularCatalogs = ({ idCatalog, Catalog, idIndicatorCatalog }) => {
             // find in array js
             //RHF Provider
             .then(res => {
-                res.map(item => {
-                    if (item.idCatalogoDetail === idCatalog) {
-                        setIndicatorCatalogues(item);
-                    }
+                const test = res.find(
+                    element => element.idCatalogoDetail === idCatalog
+                )
+                setIndicatorCatalogues({
+                    id: test.idCatalogoDetail,
+                    nombre: test.nombreAtributo,
+                    idCatalogo: idCatalog
                 });
             })
             .catch(err => {
                 console.log(err);
             })
     }, [0]);
-
-
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
 
     return (
-        // 
-        <Autocomplete
-            id="combo-box-demo"
-            options={options}
-            getOptionLabel={option => option.nombre}
-            onChange={handleChange}
-            style={{ width: '90%' }}
-            renderInput={params => (
-                <TextField
-                    {...params}
-                    label={`${Catalog}`}
-                    variant="outlined"
-                    size='small'
-                    fullWidth
-                />
-            )}
-        />
+        <>
+            <Controller
+                name={`${Catalog}`}
+                control={control}
+                render={({
+                    field: { onChange, value },
+                    fieldState: { error }
+                }) => (
+                    <Autocomplete
+                        id="combo-box-demo"
+                        options={options}
+                        getOptionLabel={option => option.nombre}
+                        onChange={handleChange}
+                        style={{ width: '90%' }}
+                        renderInput={params => (
+                            <TextField
+                                {...params}
+                                label={`${Catalog}`}
+                                variant="outlined"
+                                size='small'
+                                fullWidth
+                            />
+                        )}
+                    />
+                )}
+                defaultValue={[{ id: 0, nombre: 'Seleccione una opción', idCatalogo: 0 }]}
+            />
+
+        </>
     );
 }
 export default CatalogPicker;
