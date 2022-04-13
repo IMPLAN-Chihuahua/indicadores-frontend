@@ -7,10 +7,9 @@ import { Controller } from 'react-hook-form';
 import { Grid } from '@mui/material';
 import { BeatLoader } from 'react-spinners';
 
-const CatalogPicker = ({ idIndicatorCatalog = 0, control, xs = 12, md = 4 }) => {
+const CatalogPicker = ({ idIndicatorCatalog = 0, control, xs = 12, md = 4, catalogs = [] }) => {
     const [catalogos, setCatalogos] = useState([]);
     // const { catalogos, loading } = useCatalogos();
-
     useEffect(() => {
         getCatalogos()
             .then(res => {
@@ -28,7 +27,7 @@ const CatalogPicker = ({ idIndicatorCatalog = 0, control, xs = 12, md = 4 }) => 
                     if (catalog.nombre !== 'ODS') {
                         return (
                             <Grid item xs={xs} md={md} key={catalog.id}>
-                                <RegularCatalogs idCatalog={catalog.id} Catalog={catalog.nombre} idIndicatorCatalog={idIndicatorCatalog} control={control} />
+                                <RegularCatalogs idCatalog={catalog.id} Catalog={catalog.nombre} idIndicatorCatalog={idIndicatorCatalog} control={control} catalogs={catalogs} />
                             </Grid>
                         )
                     } else {
@@ -49,10 +48,12 @@ const OdsCatalog = (odsId = 1) => {
     return <OdsPicker odsId={odsId} />
 };
 
-const RegularCatalogs = ({ idCatalog, Catalog, idIndicatorCatalog, control }) => {
+const RegularCatalogs = ({ idCatalog, Catalog, idIndicatorCatalog, control, catalogs }) => {
     const [value, setValue] = useState('');
     const [options, setOptions] = useState([{ id: 0, nombre: 'Seleccione una opción', idCatalogo: 0 }]);
     const [indicatorCatalogues, setIndicatorCatalogues] = useState([{ id: 0, nombre: 'Seleccione una opción', idCatalogo: 0 }]);
+
+    const catalogFromIndicador = catalogs.filter(catalog => catalog.id === idCatalog);
 
     useEffect(() => {
         getCatalogosDetails(idCatalog).
@@ -63,7 +64,6 @@ const RegularCatalogs = ({ idCatalog, Catalog, idIndicatorCatalog, control }) =>
                 console.log(err);
             })
     }, [0]);
-
     useEffect(() => {
         getCatalogosFromIndicador(idIndicatorCatalog)
             // find in array js
@@ -108,6 +108,7 @@ const RegularCatalogs = ({ idCatalog, Catalog, idIndicatorCatalog, control }) =>
                                 variant="outlined"
                                 size='small'
                                 fullWidth
+                                value={'a'}
                             />
                         )}
                     />

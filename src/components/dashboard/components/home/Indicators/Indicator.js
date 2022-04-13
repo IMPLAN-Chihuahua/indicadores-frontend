@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
 import './indicator.css'
 
-import { Avatar, Button, Card, CardContent, FormControl, Grid, IconButton, TextField, Typography, Backdrop, Fade, Select, MenuItem } from '@mui/material';
+import { Avatar, Button, Card, CardContent, FormControl, Grid, IconButton, TextField, Typography, Backdrop, Fade, Select, MenuItem, ClickAwayListener } from '@mui/material';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import TodayRoundedIcon from '@mui/icons-material/TodayRounded';
-import { Controller, FormProvider, useForm } from 'react-hook-form';
+import { Controller, FormProvider, useForm, useWatch } from 'react-hook-form';
 import { Box } from '@mui/system';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
@@ -23,11 +23,13 @@ import ImageUploader from '../../../common/ImageUploader';
 import CatalogPicker from '../../../common/CatalogPicker';
 import { BeatLoader } from 'react-spinners';
 import MapInput from '../../../../common/mapInput/MapInput';
+import FileInput from '../../../../common/FileInput';
 
 
 export const Indicator = () => {
 	console.count('counter');
-	const [loading, setLoading] = useState(false);
+	const [editingUltimoValor, setEditingUltimoValor] = useState(false);
+
 	const alert = useAlert();
 	const { id } = useParams();
 
@@ -66,6 +68,9 @@ export const Indicator = () => {
 		mode: 'all',
 	});
 
+	const toggleEditing = () => {
+		setEditingUltimoValor(true);
+	}
 
 	const onSubmit = async (data) => {
 		const { ...indicator } = data;
@@ -76,16 +81,21 @@ export const Indicator = () => {
 				formData.append(key, indicator[key][0])
 				continue;
 			}
+
+			if (indicator[key]) {
+				formData.append(key, indicator[key]);
+			}
 		};
 
 		try {
-			await updateIndicator(id, data);
+			await updateIndicator(id, formData);
 			alert.success('Indicador actualizado exitosamente');
 		} catch (error) {
 			alert.error(error);
 		}
 	};
 
+	const boobp = methods.watch('urlImagen');
 	return (
 		(
 			<FormProvider {...methods}>
@@ -107,14 +117,36 @@ export const Indicator = () => {
 																name='ultimoValorDisponible'
 																control={methods.control}
 																render={({
-																	field: { onChange, value },
+																	field,
 																	fieldState: { error }
 																}) => (
-																	<Typography variant='h5' component='div'>
-																		{value}
-																	</Typography>
-																)
-																}
+																	editingUltimoValor ?
+																		(
+																			<ClickAwayListener
+																				onClickAway={() => {
+																					setEditingUltimoValor(false);
+																				}}
+																			>
+																				<TextField
+																					type='text'
+																					size='small'
+																					required
+																					autoComplete='off'
+																					sx={{ width: '60%' }}
+																					error={!!error}
+																					helperText={error ? error.message : null}
+																					variant='outlined'
+																					{...field}
+																				/>
+																			</ClickAwayListener>
+																		)
+																		:
+																		(
+																			<Typography variant='h5' component='div' onDoubleClick={toggleEditing}>
+																				{field.value}
+																			</Typography>
+																		)
+																)}
 															/>
 														</Box>
 														<Box className='information-card-icon'>
@@ -216,7 +248,10 @@ export const Indicator = () => {
 															field: { onChange, value },
 															fieldState: { error }
 														}) => (
-															<ImageUploader imageSource={value} altDefinition={`Fotografía de indicador`} />
+															<FileInput
+																accept='image/png, image/jpg, image/jpeg, image/gif'
+																name='urlImagen'
+															/>
 														)}
 													/>
 													<Controller
