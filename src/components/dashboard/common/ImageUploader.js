@@ -3,12 +3,9 @@ import { Avatar, Badge, Button, Card, CardContent, FormControl, Grid, IconButton
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import FileInput from "../../common/FileInput";
 import { Box } from '@mui/system';
+import { useForm, FormProvider, useFormContext } from "react-hook-form";
 
-const ImageUploader = ({ imageSource = 'https://pbs.twimg.com/media/Efso_-yUwAAJpRV.jpg', altDefinition }) => {
-	const [open, setOpen] = useState(false);
-	const handleOpen = () => setOpen(true);
-	const handleClose = () => setOpen(false);
-	imageSource = 'http://localhost:8080' + imageSource;
+const ImageUploader = ({ imageSource, badgeContent }) => {
 
 	const style = {
 		position: 'absolute',
@@ -23,61 +20,13 @@ const ImageUploader = ({ imageSource = 'https://pbs.twimg.com/media/Efso_-yUwAAJ
 		bgcolor: 'white',
 	};
 
-	const [image, setImage] = useState(imageSource);
-
-	const handleImageUpload = (e) => {
-		console.log(e.target);
-	};
-
 	return (
 		<Badge
 			overlap="circular"
 			anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-			badgeContent={
-				<IconButton onClick={handleOpen}>
-					<Avatar>
-						<EditOutlinedIcon />
-					</Avatar>
-				</IconButton>
-			}
+			badgeContent={badgeContent}
 		>
-			<Avatar sx={{ width: 160, height: 160 }} className='image-indicator' src={`${imageSource}`} alt={altDefinition} />
-
-			<Modal
-				open={open}
-				onClose={handleClose}
-				closeAfterTransition
-				BackdropComponent={Backdrop}
-				BackdropProps={{ timeout: 500 }}
-			>
-				<Fade in={open}>
-					<Box sx={style}>
-						<FileInput
-							accept='image/png, image/jpg, image/jpeg, image/gif'
-							name='profileImage'
-							onChange={handleImageUpload}
-						/>
-						<Box className='modal-footer'>
-							<Button
-								variant='contained'
-								color='primary'
-								className='modal-footer-button'
-								onClick={handleImageUpload}
-							>
-								Guardar
-							</Button>
-							<Button
-								variant='contained'
-								color='primary'
-								className='modal-footer-button'
-								onClick={handleClose}
-							>
-								Cancelar
-							</Button>
-						</Box>
-					</Box>
-				</Fade>
-			</Modal>
+			<Avatar sx={{ width: 160, height: 160 }} className='image-indicator' src={`${imageSource}`} />
 		</Badge>
 	)
 }

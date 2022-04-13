@@ -23,7 +23,6 @@ const useIndicadorWithSWR = (id) => {
 }
 
 const updateIndicator = async (id, data) => {
-    console.log(data);
     try {
         const patch = await protectedApi.patch(`/indicadores/${id}`, data);
         return 1;
