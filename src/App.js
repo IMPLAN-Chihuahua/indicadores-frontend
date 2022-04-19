@@ -13,6 +13,7 @@ import { AlertProvider } from "./contexts/AlertContext";
 import { Indicators } from "./pages/Indicators";
 import { Relationship } from "./pages/Relationship";
 import { MyComponents } from "./pages/MyComponents";
+import { Profile } from "./pages/Profile";
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
               <Route path='/indicadores/:id' element={<Indicator />} />
               <Route path='/autorizacion' element={<Relationship />} />
               <Route path='/myComponents' element={<MyComponents />} />
+              <Route path='/profile' element={<Profile />} />
             </Route>
           </Routes>
         </BrowserRouter>
