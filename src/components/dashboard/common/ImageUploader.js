@@ -5,20 +5,7 @@ import FileInput from "../../common/FileInput";
 import { Box } from '@mui/system';
 import { useForm, FormProvider, useFormContext } from "react-hook-form";
 
-const ImageUploader = ({ imageSource, badgeContent }) => {
-
-	const style = {
-		position: 'absolute',
-		top: '50%',
-		left: '50%',
-		transform: 'translate(-50%, -50%)',
-		width: 400,
-		bgcolor: 'background.paper',
-		border: '2px solid #000',
-		boxShadow: 24,
-		p: 4,
-		bgcolor: 'white',
-	};
+const ImageUploader = ({ imageSource, badgeContent, type = 'avatar' }) => {
 
 	return (
 		<Badge
@@ -26,7 +13,16 @@ const ImageUploader = ({ imageSource, badgeContent }) => {
 			anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
 			badgeContent={badgeContent}
 		>
-			<Avatar sx={{ width: 160, height: 160 }} className='image-indicator' src={`${imageSource}`} />
+			{
+				type === 'avatar' ?
+					(
+						<Avatar sx={{ width: 160, height: 160 }} className='image-indicator' src={`${imageSource}`} />
+					)
+					:
+					(
+						<img src={`${imageSource}`} alt='map' />
+					)
+			}
 		</Badge>
 	)
 }
