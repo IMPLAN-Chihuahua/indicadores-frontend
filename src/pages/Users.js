@@ -14,6 +14,7 @@ import { DataPagination } from "../components/dashboard/common/DataPagination";
 import FormUser from "../components/dashboard/forms/user/FormUser";
 
 export const Users = () => {
+
   let perPage = localStorage.getItem("perPage") || 5;
   let totalPages = 1;
   let rowsUsers = [];
@@ -31,7 +32,7 @@ export const Users = () => {
     paginationCounter,
     searchUser
   );
-  
+
   const [openModal, setOpenModal] = React.useState(false);
   const handleOpenModal = () => setOpenModal(true);
   const handleCloseModal = () => setOpenModal(false);
@@ -48,7 +49,7 @@ export const Users = () => {
   usersList && (rowsUsers = usersList.data);
 
   let rowsUsersEdited = [];
-  rowsUsers.map((data) => {
+  rowsUsers.forEach((data) => {
     rowsUsersEdited = [
       ...rowsUsersEdited,
       {
@@ -61,6 +62,7 @@ export const Users = () => {
       },
     ];
   });
+  
   useEffect(() => {
     return () => {
       isMounted.current = false;
@@ -276,7 +278,7 @@ export const Users = () => {
         setOpenModal={setOpenModal}
         title={`Editar Usuario`}
       >
-        <FormUser handleCloseModal={handleCloseModal}/>
+        <FormUser handleCloseModal={handleCloseModal} />
       </FormDialog>
     </>
   );
