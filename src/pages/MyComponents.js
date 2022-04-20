@@ -1,13 +1,24 @@
-import { Input, TextField } from '@mui/material'
 import React from 'react'
-import { DataSelector } from '../components/common/dataSelector/DataSelector'
-import { MathInput } from '../components/common/mathInput/MathInput'
+import FormDelete from '../components/common/FormDelete';
+import FormDialog from "../components/dashboard/common/FormDialog";
 
 export const MyComponents = () => {
+  const [openModal, setOpenModal] = React.useState(false);
+  const handleOpenModal = () => setOpenModal(true);
+  const handleCloseModal = () => setOpenModal(false);
 
   return (
     <>                  
-    <DataSelector topic={'Indicadores'}/>
+      <button onClick={handleOpenModal}>Test Modal</button>
+      
+
+      
+      <FormDialog
+        open={openModal}
+        setOpenModal={setOpenModal}
+      >
+        <FormDelete handleCloseModal={handleCloseModal} />
+      </FormDialog>
     </>
   )
 }

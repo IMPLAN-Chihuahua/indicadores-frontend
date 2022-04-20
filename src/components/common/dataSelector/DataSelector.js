@@ -5,11 +5,7 @@ import './dataSelector.css'
 import { DataSelectorList } from './DataSelectorList'
 import { DataSelectorTable } from './DataSelectorTable'
 
-export const DataSelector = ({topic}) => {
-  const init = () => {
-    return []
-  } 
-  const [dataList, dispatch] = React.useReducer(dataReducer, [], init)
+export const DataSelector = ({topic,dispatch}) => {
 
   useEffect(() => {
     dispatch({
@@ -19,11 +15,9 @@ export const DataSelector = ({topic}) => {
 
 
   return (
-    <DataContext.Provider value={dataList}>
     <div className='ds-container'>
       <DataSelectorTable topic={topic} dispatch={dispatch} />
       <DataSelectorList topic={topic} dispatch={dispatch}/>
     </div>
-    </DataContext.Provider>
   )
 }
