@@ -58,6 +58,7 @@ export const Indicator = () => {
 			methods.reset({
 				...defaultValues,
 			});
+			console.log(defaultValues);
 		})
 	}, [id]);
 

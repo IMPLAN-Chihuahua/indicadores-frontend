@@ -43,7 +43,15 @@ function App() {
               <Route path='/indicadores/:id' element={<Indicator />} />
               <Route path='/autorizacion' element={<Relationship />} />
               <Route path='/myComponents' element={<MyComponents />} />
-              <Route path='/profile' element={<Profile />} />
+            </Route>
+            <Route
+              path='/profile'
+              element={
+                <PrivateRoute>
+                  <Profile />
+                </PrivateRoute>
+              }
+            >
             </Route>
           </Routes>
         </BrowserRouter>

@@ -1,21 +1,85 @@
-import { Container } from '@mui/material';
 import { Box } from '@mui/system';
 import React, { useState, useEffect } from 'react'
 import './styles/profile.css'
+import { Helmet } from "react-helmet";
+import { Avatar, Grid, Typography } from '@mui/material';
+import { Navbar } from '../components/dashboard/components/navbar/Navbar';
+import { getCurrentUser } from '../services/userService';
+import { BeatLoader } from 'react-spinners';
 
 export const Profile = () => {
   const color1 = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
   const color2 = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+  const points = Math.floor(Math.random() * (30 - 10)) + 10;
+  const [user, setUser] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getCurrentUser().then(user => {
+      setUser(user);
+    });
+    if (user) {
+      setLoading(false);
+    }
+  }, []);
+
+  const isEmpty = Object.keys(user).length === 0;
 
   return (
-    <Box style={{ background: `linear-gradient(to right bottom, ${color1}, ${color2})` }} className='color-panel'>
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" className='waves'>
-        <path
-          fill="#0099ff"
-          fill-opacity="0.2"
-          d="M0,256L102.9,160L205.7,32L308.6,64L411.4,32L514.3,160L617.1,288L720,96L822.9,320L925.7,32L1028.6,96L1131.4,128L1234.3,256L1337.1,320L5440,288L1440,320L1337.1,320L1234.3,320L1131.4,320L1028.6,320L925.7,320L822.9,320L720,320L617.1,320L514.3,320L411.4,320L308.6,320L205.7,320L102.9,320L0,320Z">
-        </path>
-      </svg>
-    </Box>
+    <>
+      {
+        !isEmpty ?
+          (
+            <Box className='profile'>
+              <Helmet>
+                <body className='profile-body' />
+              </Helmet>
+              <Navbar />
+              <Box className='profile-container'>
+                <Box className='h500'>
+                </Box>
+                <Box className='bottom-centered'>
+                  <Grid container className='profile-grid'>
+                    <Grid item xs={12} md={12} className='profile-grid-item'>
+                      <Box className='user-image-container'>
+                        <Avatar className='user-image' sx={{ width: 170, height: 170 }} src={`http://localhost:8080/${user.avatar}`}>
+                        </Avatar>
+                        <h1 className='user-role'>{
+                          user.roles === 'ADMIN' ? 'Admin' : 'Usuario'
+                        }</h1>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={12} md={12} className='profile-grid-item'>
+                      <Typography variant='h4' className='user-name'>
+                        {user.nombres} {user.apellidoPaterno}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} md={12} className='profile-grid-item'>
+                      <Typography sx={{ fontSize: 16 }} color="text.secondary" gutterBottom>
+                        {user.correo}
+                      </Typography>
+                    </Grid>
+                    <hr className='magic-line' />
+                    <Grid item xs={12} md={12} className='description'>
+                      <Typography variant='h6' className='user-description'>
+                        The electromagnetic theory was also established in the 19th century by the works of Hans Christian Ørsted, André-Marie Ampère,  Michael Faraday, James Clerk Maxwell, Oliver Heaviside, and Heinrich Hertz. The new theory raised questions that could not easily be answered using Newton's framework. The phenomena that would allow the deconstruction of the atom were discovered in the last decade of the 19th century: the discovery of X-rays inspired the discovery of radioactivity. In the next year came the discovery of the first subatomic particle, the electron.
+                      </Typography>
+                    </Grid>
+                  </Grid>
+
+                </Box>
+              </Box>
+            </Box>
+          )
+          :
+          (
+            <Box className='dt-loading'>
+              <BeatLoader size={50} color="#1976D2" />
+            </Box>
+          )
+      }
+
+    </>
+
   )
 }

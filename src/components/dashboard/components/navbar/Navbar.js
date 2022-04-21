@@ -13,7 +13,9 @@ export const Navbar = () => {
       <Box className='navbar'>
         <Box className='navbar-wrapper'>
           <Box className='navbar-left'>
-            O.U.T
+            <Link to='/' className='link-to-profile'>
+              O.U.T
+            </Link>
           </Box>
           <Box className='navbar-right'>
 
