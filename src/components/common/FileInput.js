@@ -9,9 +9,17 @@ import { Box } from '@mui/system';
 import ImageUploader from "../dashboard/common/ImageUploader";
 
 const FileInput = (props) => {
-  const { name, label, height } = props;
+  const { name, label, height, image } = props;
   const { register, unregister, setValue, watch } = useFormContext();
-  const files = watch(name);
+  const [files, setFiles] = useState(watch(name));
+  const [previousImage, setPreviousImage] = useState('');
+
+  useEffect(() => {
+    setFiles(watch(name));
+    if (typeof (image) === 'string') {
+      setPreviousImage(image);
+    }
+  }, [watch(name)]);
 
   const [open, setOpen] = useState(false);
 
@@ -46,6 +54,12 @@ const FileInput = (props) => {
     p: 4,
     bgcolor: 'white',
   };
+
+  const handleCancel = () => {
+    setOpen(false);
+    setFiles(previousImage);
+    setValue(name, previousImage, { shouldValidate: true });
+  }
 
   return (
     <>
@@ -169,7 +183,7 @@ const FileInput = (props) => {
                 variant='contained'
                 color='primary'
                 className='modal-footer-button'
-                onClick={handleClose}
+                onClick={handleCancel}
               >
                 Cancelar
               </Button>

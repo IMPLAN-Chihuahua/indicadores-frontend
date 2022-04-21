@@ -2,15 +2,14 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
 import './indicator.css'
 
-import { Avatar, Button, Card, CardContent, FormControl, Grid, IconButton, TextField, Typography, Backdrop, Fade, Select, MenuItem, ClickAwayListener } from '@mui/material';
+import { Avatar, Button, Card, CardContent, FormControl, Grid, TextField, Typography, ClickAwayListener } from '@mui/material';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import TodayRoundedIcon from '@mui/icons-material/TodayRounded';
-import { Controller, FormProvider, useForm, useWatch } from 'react-hook-form';
+import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { Box } from '@mui/system';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import FmdGoodIcon from '@mui/icons-material/FmdGood';
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { useAlert } from '../../../../../contexts/AlertContext';
 
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -19,7 +18,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { createIndicatorSchema } from '../../../../../utils/indicatorValidator';
 import { getIndicator, updateIndicator } from '../../../../../services/indicatorService';
 
-import ImageUploader from '../../../common/ImageUploader';
 import CatalogPicker from '../../../common/CatalogPicker';
 import { BeatLoader } from 'react-spinners';
 import MapInput from '../../../../common/mapInput/MapInput';
@@ -28,6 +26,7 @@ import FileInput from '../../../../common/FileInput';
 
 export const Indicator = () => {
 	console.count('counter');
+
 	const [editingUltimoValor, setEditingUltimoValor] = useState(false);
 
 	const alert = useAlert();
@@ -59,6 +58,7 @@ export const Indicator = () => {
 			methods.reset({
 				...defaultValues,
 			});
+			console.log(defaultValues);
 		})
 	}, [id]);
 
@@ -248,9 +248,11 @@ export const Indicator = () => {
 															field: { onChange, value },
 															fieldState: { error }
 														}) => (
+															console.log('here ' + value),
 															<FileInput
 																accept='image/png, image/jpg, image/jpeg, image/gif'
 																name='urlImagen'
+																image={value}
 															/>
 														)}
 													/>
@@ -274,7 +276,7 @@ export const Indicator = () => {
 													<Controller
 														name='nombre'
 														control={methods.control}
-														render={({ field, fieldState: { error }
+														render={({ field: { onChange, value }, fieldState: { error }
 														}) =>
 															<TextField
 																label='Nombre del indicador'
@@ -287,7 +289,8 @@ export const Indicator = () => {
 																error={!!error}
 																helperText={error ? error.message : null}
 																variant='outlined'
-																{...field}
+																onChange={onChange}
+																value={value}
 															/>
 														}
 													/>
