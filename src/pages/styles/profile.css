@@ -12,6 +12,13 @@
   background-image: url('https://images.unsplash.com/photo-1499336315816-097655dcfbda?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2710&q=80');
 }
 
+.bottom-right {
+  position: absolute;
+  right: 0;
+  transform: translate(-230%, -350%);
+  z-index: 10000;
+}
+
 .bottom-centered {
   position: absolute;
   left: 50%;
