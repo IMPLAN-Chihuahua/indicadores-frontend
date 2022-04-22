@@ -6,7 +6,6 @@ export const FormMapa = ({ handleBack, handleNext }) => {
   const methods = useForm();
   const { control, handleSubmit, reset } = methods;
   const onSubmit = data => {
-    console.log(data)
     handleNext();
   }
 

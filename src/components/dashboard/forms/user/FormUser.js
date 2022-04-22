@@ -16,6 +16,8 @@ import { getRoles } from '../../../../services/roleService';
 import { useEffect, useState } from 'react';
 
 const FormUser = ({ handleCloseModal }) => {
+  console.count('counter');
+
   const [roles, setRoles] = useState([]);
   const alert = useAlert();
   const methods = useForm({

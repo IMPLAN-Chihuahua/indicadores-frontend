@@ -69,7 +69,8 @@ export const DataSelectorTable = ({topic, dispatch}) => {
         </div>
         ,
         <div className='ds-col-3'>
-          <button className='ds-btn-selection' onClick={() => {handleToList({
+          <button className='ds-btn-selection' onClick={() => {
+            handleToList({
             id,
             nombre,
           })}}>
