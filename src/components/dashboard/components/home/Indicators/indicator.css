@@ -4,7 +4,7 @@
 	background: -moz-linear-gradient(90deg, hsla(340, 80%, 69%) 0%, hsla(15, 93%, 71%) 100%);
 	background: -webkit-linear-gradient(90deg, hsla(340, 80%, 69%) 0%, hsla(15, 93%, 71%) 100%);
 	filter: progid: DXImageTransform.Microsoft.gradient(startColorstr="#EF709B", endColorstr="#FA9372", GradientType=1);
-	padding: 0 0 2% 0;
+	padding: 0 0 1% 0;
 }
 
 .nav-indicator {
@@ -20,7 +20,6 @@
 
 .information-card {
 	max-height: 300px;
-	height: 100px;
 }
 
 .information-card-content {
@@ -54,7 +53,6 @@
 	color: rgb(163, 163, 163);
 }
 
-
 .body-left {
 	display: flex;
 	flex-direction: column;
@@ -63,9 +61,8 @@
 	background: white;
 	box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 20px, rgba(0, 0, 0, 0.22) 0px 15px 12px;
 	border-radius: 10px;
-	padding: 5% 0 5% 0;
-	gap: 20px;
 	margin-left: 10%;
+	height: 100%;
 }
 
 .image-indicator {
@@ -86,14 +83,6 @@
 	color: rgb(94, 94, 94);
 	font-weight: bold;
 	text-decoration: none;
-}
-
-.modal-footer {
-	padding: 5% 0 0 0;
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: space-around;
 }
 
 .body-right {
@@ -152,6 +141,8 @@
 	width: 70%;
 	border-radius: 10px;
 	box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+	background: blue;
+	margin-bottom: 5%;
 }
 
 .mapa-container {
@@ -183,21 +174,6 @@
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-end;
-}
-
-.body-mid-right {
-	background-color: rgba(127, 255, 212, 0.363);
-	height: 85%;
-}
-
-.body-down-title {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-}
-
-.indicator-mapa {
-	width: 90%;
 }
 
 .indicator-buttons {
