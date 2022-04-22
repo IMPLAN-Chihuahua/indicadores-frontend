@@ -58,7 +58,6 @@ export const Indicator = () => {
 			methods.reset({
 				...defaultValues,
 			});
-			console.log(defaultValues);
 		})
 	}, [id]);
 
@@ -248,11 +247,11 @@ export const Indicator = () => {
 															field: { onChange, value },
 															fieldState: { error }
 														}) => (
-															console.log('here ' + value),
 															<FileInput
 																accept='image/png, image/jpg, image/jpeg, image/gif'
 																name='urlImagen'
 																image={value}
+																type={'avatar'}
 															/>
 														)}
 													/>
