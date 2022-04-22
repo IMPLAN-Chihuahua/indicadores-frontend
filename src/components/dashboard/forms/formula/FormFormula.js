@@ -1,12 +1,15 @@
-import { Button, DialogActions, DialogContent } from "@mui/material";
+import { Button, DialogActions, DialogContent, Grid } from "@mui/material";
 import { Box } from "@mui/system";
 import EquationEditor from "equation-editor-react";
+import "../../../common/mathInput/mathInput.css";
+import { useEffect } from "react";
 import { Controller, FormProvider, useFieldArray, useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addFormulaData } from "../../../../features/indicador/indicadorSlice";
+import { isObjEmpty } from "../../../../utils/objects";
 import { Variable } from "../../../common/formula/Variable";
 
-export const FormFormula = ({handleBack, handleNext}) => {
+export const FormFormula = ({ handleBack, handleNext }) => {
   const methods = useForm({
     defaultValues: {
       ecuacion: '',
@@ -15,23 +18,35 @@ export const FormFormula = ({handleBack, handleNext}) => {
           nombre: '',
           dato: '',
           anio: '',
+          medida: null,
+          descripcion: ''
         }
       ]
     }
   });
-  const { handleSubmit, control } = methods;
+
+  const { handleSubmit, control, reset } = methods;
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'variables'
   })
-  const addVariable = (variable) => append({ ...variable });
-  const deleteVariable = (index) => remove(index);
 
   const dispatch = useDispatch();
+  const addVariable = (variable) => append({ ...variable });
+  const deleteVariable = (index) => remove(index);
   const onSubmit = data => {
     dispatch(addFormulaData(data))
     handleNext();
   };
+
+  const formulaForm = useSelector((state) => state.indicadores.formula);
+
+  useEffect(() => {
+    if (!isObjEmpty(formulaForm)) {
+      reset(formulaForm);
+    }
+  }, []);
+
 
   return (
     <>
@@ -39,32 +54,22 @@ export const FormFormula = ({handleBack, handleNext}) => {
         <FormProvider {...methods}>
           <Box
             component='form'
-            onSubmit={handleSubmit(onSubmit)}
             noValidate
           >
-            <Controller
-              name='ecuacion'
-              control={control}
-              render={({
-                field: { onChange, value }
-              }) => (
-                <EquationEditor
-                  value={value}
-                  onChange={onChange}
-                  autoCommands="pi theta sqrt sum prod alpha beta gamma rho"
-                  autoOperatorNames="sin cos tan"
-                />
-              )}
-            />
+            <Grid container gap={2}>
+              <Grid item xs={12}>
+                Equation
+              </Grid>
 
-            {fields.map((field, i) => (
-              <Variable
-                index={i}
-                key={field.id}
-                addVariable={i === 0 && addVariable}
-                deleteVariable={i !== 0 && deleteVariable}
-              />
-            ))}
+              {fields.map((field, i) => (
+                <Variable
+                  index={i}
+                  key={field.id}
+                  addVariable={i === 0 && addVariable}
+                  deleteVariable={i !== 0 && deleteVariable}
+                />
+              ))}
+            </Grid>
           </Box>
         </FormProvider>
       </DialogContent>

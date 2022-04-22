@@ -25,7 +25,6 @@ import CatalogPicker from '../../../common/CatalogPicker';
 
 
 export const Indicator = () => {
-
 	const { id } = useParams();
 	let defaultValues = {
 		anioUltimoValorDisponible: '',
