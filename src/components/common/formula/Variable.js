@@ -32,14 +32,13 @@ export const Variable = (props) => {
         borderRadius: 5,
         alignItems: 'self-start',
         justifyContent: 'space-evenly',
-        mb: 3,
         gap: 1
       }}
     >
-      <Grid item xs={1}>
+      <Grid item xs>
         <Controller
           control={methods.control}
-          name={`variables.${index}.nombre`}
+          name={`variables[${index}].nombre`}
           defaultValue=''
           render={({
             field: { onChange, value }
@@ -56,7 +55,7 @@ export const Variable = (props) => {
       <Grid item xs={2}>
         <Controller
           control={methods.control}
-          name={`variables.${index}.dato`}
+          name={`variables[${index}].dato`}
           defaultValue=''
           render={({
             field: { onChange, value }
@@ -73,7 +72,7 @@ export const Variable = (props) => {
       <Grid item xs={1}>
         <Controller
           control={methods.control}
-          name={`variables.${index}.anio`}
+          name={`variables[${index}].anio`}
           defaultValue=''
           render={({
             field: { onChange, value }
@@ -90,7 +89,7 @@ export const Variable = (props) => {
       <Grid item xs={3}>
         <Autocomplete
           options={options}
-          renderInput={(params) => <TextField {...params} required label="Unidad Medida" />}
+          renderInput={(params) => <TextField {...params} label="Unidad Medida" />}
         />
       </Grid>
       <Grid item xs={3}>
@@ -102,7 +101,7 @@ export const Variable = (props) => {
           fullWidth
         />
       </Grid>
-      <Grid item xs alignSelf='center'>
+      <Grid item xs={1} alignSelf='center'>
         <IconButton
           onClick={handleOnClick}
           color='primary'

@@ -1,11 +1,27 @@
-.mi-container{
-    justify-content: center;
-    align-items: center;
-    text-align: center;
+.mi-container {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
-.mi-equation{
-    display: inline-block;
-    border: 1px solid rgb(0,0,0,0.09);
-    padding: 20px 50px 20px 50px;
-    font-size: 20px;
+.mi-equation {
+  margin-bottom: 25px;
+}
+
+.mq-editable-field {
+  display: block;
+  padding: 16.5px 14px;
+}
+
+.mq-math-mode {
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.3) !important;
+  border-radius: 4px !important;
+  box-sizing: border-box !important;
+}
+
+.mq-math-mode:hover {
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.87) !important;
+}
+
+.mq-editable-field.mq-focused {
+  box-shadow: inset 0 0 0 2px #1e88e5 !important;
 }

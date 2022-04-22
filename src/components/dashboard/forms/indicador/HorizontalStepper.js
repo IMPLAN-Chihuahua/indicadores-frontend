@@ -1,13 +1,12 @@
 import {
   Box, DialogTitle,
-  Step, Stepper, StepLabel, DialogContent, Button, DialogActions
+  Step, Stepper, StepLabel
 } from "@mui/material";
 import { FormIndicador } from "./FormIndicador";
 import { FormFormula } from "../formula/FormFormula";
 import { FormMapa } from "../mapa/FormMapa";
 import { FormExtra } from "./FormExtra";
-import { useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const steps = ['Información Básica', 'Formula', 'Mapa', 'Extra'];
 
