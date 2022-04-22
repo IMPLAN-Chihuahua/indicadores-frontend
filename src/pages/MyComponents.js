@@ -3,21 +3,18 @@ import FormDelete from '../components/common/FormDelete';
 import FormDialog from "../components/dashboard/common/FormDialog";
 
 export const MyComponents = () => {
-  const [openModal, setOpenModal] = React.useState(false);
-  const handleOpenModal = () => setOpenModal(true);
-  const handleCloseModal = () => setOpenModal(false);
+  const [removeOpenModal, setRemoveOpenModal] = React.useState(false);
+  const handleRemoveOpenModal = () => setRemoveOpenModal(true);
+  const handleRemoveCloseModal = () => setRemoveOpenModal(false);
 
   return (
     <>                  
-      <button onClick={handleOpenModal}>Test Modal</button>
-      
-
-      
+      <button onClick={handleRemoveOpenModal}>Test Modal</button>
       <FormDialog
-        open={openModal}
-        setOpenModal={setOpenModal}
+        open={removeOpenModal}
+        setOpenModal={setRemoveOpenModal}
       >
-        <FormDelete handleCloseModal={handleCloseModal} />
+        <FormDelete handleCloseModal={handleRemoveCloseModal} />
       </FormDialog>
     </>
   )
