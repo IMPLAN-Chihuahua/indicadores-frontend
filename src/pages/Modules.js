@@ -19,9 +19,7 @@ import { useAlert } from "../contexts/AlertContext";
 
 export const Modules = () => {
 
-  let perPage = 5;
-  localStorage.getItem("perPage") &&
-    (perPage = localStorage.getItem("perPage"));
+  let perPage = localStorage.getItem("perPage") || 5;
   let totalPages = 1;
   let rowsModules = [];
 
@@ -286,7 +284,6 @@ export const Modules = () => {
   ];
 
   const dataTable = [columnsModule, dataStore];
-
   const dataModule = {
     topic: "modulo",
     countEnable: activeCounter,
@@ -296,7 +293,6 @@ export const Modules = () => {
   };
   return (
     <>
-
       <DataHeader
         data={dataModule}
         handleOpenModal={handleOpenModal}

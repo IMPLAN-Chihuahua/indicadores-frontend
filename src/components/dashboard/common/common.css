@@ -249,6 +249,11 @@ width: 100%;
     justify-content: space-between;
     width: 86px;
 }
+.dt-btn-container-tri{
+    display: flex;
+    gap: 7px;
+    width: 120px;
+}
 .dt-action-delete,.dt-action-edit{
 color: white;
 

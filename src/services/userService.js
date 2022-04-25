@@ -99,8 +99,6 @@ export const useAutocompleteInput = (topic) => {
   } 
 };
 
-
-
 export const getModules = async (page) => {
   try {
     const response = await protectedApi.get(`/me/modulos?per_page=10&page=${page}`);
@@ -143,4 +141,13 @@ export const updateUser = async (user) => {
   } catch(err) {
     throw err;
   }
+}
+
+export const changeStatusUser = async (id) => {
+  try {
+    const response = await protectedApi.patch(`/usuarios/${id}`);
+    return response.data;
+  } catch (error) {
+    Promise.reject(error)
+  };
 }
