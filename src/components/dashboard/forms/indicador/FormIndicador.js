@@ -21,7 +21,7 @@ const indicadorBasicSchema = yup.object({
 
 export const FormIndicador = ({ handleNext }) => {
   const basicFormData = useSelector((state) => state.indicadores.basic)
-  const methods = useForm({ resolver: yupResolver(indicadorBasicSchema) });
+  const methods = useForm();
   let dummyOptions = [{ id: 1, unidad: 'u-1' }, { id: 2, unidad: 'u-2' }];
   const { control, reset, handleSubmit } = methods;
   const dispatch = useDispatch();

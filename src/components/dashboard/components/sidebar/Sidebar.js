@@ -92,7 +92,7 @@ export const Sidebar = () => {
                         <Link to='modulos' className='link'>
                         <li className={show?`sidebar-list-item ${activeModules}` :`sidebar-list-item-min ${activeModules}`}>
                             <ViewModuleIcon className='sidebar-icon'/> 
-                            <span>Modulos</span>
+                            <span>Temas</span>
                         </li>
                         </Link>
 

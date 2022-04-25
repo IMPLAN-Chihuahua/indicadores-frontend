@@ -9,10 +9,19 @@ import { Box } from '@mui/system';
 import ImageUploader from "../dashboard/common/ImageUploader";
 
 const FileInput = (props) => {
-  const { name, label, height, image } = props;
+  const { name, label, height, image, type } = props;
   const { register, unregister, setValue, watch } = useFormContext();
   const [files, setFiles] = useState(watch(name));
   const [previousImage, setPreviousImage] = useState('');
+
+  if (!files || files === null) {
+    if (type === 'avatar') {
+      setFiles('/images/avatar.jpg');
+    }
+    else if (type === 'map') {
+      setFiles('/images/map.png');
+    }
+  }
 
   useEffect(() => {
     setFiles(watch(name));
@@ -67,7 +76,7 @@ const FileInput = (props) => {
         typeof files !== 'object'
           ?
           (
-            <ImageUploader imageSource={`http://localhost:8080${files}`} badgeContent={
+            <ImageUploader type={type} imageSource={`http://localhost:8080${files}`} badgeContent={
               <IconButton onClick={handleOpen}>
                 <Avatar>
                   <EditOutlinedIcon />
@@ -76,19 +85,26 @@ const FileInput = (props) => {
             } />
           )
           :
-          (
-            files.map((file, index) => {
-              return (
-                <ImageUploader key={index} imageSource={URL.createObjectURL(file)} badgeContent={
-                  <IconButton onClick={handleOpen}>
-                    <Avatar>
-                      <EditOutlinedIcon />
-                    </Avatar>
-                  </IconButton >
-                } />
-              )
-            })
-          )
+          files === null ?
+            (
+              <h1>test</h1>
+            )
+            :
+            (
+              files.map((file, index) => {
+                return (
+                  <>
+                    <ImageUploader type={type} key={index} imageSource={URL.createObjectURL(file)} badgeContent={
+                      <IconButton onClick={handleOpen}>
+                        <Avatar>
+                          <EditOutlinedIcon />
+                        </Avatar>
+                      </IconButton >
+                    } />
+                  </>
+                )
+              })
+            )
       }
 
 
