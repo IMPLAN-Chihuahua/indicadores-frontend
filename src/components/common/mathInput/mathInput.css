@@ -25,3 +25,58 @@
 .mq-editable-field.mq-focused {
   box-shadow: inset 0 0 0 2px #1e88e5 !important;
 }
+
+.math-container {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.material-textfield {
+  position: relative;
+}
+
+.equation-label {
+  position: absolute;
+  font-size: 1rem;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: white;
+  color: gray;
+  padding: 0 0.3rem;
+  margin: 0 0.5rem;
+  transition: 0.1s ease-out;
+  transform-origin: left top;
+  pointer-events: none;
+}
+
+.equation-input {
+  font-size: 1rem;
+  outline: none;
+  border: 1px solid gray;
+  border-radius: 5px;
+  padding: 1rem 0.7rem;
+  color: gray;
+  transition: 0.1s ease-out;
+}
+
+.equation-input:focus {
+  border-color: #6200ee;
+}
+
+.equation-input:focus+label {
+  color: #6200ee;
+  top: 0;
+  transform: translateY(-50%) scale(0.9) !important;
+}
+
+.equation-input:not(:placeholder-shown)+label {
+  top: 0;
+  transform: translateY(-50%) scale(0.9) !important;
+}
+
+.equation-input:not(:focus)::placeholder {
+  opacity: 0;
+}

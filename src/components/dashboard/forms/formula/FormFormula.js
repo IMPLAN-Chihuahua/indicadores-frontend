@@ -1,13 +1,54 @@
-import { Button, DialogActions, DialogContent, Grid } from "@mui/material";
-import { Box } from "@mui/system";
+import {
+  Button, DialogActions,
+  DialogContent, Grid,
+  Link as MuiLink, Typography,
+  Box
+} from "@mui/material";
+import {
+  Controller, FormProvider,
+  useFieldArray, useForm
+} from "react-hook-form";
+import { MathJax } from "better-react-mathjax";
 import EquationEditor from "equation-editor-react";
-import "../../../common/mathInput/mathInput.css";
-import { useEffect } from "react";
-import { Controller, FormProvider, useFieldArray, useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import "../../../common/mathInput/mathInput.css";
 import { addFormulaData } from "../../../../features/indicador/indicadorSlice";
 import { isObjEmpty } from "../../../../utils/objects";
 import { Variable } from "../../../common/formula/Variable";
+
+
+const EquationInput = ({ value, onChange }) => {
+  return (
+    <div>
+      <EquationEditor
+        value={value}
+        onChange={onChange}
+        autoCommands="pi theta sqrt sum prod alpha beta gamma rho"
+        autoOperatorNames="sin cos tan"
+      />
+      <MuiLink
+        target='_blank'
+        rel='noopener noreferrer'
+        variant='body2'
+        href='https://www.latex-project.org/help/documentation/amsldoc.pdf'
+      >Documentación MathJax</MuiLink>
+    </div>
+  );
+};
+
+const EquationViewer = ({ equation }) => {
+  return (
+    <>
+      <div style={{ fontSize: '1.5rem' }}>
+        <MathJax>{`\\(${equation}\\)`}</MathJax>
+      </div>
+      <Typography
+        variant='body2'
+      >Doble click para editar ecuación</Typography>
+    </>
+  )
+}
 
 export const FormFormula = ({ handleBack, handleNext }) => {
   const methods = useForm({
@@ -47,6 +88,7 @@ export const FormFormula = ({ handleBack, handleNext }) => {
     }
   }, []);
 
+  const [editingEquation, setEditingEquation] = useState(false);
 
   return (
     <>
@@ -58,9 +100,37 @@ export const FormFormula = ({ handleBack, handleNext }) => {
           >
             <Grid container gap={2}>
               <Grid item xs={12}>
-                Equation
+                <Typography component='label'>Ecuación
+                  <Controller
+                    name='ecuacion'
+                    control={control}
+                    render={({
+                      field: { onChange, value }
+                    }) => editingEquation ?
+                        (
+                          <EquationInput
+                            value={value}
+                            onChange={onChange}
+                          />
+                        ) :
+                        (
+                          <Box onDoubleClick={() => setEditingEquation(true)}>
+                            {
+                              value ?
+                                (
+                                  <EquationViewer equation={value} />
+                                ) :
+                                (<Typography
+                                  variant='body1'>
+                                  Doble click para ingresar la ecuación
+                                </Typography>)
+                            }
+                          </Box>
+                        )
+                    }
+                  />
+                </Typography>
               </Grid>
-
               {fields.map((field, i) => (
                 <Variable
                   index={i}

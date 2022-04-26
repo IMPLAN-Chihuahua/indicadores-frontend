@@ -20,7 +20,7 @@ export const FormMapa = ({ handleBack, handleNext }) => {
             onReset={reset}
           >
             <Grid container rowSpacing={2}>
-              <Grid item xs={6}>
+              <Grid item xs={12}>
                 <Controller
                   control={control}
                   name='url'
