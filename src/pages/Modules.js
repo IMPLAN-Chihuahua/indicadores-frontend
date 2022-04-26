@@ -7,20 +7,21 @@ import { useModules } from "../services/userService";
 import { BeatLoader } from "react-spinners";
 import ShowImage from "../components/dashboard/common/ShowImage";
 import { Status } from "../components/dashboard/common/Status";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import FormDialog from "../components/dashboard/common/FormDialog";
 import FormModel from "../components/dashboard/forms/model/FormModel";
 import { DataPagination } from "../components/dashboard/common/DataPagination";
+import { changeStatusModule } from "../services/moduleService";
+import FormDelete from "../components/common/FormDelete";
+import ToggleOnIcon from '@mui/icons-material/ToggleOn';
+import ToggleOffIcon from '@mui/icons-material/ToggleOff';
+import { useAlert } from "../contexts/AlertContext";
 
 export const Modules = () => {
 
-  let perPage = 5;
-  localStorage.getItem("perPage") &&
-    (perPage = localStorage.getItem("perPage"));
+  let perPage = localStorage.getItem("perPage") || 5;
   let totalPages = 1;
   let rowsModules = [];
-
 
   const [searchModule, setSearchModule] = useState("");
   const [paginationCounter, setPaginationCounter] = useState(1);
@@ -36,6 +37,7 @@ export const Modules = () => {
     searchModule
   );
 
+  const alert = useAlert();
   const [openModal, setOpenModal] = React.useState(false);
   const handleOpenModal = () => setOpenModal(true);
   const handleCloseModal = () => setOpenModal(false);
@@ -44,39 +46,60 @@ export const Modules = () => {
     row: { temaIndicador: "" },
   });
 
+  const [removeOpenModal, setRemoveOpenModal] = React.useState(false);
+  const handleRemoveOpenModal = () => setRemoveOpenModal(true);
+  const handleRemoveCloseModal = () => setRemoveOpenModal(false);
+
+  const [changeData, setChangeData] = useState({});
+  const [dataStore, setDataStore] = useState([]);
+
+
+  const handleStatusModule = (id, topic, element, type ) => {
+    setChangeData({
+      id,
+      topic,
+      element,
+      type
+    });
+    handleRemoveOpenModal();  
+  }
+
   if (activeCounter == 0 && inactiveCounter == 0 && modulesList) {
     setActiveCounter(modulesList.total - modulesList.totalInactivos);
     setInactiveCounter(modulesList.totalInactivos);
   }
   modulesList && (totalPages = modulesList.totalPages);
   modulesList && (rowsModules = modulesList.data);
-
-  let rowsModulesEdited = [];
-  useMemo(() => {
-    rowsModules.map((data) => {
-      rowsModulesEdited = [
-        ...rowsModulesEdited,
-        {
-          ...data,
-          createdAt: data.createdAt.split("T")[0],
-          updatedAt: data.updatedAt.split("T")[0],
-          activo: data.activo == "SI" ? "Activo" : "Inactivo",
-          actions: "Acciones",
-        },
-      ];
-    })
-  });
-
-  useEffect(() => {
+      
+    useEffect(() => {
     return () => {
       isMounted.current = false;
     };
   }, []);
-
+  
+    useEffect(() => {
+      if(modulesList){
+        let rowsModulesEdited = []; 
+        rowsModules.map((data) => {
+          rowsModulesEdited = [
+              ...rowsModulesEdited,
+              {
+                ...data,
+                createdAt: data.createdAt.split("T")[0],
+                updatedAt: data.updatedAt.split("T")[0],
+                activo: data.activo == "SI" ? "Activo" : "Inactivo",
+                actions: "Acciones",
+              },
+            ];
+          })
+          setDataStore(rowsModulesEdited)
+      }
+  }, [modulesList]);
+  
   const editable = true,
     headerClassName = "dt-theme--header",
     sortable = false,
-    headerAlign = "center",
+    headerAlign = "center", 
     align = "center",
     filterable = false;
   const columnsModule = [
@@ -230,10 +253,21 @@ export const Modules = () => {
       renderCell: (params) => {
         return (
           <div className="dt-btn-container">
-            <span className="dt-action-delete">
-              {" "}
-              <DeleteOutlineIcon />{" "}
+            {
+              (params.row.activo == 'Activo')
+              ?
+            <span className="dt-action-delete"
+            onClick={() => handleStatusModule(params.row.id, "modulo",params.row.temaIndicador, "off")}
+            >
+                <ToggleOnIcon />
             </span>
+                :
+                <span className="dt-action-delete"
+                onClick={() => handleStatusModule(params.row.id, "modulo",params.row.temaIndicador, "on")}
+                >
+                    <ToggleOffIcon/>
+                </span>
+              }
             <span
               className="dt-action-edit"
               onClick={() => {
@@ -241,8 +275,7 @@ export const Modules = () => {
                 setClickInfo(params.row);
               }}
             >
-              {" "}
-              <ModeEditIcon />{" "}
+              <ModeEditIcon />
             </span>
           </div>
         );
@@ -250,8 +283,7 @@ export const Modules = () => {
     },
   ];
 
-  const dataTable = [columnsModule, rowsModulesEdited];
-
+  const dataTable = [columnsModule, dataStore];
   const dataModule = {
     topic: "modulo",
     countEnable: activeCounter,
@@ -261,7 +293,6 @@ export const Modules = () => {
   };
   return (
     <>
-
       <DataHeader
         data={dataModule}
         handleOpenModal={handleOpenModal}
@@ -273,7 +304,7 @@ export const Modules = () => {
           </Box>
         ) : (
           <>
-            <DatagridTable data={dataTable} />
+            <DatagridTable data={dataTable} />  
             <DataPagination
               data={{
                 dataModule,
@@ -295,6 +326,27 @@ export const Modules = () => {
         title={`Editar módulo ${clickInfo.temaIndicador}`}
       >
         <FormModel data={clickInfo} handleCloseModal={handleCloseModal} />
+      </FormDialog>
+      <FormDialog
+        open={removeOpenModal}
+        setOpenModal={setRemoveOpenModal}
+      >
+        <FormDelete topic={changeData?.topic} element={changeData?.element} type={changeData?.type}  handleCloseModal={handleRemoveCloseModal}  
+        handleDelete = {
+          () => {
+            try {
+              changeStatusModule(changeData?.id);
+              if(dataStore.find(x => x.id == changeData?.id).activo == 'Activo'){
+                dataStore.find(x => x.id == changeData?.id).activo = 'Inactivo';
+              }else{
+                dataStore.find(x => x.id == changeData?.id).activo = 'Activo';
+              }
+              alert.success('Estado del modulo cambiado exitosamente');
+              handleRemoveCloseModal();
+            } catch (err) {
+              alert.error(err);
+            }
+          }}/>
       </FormDialog>
     </>
   );

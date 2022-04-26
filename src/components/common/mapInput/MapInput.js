@@ -6,6 +6,7 @@ import FileInput from "../../common/FileInput";
 
 
 import './MapInput.css';
+import { Controller } from 'react-hook-form';
 
 const MapInput = ({ altDefinition = '', value }) => {
   const [open, setOpen] = useState(false);
@@ -31,16 +32,20 @@ const MapInput = ({ altDefinition = '', value }) => {
         Mapa
       </Typography>
       <Box className='map-container'>
-        <img
-          src={`https://res.cloudinary.com/davzo6qf4/image/upload/v1644535117/mapa_mwlhkq.png`}
-          alt='mapa'
-          className='indicator-map'
+        <Controller
+          name="mapa.ubicacion"
+          render={({
+            field: { onChange, value },
+            fieldState: { error }
+          }) => (
+            <FileInput
+              accept='image/png, image/jpg, image/jpeg, image/gif'
+              name='mapa.ubicacion'
+              image={value ? value : 'test'}
+              type={'map'}
+            />
+          )}
         />
-        <IconButton className='map-button' onClick={handleOpen}>
-          <Avatar>
-            <EditOutlinedIcon />
-          </Avatar>
-        </IconButton>
         {
           value ?
             (

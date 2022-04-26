@@ -9,16 +9,15 @@ export const createModule = async (modulo) => {
     Promise.reject(error)
   };
 }
-export const statusModule = async (id) => {
+export const changeStatusModule = async (id) => {
   try {
     const response = await protectedApi.patch(`/modulos/${id}`);
     return response.data;
-
   } catch (error) {
     Promise.reject(error)
   };
 }
-
+  
 
 
 

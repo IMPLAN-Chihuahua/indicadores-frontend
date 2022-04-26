@@ -16,11 +16,11 @@ const DatagridTable = ({ data }) => {
         hideFooter={true}
         columnBuffer={2}
         columnThreshold={2}
-        onRowClick={(params) => {
-          if (topic === 'indicador') {
-            navigate(`/indicadores/${params.id}`, [navigate])
-          }
-        }}
+        // onRowClick={(params) => {
+        //   if (topic === 'indicador') {
+        //     navigate(`/indicadores/${params.id}`, [navigate])
+        //   }
+        // }}
         localeText={esES.components.MuiDataGrid.defaultProps.localeText}
         sx={{
           border: 'none',
