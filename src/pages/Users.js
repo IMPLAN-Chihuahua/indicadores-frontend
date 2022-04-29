@@ -51,25 +51,25 @@ export const Users = () => {
   const [removeOpenModal, setRemoveOpenModal] = React.useState(false);
   const handleRemoveOpenModal = () => setRemoveOpenModal(true);
   const handleRemoveCloseModal = () => setRemoveOpenModal(false);
-  
+
   const [changeData, setChangeData] = useState({});
   const [dataStore, setDataStore] = useState([]);
-  
-  const handleStatus = (id, topic, element, type ) => {
+
+  const handleStatus = (id, topic, element, type) => {
     setChangeData({
       id,
       topic,
       element,
       type
     });
-    handleRemoveOpenModal();  
+    handleRemoveOpenModal();
   }
 
   if (activeCounter === 0 && inactiveCounter === 0 && usersList) {
     setActiveCounter(usersList.total - usersList.totalInactivos);
     setInactiveCounter(usersList.totalInactivos);
   }
-  
+
   usersList && (totalPages = usersList.totalPages);
   usersList && (rowsUsers = usersList.data);
 
@@ -89,7 +89,7 @@ export const Users = () => {
   //   ];
   //});
 
-  
+
   useEffect(() => {
     return () => {
       isMounted.current = false;
@@ -97,24 +97,24 @@ export const Users = () => {
   }, []);
 
   useEffect(() => {
-    if(usersList){
-      let rowsUsersEdited = []; 
+    if (usersList) {
+      let rowsUsersEdited = [];
       rowsUsers.map((data) => {
         rowsUsersEdited = [
-            ...rowsUsersEdited,
-            {
-              ...data,
-              createdAt: data.createdAt.split("T")[0],
-              updatedAt: data.updatedAt.split("T")[0],
-              idRol: data.idRol === 1 ? "Administrador" : data.idRol === 2 ? "Usuario" : "N/A",
-              activo: data.activo === "SI" ? "Activo" : "Inactivo",
-              actions: "Acciones",
-            },
-          ];
-        })
-        setDataStore(rowsUsersEdited)
+          ...rowsUsersEdited,
+          {
+            ...data,
+            createdAt: data.createdAt.split("T")[0],
+            updatedAt: data.updatedAt.split("T")[0],
+            idRol: data.idRol === 1 ? "Administrador" : data.idRol === 2 ? "Usuario" : "N/A",
+            activo: data.activo === "SI" ? "Activo" : "Inactivo",
+            actions: "Acciones",
+          },
+        ];
+      })
+      setDataStore(rowsUsersEdited)
     }
-  },[usersList]);
+  }, [usersList]);
 
   const editable = true,
     headerClassName = "dt-theme--header",
@@ -265,19 +265,19 @@ export const Users = () => {
           <div className="dt-btn-container">
             {
               (params.row.activo == 'Activo')
-              ?
-            <span className="dt-action-delete"
-            onClick={() => handleStatus(params.row.id, "usuario",params.row.nombres + " " +params.row.apellidoPaterno+ " " +params.row.apellidoMaterno, "off")}
-            >
-                <ToggleOnIcon />
-            </span>
+                ?
+                <span className="dt-action-delete"
+                  onClick={() => handleStatus(params.row.id, "usuario", params.row.nombres + " " + params.row.apellidoPaterno + " " + params.row.apellidoMaterno, "off")}
+                >
+                  <ToggleOnIcon />
+                </span>
                 :
                 <span className="dt-action-delete"
-                onClick={() => handleStatus(params.row.id, "usuario",params.row.nombres + " " +params.row.apellidoPaterno+ " " +params.row.apellidoMaterno, "on")}
+                  onClick={() => handleStatus(params.row.id, "usuario", params.row.nombres + " " + params.row.apellidoPaterno + " " + params.row.apellidoMaterno, "on")}
                 >
-                    <ToggleOffIcon/>
+                  <ToggleOffIcon />
                 </span>
-              }
+            }
             <span
               className="dt-action-edit"
               onClick={() => {
@@ -342,22 +342,24 @@ export const Users = () => {
         open={removeOpenModal}
         setOpenModal={setRemoveOpenModal}
       >
-        <FormDelete topic={changeData?.topic} element={changeData?.element} type={changeData?.type}  handleCloseModal={handleRemoveCloseModal}  
-        handleDelete = {
-          () => {
-            try {
-              changeStatusUser(changeData?.id);
-              if(dataStore.find(x => x.id == changeData?.id).activo == 'Activo'){
-                dataStore.find(x => x.id == changeData?.id).activo = 'Inactivo';
-              }else{
-                dataStore.find(x => x.id == changeData?.id).activo = 'Activo';
-              }
-              alert.success('Estado del usuario cambiado exitosamente');
-              handleRemoveCloseModal();
-            } catch (err) {
-              alert.error(err);
-            }
-          }}/>
+        <FormDelete topic={changeData?.topic} element={changeData?.element} type={changeData?.type} handleCloseModal={handleRemoveCloseModal}
+          handleDelete={
+            () => {
+
+              changeStatusUser(changeData?.id)
+                .then(res => res.data)
+                .then(res => {
+                  if (dataStore.find(x => x.id === changeData?.id).activo === 'Activo') {
+                    dataStore.find(x => x.id === changeData?.id).activo = 'Inactivo';
+                  } else {
+                    dataStore.find(x => x.id === changeData?.id).activo = 'Activo';
+                  }
+                  alert.success('Estado del usuario cambiado exitosamente');
+                  handleRemoveCloseModal();
+                })
+                .catch(err => alert.error(err))
+
+            }} />
       </FormDialog>
     </>
   );
