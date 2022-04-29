@@ -42,61 +42,61 @@ export const getLastedModules = async () => {
   }
 };
 
-export const useModules = (perPage,page,search) => {
-  const {data, error} = useSWR(`me/modulos?perPage=${perPage}&page=${page}&searchQuery=${search}`,fetcher) 
-  return{
+export const useModules = (perPage, page, search) => {
+  const { data, error } = useSWR(`me/modulos?perPage=${perPage}&page=${page}&searchQuery=${search}`, fetcher)
+  return {
     modulesList: data,
     isLoading: !error && !data,
     isError: error,
   }
 };
-export const useIndicators = (perPage,page,search) => {
-  const {data, error} = useSWR(`indicadores?perPage=${perPage}&page=${page}&searchQuery=${search}`,fetcher) 
-  return{
+export const useIndicators = (perPage, page, search) => {
+  const { data, error } = useSWR(`indicadores?perPage=${perPage}&page=${page}&searchQuery=${search}`, fetcher)
+  return {
     IndicatorsList: data,
     isLoading: !error && !data,
     isError: error,
-  } 
+  }
 };
 
-export const useUsers = (perPage,page,search) => {
-  const {data, error} = useSWR(`usuarios?perPage=${perPage}&page=${page}&searchQuery=${search}`,fetcher) 
-  return{
+export const useUsers = (perPage, page, search) => {
+  const { data, error } = useSWR(`usuarios?perPage=${perPage}&page=${page}&searchQuery=${search}`, fetcher)
+  return {
     usersList: data,
     isLoading: !error && !data,
     isError: error,
   }
 };
 
-export const useSelector = (topic, perPage,page,search) => {
-  const {data, error} = useSWR(
+export const useSelector = (topic, perPage, page, search) => {
+  const { data, error } = useSWR(
     (topic == 'Indicadores')
-    ?
-    `indicadores?perPage=${perPage}&page=${page}&searchQuery=${search}`
-    :
-    `usuarios?perPage=${perPage}&page=${page}&searchQuery=${search}`
-    ,fetcher
-    ) 
-  return{
+      ?
+      `indicadores?perPage=${perPage}&page=${page}&searchQuery=${search}`
+      :
+      `usuarios?perPage=${perPage}&page=${page}&searchQuery=${search}`
+    , fetcher
+  )
+  return {
     itemList: data,
     isLoading: !error && !data,
     isError: error,
-  } 
+  }
 };
 export const useAutocompleteInput = (topic) => {
-  const {data, error} = useSWR(
+  const { data, error } = useSWR(
     (topic == 'Indicadores')
-    ?
-    `usuarios`
-    :
-    `indicadores`
-    ,fetcher
-    ) 
-  return{
+      ?
+      `usuarios`
+      :
+      `indicadores`
+    , fetcher
+  )
+  return {
     itemList: data,
     isLoading: !error && !data,
     isError: error,
-  } 
+  }
 };
 
 export const getModules = async (page) => {
@@ -137,15 +137,15 @@ export const createUser = async (user) => {
 export const updateUser = async (user) => {
   try {
     const response = await protectedApi.put('/usuarios', user);
-    
-  } catch(err) {
+
+  } catch (err) {
     throw err;
   }
 }
 
 export const changeStatusUser = async (id) => {
   try {
-    const response = await protectedApi.patch(`/usuarios/${id}`);
+    const response = await protectedApi.patch(`/usuarios/${id}/toggle-status`);
     return response.data;
   } catch (error) {
     Promise.reject(error)

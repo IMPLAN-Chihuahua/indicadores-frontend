@@ -33,12 +33,12 @@ const updateIndicator = async (id, data) => {
 
 export const changeStatusIndicator = async (id) => {
     try {
-      const response = await protectedApi.patch(`/indicadores/${id}`);
-      return response.data;
+        const response = await protectedApi.patch(`/indicadores/${id}/toggle-status`);
+        return response.data;
     } catch (error) {
-      Promise.reject(error)
+        Promise.reject(error)
     };
-  }
+}
 
 export {
     getIndicator,
