@@ -153,10 +153,5 @@ export const updateMe = async (user) => {
 }
 
 export const changeStatusUser = async (id) => {
-  try {
-    const response = await protectedApi.patch(`/usuarios/${id}/toggle-status`);
-    return response.data;
-  } catch (error) {
-    Promise.reject(error)
-  };
+  return protectedApi.patch(`/usuarios/${id}/toggle-status`);
 }

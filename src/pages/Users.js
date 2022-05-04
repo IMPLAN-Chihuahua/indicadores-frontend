@@ -345,18 +345,20 @@ export const Users = () => {
         <FormDelete topic={changeData?.topic} element={changeData?.element} type={changeData?.type} handleCloseModal={handleRemoveCloseModal}
           handleDelete={
             () => {
-              try {
-                changeStatusUser(changeData?.id);
-                if (dataStore.find(x => x.id == changeData?.id).activo == 'Activo') {
-                  dataStore.find(x => x.id == changeData?.id).activo = 'Inactivo';
-                } else {
-                  dataStore.find(x => x.id == changeData?.id).activo = 'Activo';
-                }
-                alert.success('Estado del usuario cambiado exitosamente');
-                handleRemoveCloseModal();
-              } catch (err) {
-                alert.error(err);
-              }
+
+              changeStatusUser(changeData?.id)
+                .then(res => res.data)
+                .then(res => {
+                  if (dataStore.find(x => x.id === changeData?.id).activo === 'Activo') {
+                    dataStore.find(x => x.id === changeData?.id).activo = 'Inactivo';
+                  } else {
+                    dataStore.find(x => x.id === changeData?.id).activo = 'Activo';
+                  }
+                  alert.success('Estado del usuario cambiado exitosamente');
+                  handleRemoveCloseModal();
+                })
+                .catch(err => alert.error(err))
+
             }} />
       </FormDialog>
     </>
