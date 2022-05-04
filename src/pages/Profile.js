@@ -6,10 +6,16 @@ import { Avatar, Button, Grid, Typography } from '@mui/material';
 import { Navbar } from '../components/dashboard/components/navbar/Navbar';
 import { getCurrentUser } from '../services/userService';
 import { BeatLoader } from 'react-spinners';
+import { NormalView } from '../components/profile/NormalView';
+import { EditView } from '../components/profile/EditView';
 
 export const Profile = () => {
   const [user, setUser] = useState({});
   const [editing, setEditing] = useState(false);
+
+  const handleEditing = () => {
+    setEditing(!editing);
+  }
 
   useEffect(() => {
     getCurrentUser().then(user => {
@@ -33,37 +39,14 @@ export const Profile = () => {
                 <Box className='h500'>
                 </Box>
                 <Box className='bottom-right'>
-                  <Button variant='outlined'>Editar</Button>
+                  <Button variant='outlined' className='edit-button' onClick={handleEditing}>Editar</Button>
                 </Box>
-                <Box className='bottom-centered'>
-                  <Grid container className='profile-grid'>
-                    <Grid item xs={12} md={12} className='profile-grid-item'>
-                      <Box className='user-image-container'>
-                        <Avatar className='user-image' sx={{ width: 170, height: 170 }} src={`http://localhost:8080/${user.avatar}`}>
-                        </Avatar>
-                        <h1 className='user-role'>{
-                          user.roles === 'ADMIN' ? 'Admin' : 'Usuario'
-                        }</h1>
-                      </Box>
-                    </Grid>
-                    <Grid item xs={12} md={12} className='profile-grid-item'>
-                      <Typography variant='h4' className='user-name'>
-                        {user.nombres} {user.apellidoPaterno}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={12} md={12} className='profile-grid-item'>
-                      <Typography sx={{ fontSize: 16 }} color="text.secondary" gutterBottom>
-                        {user.correo}
-                      </Typography>
-                    </Grid>
-                    <hr className='magic-line' />
-                    <Grid item xs={12} md={12} className='description'>
-                      <Typography variant='h6' className='user-description'>
-                        {user.descripcion}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Box>
+                {
+                  !editing ?
+                    <NormalView user={user} />
+                    :
+                    <EditView user={user} />
+                }
               </Box>
             </Box>
           )

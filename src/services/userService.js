@@ -136,8 +136,17 @@ export const createUser = async (user) => {
 
 export const updateUser = async (user) => {
   try {
-    const response = await protectedApi.put('/usuarios', user);
+    const response = await protectedApi.patch('/usuarios', user);
+    return 1;
+  } catch (err) {
+    throw err;
+  }
+}
 
+export const updateMe = async (user) => {
+  try {
+    const response = await protectedApi.patch('/me', user);
+    return 1;
   } catch (err) {
     throw err;
   }

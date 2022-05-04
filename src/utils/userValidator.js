@@ -28,4 +28,17 @@ const createUserSchema = yup.object({
       .required('Por favor, ingrese el apellido paterno del usuario')
 });
 
-export { createUserSchema }
+const editUserSchema = yup.object(
+  {
+    nombres:
+      yup.string()
+        .required('Por favor, ingrese el nombre del usuario'),
+
+    apellidoPaterno:
+      yup.string()
+        .required('Por favor, ingrese el apellido paterno del usuario')
+
+  }
+)
+
+export { createUserSchema, editUserSchema }
