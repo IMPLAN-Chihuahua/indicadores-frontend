@@ -8,8 +8,8 @@ const ImageUploader = ({ imageSource, badgeContent, type = 'avatar' }) => {
 	const [image, setImage] = useState('');
 
 	const handleState = (e) => {
-		setImage(e);
 		setOpenImage(!openImage);
+		setImage(e);
 	};
 
 	const style = {
@@ -17,12 +17,7 @@ const ImageUploader = ({ imageSource, badgeContent, type = 'avatar' }) => {
 		top: '50%',
 		left: '50%',
 		transform: 'translate(-50%, -50%)',
-		width: 400,
-		bgcolor: 'background.paper',
-		border: '2px solid #000',
-		boxShadow: 24,
-		p: 4,
-		bgcolor: 'white',
+		maxwidth: '600px',
 	};
 
 	return (
@@ -37,7 +32,6 @@ const ImageUploader = ({ imageSource, badgeContent, type = 'avatar' }) => {
 			{
 				type === 'avatar' ?
 					(
-						console.log('asdadad' + imageSource),
 						<Avatar onClick={() => {
 							handleState(imageSource);
 						}} sx={{ width: 160, height: 160 }}
@@ -57,16 +51,19 @@ const ImageUploader = ({ imageSource, badgeContent, type = 'avatar' }) => {
 					)
 			}
 
-			<Modal
-				open={openImage}
-				onClose={handleState}
-				closeAfterTransition
-				sx={{ display: 'block' }}
-			>
-				<Fade in={openImage}>
-					<img src={`${image}`} alt='map' />
-				</Fade>
-			</Modal>
+			{
+				typeof image === 'string' && (
+					<Modal
+						open={openImage}
+						onClose={handleState}
+					>
+						<Fade in={openImage}>
+							<img src={`${image}`} style={style} />
+						</Fade>
+					</Modal>
+				)
+			}
+
 		</Badge>
 	)
 }

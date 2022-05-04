@@ -9,6 +9,7 @@ const DatagridTable = ({ data }) => {
   return (
     <>
       <DataGrid
+        editMode='row'
         rows={rows}
         autoHeight
         columns={columns}
