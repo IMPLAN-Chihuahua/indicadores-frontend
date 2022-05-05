@@ -1,13 +1,8 @@
 import { Tab, Tabs } from '@mui/material';
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom';
+import React from 'react'
 import { GeneralView } from './GeneralView';
+import { HistoricosView } from './Historicos/HistoricosView';
 import './indicator.css'
-import {
-  Route,
-  Link,
-  Outlet
-} from 'react-router-dom';
 
 function LinkTab(props) {
   return (
@@ -32,14 +27,14 @@ export const Indicator = () => {
   return (
     <>
       <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-        <LinkTab label="Page One" href="/drafts" />
-        <LinkTab label="Page Two" href="/trash" />
-        <LinkTab label="Page Three" href="/spam" />
+        <LinkTab label="Indicador" />
+        <LinkTab label="Fórmula" />
+        <LinkTab label="Históricos" />
       </Tabs>
       {
         value === 0 ? <GeneralView />
           : value === 1 ? <h1>TBD</h1>
-            : value === 2 ? <h1>TBDDD</h1>
+            : value === 2 ? <HistoricosView />
               : null
       }
     </>
