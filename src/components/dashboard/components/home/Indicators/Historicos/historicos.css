@@ -1,0 +1,26 @@
+.bottom-panel {}
+
+.actual-value-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  height: 100%;
+}
+
+.actual-value-elements {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
+  width: 80%;
+  padding: 9% 0 9% 0;
+}
+
+.actual-value-elements:hover {
+  background-color: rgba(219, 218, 218, 0.196);
+  transition: 1s;
+}
