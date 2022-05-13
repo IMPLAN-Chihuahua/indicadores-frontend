@@ -1,4 +1,23 @@
-.bottom-panel {}
+.upper-panel {
+  box-shadow: 10px;
+}
+
+.bottom-panel {
+  box-shadow: 10px;
+}
+
+.bottom-panel-right {
+  box-shadow: rgb(204, 219, 232) 3px 1px 2px 0px inset;
+}
+
+.bottom-panel-left {
+  box-shadow: rgb(204, 219, 232) 0px 1px 0px 0px inset;
+}
+
+.left-item {
+  padding: 5%;
+}
+
 
 .actual-value-container {
   display: flex;

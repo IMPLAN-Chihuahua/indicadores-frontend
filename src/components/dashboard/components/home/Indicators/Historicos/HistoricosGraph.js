@@ -23,8 +23,12 @@ ChartJS.register(
 
 
 export const HistoricosGraph = ({ historicosData }) => {
-  const labels = historicosData.map(({ anio }) => anio);
-
+  const labels = historicosData.map(historico => {
+    const localDate = new Date(historico.fechaIngreso);
+    return localDate.toLocaleString('es-ES', { month: 'long' })
+  });
+  //const labels = historicosData.map(({ anio }) => anio);
+  // const labels = [123, 321, 456, 123, 4568]
   const data = {
     labels,
     datasets: [

@@ -3,25 +3,30 @@ import { Box } from '@mui/system';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { BeatLoader } from 'react-spinners';
 
-import { useHistoricos } from '../../../../../../services/historicosService';
+import { useHistoricos, deleteHistorico } from '../../../../../../services/historicosService';
 import DatagridTable from '../../../../common/DatagridTable';
 import { DataHeader } from '../../../../common/DataHeader';
 import { DataPagination } from '../../../../common/DataPagination';
 import { ActualValue } from './ActualValue';
 import { HistoricosGraph } from './HistoricosGraph';
 
+import ModeEditIcon from "@mui/icons-material/ModeEdit";
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import { useAlert } from '../../../../../../contexts/AlertContext';
+
+import { useNavigate } from 'react-router-dom';
+
 import './historicos.css';
 import { useParams } from 'react-router-dom';
 
 export const HistoricosView = () => {
-
   let perPage = localStorage.getItem('perPage') || 5;
   let totalPages = 1;
   let rowsHistoricos = [];
 
+  const alert = useAlert();
   const { id } = useParams();
 
-  const [searchHistorico, setSearchHistorico] = useState("");
   const [perPaginationCounter, setPerPaginationCounter] = useState(perPage);
   const [paginationCounter, setPaginationCounter] = useState(1);
   const [order, setOrder] = useState('desc');
@@ -39,29 +44,14 @@ export const HistoricosView = () => {
     order,
   );
 
-  const [openModal, setOpenModal] = useState(false);
-  const handleOpenModal = () => setOpenModal(true);
-  const handleCloseModal = () => setOpenModal(false);
-
-  const [clickInfo, setClickInfo] = React.useState({
-    row: { temaIndicador: "" },
-  });
-
-  const [removeOpenModal, setRemoveOpenModal] = useState(false);
-  const handleRemoveOpenModal = () => setRemoveOpenModal(true);
-  const handleRemoveCloseModal = () => setRemoveOpenModal(false);
-
-  const [changeData, setChangeData] = useState({});
   const [dataStore, setDataStore] = useState([]);
 
-  const handleStatus = (id, topic, element, type) => {
-    setChangeData({
-      id,
-      topic,
-      element,
-      type
-    });
-    handleRemoveOpenModal();
+  const handleDelete = (id) => {
+    deleteHistorico(id)
+      .then(
+        alert.success('Historico eliminado exitosamente.'))
+      .catch(err => { console.log(err); });
+
   }
 
   if (activeCounter == 0 && inactiveCounter == 0 && historicosList) {
@@ -78,7 +68,7 @@ export const HistoricosView = () => {
         ...rowsHistoricosEdited,
         {
           ...data,
-          createdAt: data.createdAt.split('T')[0],
+          fechaIngreso: data.fechaIngreso.split('T')[0],
         },
       ];
     })
@@ -98,7 +88,7 @@ export const HistoricosView = () => {
           ...rowsHistoricosEdited,
           {
             ...data,
-            createdAt: data.createdAt.split('T')[0],
+            fechaIngreso: data.fechaIngreso.split('T')[0],
           },
         ];
       })
@@ -137,17 +127,6 @@ export const HistoricosView = () => {
       align,
     },
     {
-      field: 'anio',
-      headerName: 'Año',
-      flex: 0.2,
-      minWidth: 50,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-    },
-    {
       field: 'fuente',
       headerName: 'Fuente',
       flex: 0.5,
@@ -159,8 +138,8 @@ export const HistoricosView = () => {
       align,
     },
     {
-      field: "createdAt",
-      headerName: "Creacion",
+      field: "fechaIngreso",
+      headerName: "Registro",
       flex: 0.1,
       minWidth: 100,
       editable,
@@ -168,19 +147,38 @@ export const HistoricosView = () => {
       sortable,
       headerAlign,
       align,
-    }
+    },
+    {
+      field: "actions",
+      headerName: "Acciones",
+      flex: 0.3,
+      editable: false,
+      minWidth: 100,
+      headerClassName,
+      sortable,
+      headerAlign,
+      align,
+      filterable,
+      renderCell: (params) => {
+        return (
+          <div className="dt-btn-container">
+            <span className="dt-action-delete"
+              onClick={() => handleDelete(params.row.id)}
+            >
+              <DeleteForeverIcon />
+            </span>
+            <span
+              className="dt-action-edit"
+            >
+              <ModeEditIcon />
+            </span>
+          </div>
+        );
+      },
+    },
   ];
 
   const dataTable = [columnHistoricos, dataStore];
-
-  const dataHistoricos = {
-    topic: "Historico",
-    countEnable: 100,
-    countDisable: 10,
-    setSearch: setSearchHistorico,
-    searchValue: searchHistorico
-  };
-
   return (
     <>
       <br />
@@ -192,19 +190,22 @@ export const HistoricosView = () => {
             </Box>
           ) : (
             <>
-              <DatagridTable data={dataTable} />
+              <DatagridTable data={dataTable} className='upper-panel' />
               <br />
               <Grid container className='bottom-panel'>
-                <Grid item xs={12} md={6}>
-                  <HistoricosGraph historicosData={dataTable[1]} />
+                <Grid item xs={12} md={6} className='bottom-panel-left'>
+                  <Box className='left-item'>
+                    <HistoricosGraph historicosData={dataTable[1]} />
+                  </Box>
                 </Grid>
-                <Grid item xs={12} md={6}>
-                  <ActualValue value={historicosList.indicadorLastValue} date={historicosList.indicadorLastUpdateDate} />
+                <Grid item xs={12} md={6} className='bottom-panel-right'>
+                  <Box className='actual-value-container right-item'>
+                    <ActualValue value={historicosList.indicadorLastValue} date={historicosList.indicadorLastUpdateDate} />
+                  </Box>
                 </Grid>
               </Grid>
               <DataPagination
                 data={{
-                  dataHistoricos,
                   paginationCounter,
                   setPaginationCounter,
                   perPaginationCounter,
