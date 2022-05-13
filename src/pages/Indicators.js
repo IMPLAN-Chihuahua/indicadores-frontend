@@ -64,14 +64,14 @@ export const Indicators = () => {
 
   const navigate = useNavigate();
 
-  const handleStatus = (id, topic, element, type ) => {
+  const handleStatus = (id, topic, element, type) => {
     setChangeData({
       id,
       topic,
       element,
       type
     });
-    handleRemoveOpenModal();  
+    handleRemoveOpenModal();
   }
 
   if (activeCounter == 0 && inactiveCounter == 0 && IndicatorsList) {
@@ -102,24 +102,25 @@ export const Indicators = () => {
       isMounted.current = false;
     };
   }, []);
+
   useEffect(() => {
-    if(IndicatorsList){
-    let rowsIndicatorsEdited = [];
-    rowsIndicators.map((data) => {
-      rowsIndicatorsEdited = [
-        ...rowsIndicatorsEdited,
-        {
-          ...data,
-          createdAt: data.createdAt.split("T")[0],
-          updatedAt: data.updatedAt.split("T")[0],
-          activo: data.activo == "SI" ? "Activo" : "Inactivo",
-          actions: "Acciones",
-        },
-      ];
-    })
-        setDataStore(rowsIndicatorsEdited)
+    if (IndicatorsList) {
+      let rowsIndicatorsEdited = [];
+      rowsIndicators.map((data) => {
+        rowsIndicatorsEdited = [
+          ...rowsIndicatorsEdited,
+          {
+            ...data,
+            createdAt: data.createdAt.split("T")[0],
+            updatedAt: data.updatedAt.split("T")[0],
+            activo: data.activo == "SI" ? "Activo" : "Inactivo",
+            actions: "Acciones",
+          },
+        ];
+      })
+      setDataStore(rowsIndicatorsEdited)
     }
-}, [IndicatorsList]);
+  }, [IndicatorsList]);
 
   const editable = true,
     headerClassName = "dt-theme--header",
@@ -281,7 +282,7 @@ export const Indicators = () => {
       renderCell: (params) => {
         return (
           <div className="dt-btn-container-tri">
-             <span
+            <span
               className="dt-action-delete"
               onClick={() => {
                 navigate(`/indicadores/${params.id}`, [navigate])
@@ -291,19 +292,19 @@ export const Indicators = () => {
             </span>
             {
               (params.row.activo == 'Activo')
-              ?
-            <span className="dt-action-delete"
-            onClick={() => handleStatus(params.row.id, "indicador",params.row.nombre, "off")}
-            >
-                <ToggleOnIcon />
-            </span>
+                ?
+                <span className="dt-action-delete"
+                  onClick={() => handleStatus(params.row.id, "indicador", params.row.nombre, "off")}
+                >
+                  <ToggleOnIcon />
+                </span>
                 :
                 <span className="dt-action-delete"
-                onClick={() => handleStatus(params.row.id, "indicador",params.row.nombre, "on")}
+                  onClick={() => handleStatus(params.row.id, "indicador", params.row.nombre, "on")}
                 >
-                    <ToggleOffIcon/>
+                  <ToggleOffIcon />
                 </span>
-              }
+            }
             <span
               className="dt-action-edit"
               onClick={() => {
@@ -313,7 +314,7 @@ export const Indicators = () => {
             >
               <ModeEditIcon />
             </span>
-           
+
           </div>
         );
       },
@@ -331,6 +332,8 @@ export const Indicators = () => {
     setSearch: setSearchIndicator,
     searchValue: searchIndicator
   };
+
+  console.log(dataTable);
 
   return (
     <>
@@ -375,22 +378,22 @@ export const Indicators = () => {
         open={removeOpenModal}
         setOpenModal={setRemoveOpenModal}
       >
-        <FormDelete topic={changeData?.topic} element={changeData?.element} type={changeData?.type}  handleCloseModal={handleRemoveCloseModal}  
-        handleDelete = {
-          () => {
-            try {
-              changeStatusIndicator(changeData?.id);
-              if(dataStore.find(x => x.id == changeData?.id).activo == 'Activo'){
-                dataStore.find(x => x.id == changeData?.id).activo = 'Inactivo';
-              }else{
-                dataStore.find(x => x.id == changeData?.id).activo = 'Activo';
+        <FormDelete topic={changeData?.topic} element={changeData?.element} type={changeData?.type} handleCloseModal={handleRemoveCloseModal}
+          handleDelete={
+            () => {
+              try {
+                changeStatusIndicator(changeData?.id);
+                if (dataStore.find(x => x.id == changeData?.id).activo == 'Activo') {
+                  dataStore.find(x => x.id == changeData?.id).activo = 'Inactivo';
+                } else {
+                  dataStore.find(x => x.id == changeData?.id).activo = 'Activo';
+                }
+                alert.success('Estado del modulo cambiado exitosamente');
+                handleRemoveCloseModal();
+              } catch (err) {
+                alert.error(err);
               }
-              alert.success('Estado del modulo cambiado exitosamente');
-              handleRemoveCloseModal();
-            } catch (err) {
-              alert.error(err);
-            }
-          }}/>
+            }} />
       </FormDialog>
     </>
   );
