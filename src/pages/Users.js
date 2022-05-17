@@ -3,7 +3,6 @@ import React, { useRef } from "react";
 import { useState, useEffect } from "react";
 import DatagridTable from "../components/dashboard/common/DatagridTable";
 import { DataHeader } from "../components/dashboard/common/DataHeader";
-import { useUsers } from "../services/userService";
 import { BeatLoader } from "react-spinners";
 import ShowImage from "../components/dashboard/common/ShowImage";
 import { Status } from "../components/dashboard/common/Status";
@@ -11,9 +10,17 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import FormDialog from "../components/dashboard/common/FormDialog";
 import { DataPagination } from "../components/dashboard/common/DataPagination";
+
+import { changeStatusUser, useUsers } from "../services/userService";
 import FormUser from "../components/dashboard/forms/user/FormUser";
+import ToggleOnIcon from '@mui/icons-material/ToggleOn';
+import ToggleOffIcon from '@mui/icons-material/ToggleOff';
+import { useAlert } from "../contexts/AlertContext";
+import FormDelete from "../components/common/FormDelete";
+
 
 export const Users = () => {
+
   let perPage = localStorage.getItem("perPage") || 5;
   let totalPages = 1;
   let rowsUsers = [];
@@ -31,6 +38,8 @@ export const Users = () => {
     paginationCounter,
     searchUser
   );
+
+  const alert = useAlert();
   const [openModal, setOpenModal] = React.useState(false);
   const handleOpenModal = () => setOpenModal(true);
   const handleCloseModal = () => setOpenModal(false);
@@ -39,32 +48,73 @@ export const Users = () => {
     row: { temaIndicador: "" },
   });
 
+  const [removeOpenModal, setRemoveOpenModal] = React.useState(false);
+  const handleRemoveOpenModal = () => setRemoveOpenModal(true);
+  const handleRemoveCloseModal = () => setRemoveOpenModal(false);
+
+  const [changeData, setChangeData] = useState({});
+  const [dataStore, setDataStore] = useState([]);
+
+  const handleStatus = (id, topic, element, type) => {
+    setChangeData({
+      id,
+      topic,
+      element,
+      type
+    });
+    handleRemoveOpenModal();
+  }
+
   if (activeCounter === 0 && inactiveCounter === 0 && usersList) {
     setActiveCounter(usersList.total - usersList.totalInactivos);
     setInactiveCounter(usersList.totalInactivos);
   }
+
   usersList && (totalPages = usersList.totalPages);
   usersList && (rowsUsers = usersList.data);
 
-  let rowsUsersEdited = [];
-  rowsUsers.map((data) => {
-    rowsUsersEdited = [
-      ...rowsUsersEdited,
-      {
-        ...data,
-        createdAt: data.createdAt.split("T")[0],
-        updatedAt: data.updatedAt.split("T")[0],
-        idRol: data.idRol === 1 ? "Administrador" : data.idRol === 2 ? "Usuario" : "N/A",
-        activo: data.activo === "SI" ? "Activo" : "Inactivo",
-        actions: "Acciones",
-      },
-    ];
-  });
+  // let rowsUsersEdited = [];
+  // rowsUsers.forEach((data) => {
+  //   rowsUsersEdited = [
+  //     ...rowsUsersEdited,
+  //     {
+  //       ...data,
+  //       createdAt: data.createdAt.split("T")[0],
+  //       updatedAt: data.updatedAt.split("T")[0],
+  //       idRol: data.idRol === 1 ? "Administrador" : data.idRol === 2 ? "Usuario" : "N/A",
+  //       activo: data.activo === "SI" ? "Activo" : "Inactivo",
+  //       actions: "Acciones",
+  //      
+  //     },
+  //   ];
+  //});
+
+
   useEffect(() => {
     return () => {
       isMounted.current = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (usersList) {
+      let rowsUsersEdited = [];
+      rowsUsers.map((data) => {
+        rowsUsersEdited = [
+          ...rowsUsersEdited,
+          {
+            ...data,
+            createdAt: data.createdAt.split("T")[0],
+            updatedAt: data.updatedAt.split("T")[0],
+            idRol: data.idRol === 1 ? "Administrador" : data.idRol === 2 ? "Usuario" : "N/A",
+            activo: data.activo === "SI" ? "Activo" : "Inactivo",
+            actions: "Acciones",
+          },
+        ];
+      })
+      setDataStore(rowsUsersEdited)
+    }
+  }, [usersList]);
 
   const editable = true,
     headerClassName = "dt-theme--header",
@@ -151,7 +201,7 @@ export const Users = () => {
       align,
     },
     {
-      field: "avatar",
+      field: "urlImagen",
       headerName: "Avatar ",
       flex: 0.5,
       minWidth: 80,
@@ -166,7 +216,7 @@ export const Users = () => {
           <ShowImage
             data={{
               title: params.row.correo,
-              url: params.row.avatar,
+              url: params.row.urlImagen,
             }}
           />
         );
@@ -210,12 +260,24 @@ export const Users = () => {
       align,
       filterable,
       renderCell: (params) => {
+        // console.log(params.row)
         return (
           <div className="dt-btn-container">
-            <span className="dt-action-delete">
-              {" "}
-              <DeleteOutlineIcon />{" "}
-            </span>
+            {
+              (params.row.activo == 'Activo')
+                ?
+                <span className="dt-action-delete"
+                  onClick={() => handleStatus(params.row.id, "usuario", params.row.nombres + " " + params.row.apellidoPaterno + " " + params.row.apellidoMaterno, "off")}
+                >
+                  <ToggleOnIcon />
+                </span>
+                :
+                <span className="dt-action-delete"
+                  onClick={() => handleStatus(params.row.id, "usuario", params.row.nombres + " " + params.row.apellidoPaterno + " " + params.row.apellidoMaterno, "on")}
+                >
+                  <ToggleOffIcon />
+                </span>
+            }
             <span
               className="dt-action-edit"
               onClick={() => {
@@ -223,8 +285,7 @@ export const Users = () => {
                 setClickInfo(params.row);
               }}
             >
-              {" "}
-              <ModeEditIcon />{" "}
+              <ModeEditIcon />
             </span>
           </div>
         );
@@ -232,7 +293,7 @@ export const Users = () => {
     },
   ];
 
-  const dataTable = [columnsUsers, rowsUsersEdited];
+  const dataTable = [columnsUsers, dataStore];
 
   const dataUser = {
     topic: "usuario",
@@ -275,7 +336,30 @@ export const Users = () => {
         setOpenModal={setOpenModal}
         title={`Editar Usuario`}
       >
-        <FormUser handleCloseModal={handleCloseModal}/>
+        <FormUser handleCloseModal={handleCloseModal} />
+      </FormDialog>
+      <FormDialog
+        open={removeOpenModal}
+        setOpenModal={setRemoveOpenModal}
+      >
+        <FormDelete topic={changeData?.topic} element={changeData?.element} type={changeData?.type} handleCloseModal={handleRemoveCloseModal}
+          handleDelete={
+            () => {
+
+              changeStatusUser(changeData?.id)
+                .then(res => res.data)
+                .then(res => {
+                  if (dataStore.find(x => x.id === changeData?.id).activo === 'Activo') {
+                    dataStore.find(x => x.id === changeData?.id).activo = 'Inactivo';
+                  } else {
+                    dataStore.find(x => x.id === changeData?.id).activo = 'Activo';
+                  }
+                  alert.success('Estado del usuario cambiado exitosamente');
+                  handleRemoveCloseModal();
+                })
+                .catch(err => alert.error(err))
+
+            }} />
       </FormDialog>
     </>
   );

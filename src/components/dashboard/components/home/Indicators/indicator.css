@@ -1,0 +1,206 @@
+.indicator {
+	background: hsla(340, 80%, 69%);
+	background: linear-gradient(90deg, hsla(340, 80%, 69%) 0%, hsla(15, 93%, 71%) 100%);
+	background: -moz-linear-gradient(90deg, hsla(340, 80%, 69%) 0%, hsla(15, 93%, 71%) 100%);
+	background: -webkit-linear-gradient(90deg, hsla(340, 80%, 69%) 0%, hsla(15, 93%, 71%) 100%);
+	filter: progid: DXImageTransform.Microsoft.gradient(startColorstr="#EF709B", endColorstr="#FA9372", GradientType=1);
+	padding: 0 0 1% 0;
+}
+
+.nav-indicator {
+	color: white;
+	font-weight: bold;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-evenly;
+	padding: 5%;
+	gap: 30px;
+}
+
+.information-card {
+	max-height: 300px;
+}
+
+.information-card-content {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.information-card-actions {
+	margin-top: 0 !important;
+	margin-left: 2%;
+	padding: 0 !important;
+}
+
+.tendencia-actual {
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+}
+
+.tendencia-ascendente {
+	color: green;
+}
+
+.tendencia-descendente {
+	color: red;
+}
+
+.tendencia-descendente p {
+	color: rgb(163, 163, 163);
+}
+
+.body-left {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-around;
+	background: white;
+	box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 20px, rgba(0, 0, 0, 0.22) 0px 15px 12px;
+	border-radius: 10px;
+	margin-left: 10%;
+	height: 100%;
+}
+
+.image-indicator {
+	margin-bottom: 5%;
+}
+
+.indicator-with-map {
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+	padding-bottom: 2%;
+	text-decoration: none;
+	gap: 10px;
+	color: rgb(94, 94, 94);
+}
+
+.indicator-with-map a {
+	color: rgb(94, 94, 94);
+	font-weight: bold;
+	text-decoration: none;
+}
+
+.body-right {
+	background-color: white;
+	margin-left: 5%;
+	margin-right: 5%;
+	box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 20px, rgba(0, 0, 0, 0.22) 0px 15px 12px;
+	border-radius: 10px;
+	padding: 0 0 2% 0;
+}
+
+.body-right-content {
+	padding: 0% 5% 0% 5%;
+}
+
+.body-right-content-title {
+	text-align: center;
+	padding: 2% 0 3% 0;
+}
+
+
+.body-right-title {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-evenly;
+	box-shadow: rgba(17, 17, 26, 0.1) 0px 1px 0px, rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 48px;
+	padding: 2% 0 2% 0;
+}
+
+.body-right-title-link {
+	text-decoration: none;
+	color: rgb(94, 94, 94);
+	font-weight: bold;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-evenly;
+	padding: 0.5% 0;
+}
+
+.body-right-catalogos {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-evenly;
+}
+
+.body-right-mapa {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-evenly;
+	align-items: center;
+	gap: 10px;
+}
+
+.indicator-map {
+	width: 70%;
+	border-radius: 10px;
+	box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+	background: blue;
+	margin-bottom: 5%;
+}
+
+.mapa-container {
+	position: relative;
+	width: 90%;
+}
+
+.mapa-container img {
+	width: 100%;
+	height: auto;
+}
+
+.mapa-container .mapa-button {
+	position: absolute;
+	top: 0%;
+	right: 0%;
+	transform: translate(-0%, -0%);
+	-ms-transform: translate(-0%, -0%);
+	font-size: 16px;
+	padding: 12px 24px;
+	border: none;
+	cursor: pointer;
+	border-radius: 5px;
+	text-align: center;
+}
+
+
+.body-down {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+}
+
+.indicator-buttons {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
+	align-items: center;
+	gap: 1%;
+	padding: 1% 2% 0 0;
+}
+
+@media (max-width: 900px) {
+	.body-left {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: space-around;
+		box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 20px, rgba(0, 0, 0, 0.22) 0px 15px 12px;
+		border-radius: 10px;
+		margin: 0% 5% 5% 5%;
+	}
+
+	.body-right {
+		background-color: white;
+		box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 20px, rgba(0, 0, 0, 0.22) 0px 15px 12px;
+		border-radius: 10px;
+		padding-bottom: 518px;
+		margin: 0% 5% 5% 5%;
+	}
+}

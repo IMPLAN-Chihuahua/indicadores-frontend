@@ -1,12 +1,62 @@
 .auth-container{
-height: 300px;
-width: 100%;
-}
-.auth-assign{
 display: flex;
-flex-direction: column;
+justify-content: center;
 align-items: center;
+align-content: center;
+}
+.auth-content{
+    display: flex;
+    flex-direction: column;    
+}
+.auth-header{
+display: flex;
+justify-content: space-between;
+background-color: rgb(0,0,0,0.015);
+border: 1px solid rgb(0,0,0,0.04);
+border-radius: 10px;
+padding: 30px;
+margin-bottom: 10px;
+}
+
+.auth-one{
+    width: 98%;
+    background-color: white;
+    height: 55px;
+}
+.auth-date-container{
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    width: 35%;
+    height: 100%;
 }
 .auth-date{
-    
+    background-color: white;
+    height: 55px;
+}
+.error-msg{
+    margin: 0;
+    height: 25px;
+    bottom: -27px;
+    position: absolute;
+    border-radius: 5px;
+    width: 100%;
+}
+.auth-header-container{
+position: relative;
+width: 100%;
+}
+
+.auth-selection{
+position: relative;
+width: 100%;
+padding: 10px 0 10px 0;
+}
+
+.msj-error{
+    position: absolute;
+    bottom: -30px;
+    right: 180px;
+   color: #D32F2F; 
+   text-align: right;
 }

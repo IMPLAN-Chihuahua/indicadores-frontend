@@ -9,6 +9,15 @@ const emailSchema = yup.object().shape({
   correo: yup.string().email().required(),
 });
 
+const authSchema = yup.object().shape({
+eventStartDate: yup.date().default(() => new Date(Date.now() -86400000)),
+one: yup.string().required("*Selecciona un elemento de la lista"),
+expirationDate: yup.date("Selecciona una fecha valida").required("Selecciona una fecha").when( "eventStartDate",(eventStartDate, schema) => eventStartDate && schema.min(eventStartDate,"Selecciona una fecha valida")).nullable()
+.transform((curr, orig) => orig === '' ? null : curr)
+,
+});
+// use react hook 
+
 const loginSchema = yup.object({
   correo:
     yup.string()
@@ -38,4 +47,4 @@ const moduleSchema = yup.object({
 
 });
 
-export { loginSchema, moduleSchema, emailSchema,confirmPasswordSchema}
+export { loginSchema, moduleSchema, emailSchema,confirmPasswordSchema, authSchema}

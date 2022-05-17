@@ -1,0 +1,122 @@
+
+.ds-search-input{
+    width: 100%;
+}
+
+.ds-container{
+    display: flex;
+}
+
+.ds-name{
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+
+}
+
+.ds-col-2{
+    width: 200px;
+    display: flex;
+    align-items: center;
+    align-content: center;
+    justify-content: left;
+}
+.ds-col-3{
+    display: flex;
+    align-items: center;
+    align-content: center;
+    justify-content: left;
+}
+.ds-btn-selection{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    width: 25px;
+    height: 25px;
+    border: none;
+    background-color: #263044;
+    border-radius: 50%;
+    cursor: pointer;
+}
+.ds-btn-selection:hover{
+    background-color: #0B5ED7;
+}
+.dsl-btn-selection{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    width: 25px;
+    height: 25px;
+    border: none;
+    background-color: #263044;
+    border-radius: 50%;
+    cursor: pointer;
+}
+.dsl-btn-selection:hover{
+    background-color: #D0323A;
+}
+.ds-loading{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    height: 233px;
+    background-color: rgb(0,0,0,0.001);
+}
+.ds-no-content{
+ text-align: center;
+ color: rgb(0,0,0,0.7);   
+}
+.dsl-content-list{
+    /* margin-top: 32px; */
+    margin-left: 25px;
+    position: relative;
+    width: 430px;
+}
+.dsl-header{
+    height: 33px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    color: rgb(0,0,0);
+    border-bottom: 1px solid rgb(0,0,0,0.5);
+    font-size: 16px;
+    font-weight: 600;
+}
+.dsl-body{
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    height: 282px;
+}
+.dsl-footer{
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+.dst-container{
+    width: 430px;
+}
+.auth-title{
+    display: flex;
+    justify-content: space-between;
+}
+.auth-title-btn{
+    background-color: white;
+    border: 1px solid black;
+    margin-left: 15px;
+    padding: 5px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+.auth-title-btn-active{
+    background-color: #263044;
+    color: white;
+    border: none;
+    margin-left: 15px;
+    padding: 6px;
+    cursor: pointer;
+    border-radius: 5px;
+}

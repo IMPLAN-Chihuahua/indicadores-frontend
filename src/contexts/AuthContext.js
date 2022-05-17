@@ -12,6 +12,8 @@ const AuthProvider = ({ children }) => {
     const currentUser = JSON.parse(localStorage.getItem('indicadores-user'));
     if (currentUser) {
       setUser(currentUser)
+    } else {
+      handleLogOut();
     }
   }, []);
 

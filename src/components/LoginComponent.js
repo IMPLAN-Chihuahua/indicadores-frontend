@@ -30,7 +30,7 @@ const LoginComponent = () => {
     });
     const navigate = useNavigate();
     const location = useLocation();
-    const from = location.state?.from?.pathname || '/dashboard';
+    const from = location.state?.from?.pathname || '/';
     const [passwordIsVisible, setPasswordIsVisible] = useState(false);
     const handleShowPassword = () => {
         setPasswordIsVisible(prev => !prev);

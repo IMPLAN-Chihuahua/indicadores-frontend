@@ -1,0 +1,121 @@
+.profile-body {
+  background: linear-gradient(0deg, hsla(311, 74%, 87%, 1) 10%, hsla(0, 0%, 94%, 1) 80%);
+}
+
+.profile-container {
+  position: relative;
+  text-align: center;
+}
+
+.h500 {
+  height: 500px;
+  background-image: url('https://images.unsplash.com/photo-1499336315816-097655dcfbda?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2710&q=80');
+}
+
+.bottom-right {
+  position: absolute;
+  right: 0;
+  transform: translate(-230%, -350%);
+  z-index: 10000;
+}
+
+.bottom-centered {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -40%);
+  background-color: white;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;
+  border-radius: 10px;
+  width: 80%;
+  padding-bottom: 5%;
+}
+
+.user-image-container {
+  position: relative;
+  text-align: center;
+  width: 100%;
+}
+
+.user-image {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -40%);
+}
+
+.user-role {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -180%);
+  background-color: rgba(121, 121, 121, 0.64);
+  color: white;
+  font-weight: normal;
+  font-size: 25px;
+  padding: 0px 50px 2px 50px;
+  max-width: 90px;
+  min-width: 90px;
+  border-radius: 10px;
+}
+
+.magic-line {
+  border-top: 1px solid rgba(121, 121, 121, 0.64);
+  border-radius: 100%;
+  width: 80%;
+}
+
+.description {
+  text-align: center;
+  padding-left: 10%;
+  padding-right: 10%;
+}
+
+.user-description {
+  width: 100%;
+  text-align: center;
+}
+
+.profile-grid-gral {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.profile-grid-editable-gral {
+  max-width: 50%;
+}
+
+
+.bottom-down-right {
+  position: absolute;
+  top: 0;
+  transform: translate(700%, -90%);
+  z-index: 10000;
+}
+
+@media (min-width: 1800px) {
+  .bottom-right {
+    position: absolute;
+    right: 0;
+    transform: translate(-320%, -350%);
+    z-index: 10000;
+  }
+}
+
+@media (max-width: 800px) {
+  .bottom-right {
+    position: absolute;
+    right: 0;
+    transform: translate(-130%, -350%);
+    z-index: 10000;
+  }
+}
+
+@media (max-width: 487px) {
+  .bottom-right {
+    position: absolute;
+    right: 0;
+    transform: translate(-10%, -350%);
+    z-index: 10000;
+    font-size: 0;
+  }
+
+}

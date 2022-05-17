@@ -1,11 +1,11 @@
-.dh-container{
-position: sticky;
-top:60px;
-display: flex;
-justify-content: center;
-padding: 20px;
-background-color: white;
-z-index: 777;
+.dh-container {
+    position: sticky;
+    top: 60px;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    background-color: white;
+    z-index: 777;
 }
 
 /* .dh-counters{
@@ -15,12 +15,15 @@ z-index: 777;
     align-content: center;
 } */
 
-.dh-search, .dh-counters, .dh-options{
-display: flex;
-justify-content: center;
-align-items: center;
-align-content: center;
+.dh-search,
+.dh-counters,
+.dh-options {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
 }
+
 /* .dh-options{
 display: flex;
 justify-content: right;
@@ -28,16 +31,17 @@ align-items: center;
 align-content: center;
 } */
 
-.dh-count{
-     margin-left: 15px;
-     margin-right: 15px;
+.dh-count {
+    margin-left: 15px;
+    margin-right: 15px;
 }
-.dh-options-button{
+
+.dh-options-button {
     height: 40px;
 }
 
 
-.dh-count-container{
+.dh-count-container {
     width: 60px;
     height: 60px;
     display: inline-block;
@@ -45,7 +49,8 @@ align-content: center;
     align-items: center;
     align-content: center;
 }
-.dh-count-number{
+
+.dh-count-number {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -54,39 +59,40 @@ align-content: center;
     border-radius: 50%;
     width: 100%;
     height: 100%;
-    background-color: rgb(0,0,0,0.05);
-    color: rgb(0,0,0,0.5);
+    background-color: rgb(0, 0, 0, 0.05);
+    color: rgb(0, 0, 0, 0.5);
     font-weight: 600;
     font-size: 150%;
 }
 
-.dh-count-text{
+.dh-count-text {
     text-align: center;
     font-weight: 600;
 }
-.dh-search-input{
+
+.dh-search-input {
     width: 90%;
 }
 
-.dh-options{
+.dh-options {
     padding-top: 20px;
     padding-bottom: 20px;
-    
+
 }
 
-.dt-table{
-margin-top: 30px;
-width: 100%;
+.dt-table {
+    margin-top: 30px;
+    width: 100%;
 }
 
-.dt-table-container{
+.dt-table-container {
     display: flex;
     justify-content: center;
     align-items: center;
     align-content: center;
 }
 
-.dt-pagination{
+.dt-pagination {
     display: flex;
     justify-content: left;
     align-items: center;
@@ -94,21 +100,22 @@ width: 100%;
     margin-top: 1%;
 }
 
-.dt-perPage-options--text{
+.dt-perPage-options--text {
     margin-left: 10px;
     font-weight: 500;
 }
 
-.dt-perPage-options-container{
+.dt-perPage-options-container {
     display: flex;
     justify-content: left;
     align-items: center;
     align-content: center;
     margin-top: 7px;
     z-index: 777;
-    
+
 }
-.dt-pagination-options-container{
+
+.dt-pagination-options-container {
     display: flex;
     justify-content: left;
     align-items: center;
@@ -121,25 +128,28 @@ width: 100%;
     min-width: 150px;
 }
 
-.dt-pagination-number{
+.dt-pagination-number {
     min-width: 130px;
     text-align: center;
     margin-bottom: 8px;
-    color: rgb(0,0,0,0.8);
+    color: rgb(0, 0, 0, 0.8);
     font-weight: 600;
-    
+
 }
-.dt-pagination-option{
+
+.dt-pagination-option {
     cursor: pointer;
     color: #1976D2;
 }
-.dt-pagination-option-corner{
+
+.dt-pagination-option-corner {
     cursor: pointer;
     color: #bbbbbb;
     margin-right: 10px;
     margin-left: 10px;
 }
-.dt-loading{
+
+.dt-loading {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -148,13 +158,14 @@ width: 100%;
     height: 200px;
 }
 
-.dt-theme--header{
+.dt-theme--header {
     background-color: #3d5a80;
     color: white;
     font-weight: 600;
     font-size: 18px;
 }
-.params-color{
+
+.params-color {
     width: 100%;
     height: 300px;
     display: flex;
@@ -162,20 +173,22 @@ width: 100%;
     align-items: center;
     align-content: center;
     text-align: center;
-    color: red;
 }
-.params-color--circle{
+
+.params-color--circle {
     width: 35px;
     height: 35px;
     border-radius: 10px;
 }
-.dt-showImage{
+
+.dt-showImage {
     width: 100%;
     min-width: 400px;
     min-height: 400px;
 }
 
-.dt-chip-active, .dt-chip-inactive{
+.dt-chip-active,
+.dt-chip-inactive {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -185,7 +198,9 @@ width: 100%;
     padding: 5px;
     border-radius: 15px;
 }
-.dt-chip-admin, .dt-chip-user{
+
+.dt-chip-admin,
+.dt-chip-user {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -195,44 +210,53 @@ width: 100%;
     padding: 5px;
     border-radius: 15px;
 }
-.dt-chip-active{
+
+.dt-chip-active {
     border: 1px solid #10A04E;
     /* background-color: #C6F9C6; */
 }
-.dt-chip-active--text{
+
+.dt-chip-active--text {
     color: #10A04E;
     font-size: 13px;
     font-weight: 600;
     padding-top: 2px;
     padding-right: 10px;
 }
-.dt-chip-inactive{
+
+.dt-chip-inactive {
     border: 1px solid #9E1010;
     /* border-color: #F0C8C8; */
 }
-.dt-chip-inactive--text{
+
+.dt-chip-inactive--text {
     color: #9E1010;
     font-size: 13px;
     font-weight: 600;
     padding-top: 2px;
     padding-right: 10px;
 }
-.dt-chip-admin{
+
+.dt-chip-admin {
     border: 1px solid #01579b;
     /* background-color: #bbdefb; */
 }
-.dt-chip-admin--text{
+
+.dt-chip-admin--text {
     color: #01579b;
     font-size: 13px;
     font-weight: 600;
     padding-top: 2px;
     padding-right: 10px;
 }
-.dt-chip-user{
-    border: 1px solid #546e7a;;
+
+.dt-chip-user {
+    border: 1px solid #546e7a;
+    ;
     /* background-color: #eceff1 */
 }
-.dt-chip-user--text{
+
+.dt-chip-user--text {
     color: #546e7a;
     font-size: 13px;
     font-weight: 600;
@@ -240,53 +264,91 @@ width: 100%;
     padding-right: 10px;
 }
 
-.dt-theme--text{
+.dt-theme--text {
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.dt-btn-container{
+.dt-btn-container {
     display: flex;
     justify-content: space-between;
     width: 86px;
 }
+.dt-btn-container-tri{
+    display: flex;
+    gap: 7px;
+    width: 120px;
+}
 .dt-action-delete,.dt-action-edit{
 color: white;
+}
 
-display: flex;
-align-items: center;
-justify-content: center;
-align-content: center;
+.dt-action-delete,
+.dt-action-edit {
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
 
-width: 35px;
-height: 35px;
+    width: 35px;
+    height: 35px;
 
-border-radius: 20%;
+    border-radius: 20%;
 
-cursor: pointer;
+    cursor: pointer;
 }
 
 .dt-action-delete{
-    background-color: #df4759;
-}
-.dt-action-delete:hover{
-    background-color: #ce3446;
+background-color: #546e7a;
+color: white;
 }
 
-.dt-action-edit{
+.dt-action-edit {
     background-color: #467fd0;
 }
-.dt-action-edit:hover{
+
+.dt-action-edit:hover {
     background-color: #396db6;
 }
 
 
+/** For Image Uploader **/
+.image {
+    margin-bottom: 5%;
+}
 
-@media (max-width: 900px){
-    .dt-pagination{
+.modal-footer {
+    padding: 5% 0 0 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.modal-centered {
+    position: 'absolute';
+    top: '50%';
+    left: '50%';
+    transform: 'translate(-50%, -50%)';
+    width: 400;
+    background-color: 'background.paper';
+    border: '2px solid #000';
+    box-shadow: 24;
+    padding: 4;
+    background-color: 'white';
+}
+
+.image-selector {
+    cursor: pointer;
+}
+
+@media (max-width: 900px) {
+    .dt-pagination {
         display: inline-block;
     }
-    .dt-showImage{
+
+    .dt-showImage {
         width: 100%;
         min-width: 300px;
         min-height: 250px;

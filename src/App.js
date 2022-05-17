@@ -1,5 +1,6 @@
 import "./App.css";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
+import { Indicator } from './components/dashboard/components/home/Indicators/Indicator'
 import { Modules } from './pages/Modules'
 import { AuthProvider } from "./contexts/AuthContext";
 import { PrivateRoute, PublicRoute } from "./components/RequireAuth";
@@ -11,6 +12,9 @@ import { ForgotPassword } from "./pages/ForgotPassword";
 import { AlertProvider } from "./contexts/AlertContext";
 import { Indicators } from "./pages/Indicators";
 import { Relationship } from "./pages/Relationship";
+import { MyComponents } from "./pages/MyComponents";
+import { Profile } from "./pages/Profile";
+import { GeneralView } from "./components/dashboard/components/home/Indicators/GeneralView";
 
 function App() {
   return (
@@ -37,7 +41,21 @@ function App() {
               <Route path='/usuarios' element={<Users />} />
               <Route path='/modulos' element={<Modules />} />
               <Route path='/indicadores' element={<Indicators />} />
+              <Route path='/indicadores/:id' element={<Indicator />} />
+              <Route path='/indicadores/:id/general' element={<GeneralView />} />
+              <Route path='/indicadores/:id/formula' element={<Indicator />} />
+              <Route path='/indicadores/:id/historicos' element={<Indicator />} />
               <Route path='/autorizacion' element={<Relationship />} />
+              <Route path='/myComponents' element={<MyComponents />} />
+            </Route>
+            <Route
+              path='/profile'
+              element={
+                <PrivateRoute>
+                  <Profile />
+                </PrivateRoute>
+              }
+            >
             </Route>
           </Routes>
         </BrowserRouter>

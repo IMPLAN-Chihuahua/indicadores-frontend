@@ -3,31 +3,32 @@ import React from "react";
 import "./userInformation.css";
 import { useAuth } from '../../../../../contexts/AuthContext';
 
-
 export const UserInformation = () => {
-  const {user} = useAuth();
-  const {correo, nombres,apellidoPaterno,apellidoMaterno} = user;
-  const fullName = `${nombres} ${apellidoPaterno} ${apellidoMaterno}`
+  const { user } = useAuth();
+  const { correo, nombres, apellidoPaterno, apellidoMaterno } = user;
+  const fullName = `${nombres} ${apellidoPaterno} ${apellidoMaterno || ''}`;
   return (
-    <Box>
+    user && (
+      <Box>
         <Box className="user-general-container">
-        <Box className="user-container">
-          <Box className="user-picture">
+          <Box className="user-container">
+            <Box className="user-picture">
               <Box className="picture">
-                  <span className="picture-text">✦</span>
+                <span className="picture-text">✦</span>
               </Box>
-          </Box>
-          <Box className="user-information">
-            <h2 className="user-name">{fullName}</h2>
-            <span className="user-email">{correo}</span>
-          </Box>
-        </Box>
-        <Box className="date">
-            <Box className="date-text">
-            <h3>{new Date().toLocaleDateString()}</h3>
             </Box>
+            <Box className="user-information">
+              <h2 className="user-name">{fullName}</h2>
+              <span className="user-email">{correo}</span>
+            </Box>
+          </Box>
+          <Box className="date">
+            <Box className="date-text">
+              <h3>{new Date().toLocaleDateString()}</h3>
+            </Box>
+          </Box>
         </Box>
       </Box>
-</Box>
+    )
   );
 };
