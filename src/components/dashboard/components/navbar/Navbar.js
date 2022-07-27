@@ -14,7 +14,7 @@ export const Navbar = () => {
         <Box className='navbar-wrapper'>
           <Box className='navbar-left'>
             <Link to='/' className='link-to-profile'>
-              Chihuahua Métrica
+              Chihuahua en Datos
             </Link>
           </Box>
           <Box className='navbar-right'>
