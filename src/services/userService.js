@@ -70,7 +70,7 @@ export const useUsers = (perPage, page, search) => {
 
 export const useSelector = (topic, perPage, page, search) => {
   const { data, error } = useSWR(
-    (topic == 'Indicadores')
+    (topic === 'Indicadores')
       ?
       `indicadores?perPage=${perPage}&page=${page}&searchQuery=${search}`
       :
@@ -83,15 +83,9 @@ export const useSelector = (topic, perPage, page, search) => {
     isError: error,
   }
 };
-export const useAutocompleteInput = (topic) => {
-  const { data, error } = useSWR(
-    (topic == 'Indicadores')
-      ?
-      `usuarios`
-      :
-      `indicadores`
-    , fetcher
-  )
+
+export const useAutocompleteInput = (key) => {
+  const { data, error } = useSWR(key, fetcher)
   return {
     itemList: data,
     isLoading: !error && !data,
@@ -154,4 +148,8 @@ export const updateMe = async (user) => {
 
 export const changeStatusUser = async (id) => {
   return protectedApi.patch(`/usuarios/${id}/toggle-status`);
+}
+
+export const setIndicatorsToUser = (id, data) => {
+  return protectedApi.post(`/usuarios/${id}/indicadores`, data);
 }
