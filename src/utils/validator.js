@@ -10,13 +10,23 @@ const emailSchema = yup.object().shape({
 });
 
 const authSchema = yup.object().shape({
-eventStartDate: yup.date().default(() => new Date(Date.now() -86400000)),
-one: yup.string().required("*Selecciona un elemento de la lista"),
-expirationDate: yup.date("Selecciona una fecha valida").required("Selecciona una fecha").when( "eventStartDate",(eventStartDate, schema) => eventStartDate && schema.min(eventStartDate,"Selecciona una fecha valida")).nullable()
-.transform((curr, orig) => orig === '' ? null : curr)
-,
+  one: yup.object({
+    id: yup.number(),
+    nombre: yup.string()
+  }).nullable().required('Por favor, selecciona un elemento'),
+  desde: yup.date()
+    .nullable()
+    .transform((curr, orig) => orig === '' ? null : curr)
+    .required("Selecciona una fecha"),
+  hasta: yup.date()
+    .nullable()
+    .transform((curr, orig) => orig === '' ? null : curr)
+    .required("Selecciona una fecha")
+    .when(
+      "desde",
+      (desde, schema) => desde && schema.min(desde, "Selecciona una fecha valida")
+    ),
 });
-// use react hook 
 
 const loginSchema = yup.object({
   correo:
@@ -29,7 +39,7 @@ const loginSchema = yup.object({
 });
 
 const moduleSchema = yup.object({
-  temaIndicador: 
+  temaIndicador:
     yup.string()
       .required('Por favor, ingrese el tema del indicador')
       .min(5, 'El tema del indicador debe contener al menos 5 caracteres'),
@@ -40,11 +50,11 @@ const moduleSchema = yup.object({
       .min(3, 'El código debe contener al menos 3 caracteres')
       .max(3, 'El código debe contener máximo 3 caracteres')
       .matches(/^[0-9]+$/, 'El código debe contener solo números'),
-    
+
   observaciones:
     yup.string()
       .max(255, 'Las observaciones debe contener máximo 255 caracteres'),
 
 });
 
-export { loginSchema, moduleSchema, emailSchema,confirmPasswordSchema, authSchema}
+export { loginSchema, moduleSchema, emailSchema, confirmPasswordSchema, authSchema }

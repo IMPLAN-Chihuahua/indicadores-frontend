@@ -1,4 +1,3 @@
-import { publicApi } from '.';
 import { protectedApi } from '.';
 import useSWR from 'swr';
 
@@ -31,6 +30,10 @@ const updateIndicator = async (id, data) => {
     }
 }
 
+const setUsersToIndicator = async (id, data) => {
+    return protectedApi.post(`/indicadores/${id}/usuarios`, data);
+};
+
 export const changeStatusIndicator = async (id) => {
     try {
         const response = await protectedApi.patch(`/indicadores/${id}/toggle-status`);
@@ -44,4 +47,5 @@ export {
     getIndicator,
     updateIndicator,
     useIndicadorWithSWR,
+    setUsersToIndicator
 };

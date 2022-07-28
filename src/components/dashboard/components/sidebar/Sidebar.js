@@ -109,11 +109,6 @@ export const Sidebar = () => {
                             <span>Autorizacion</span>
                         </li>
                         </Link>
-                        <Link to='myComponents'>
-                        <li>
-                            <span>Miau</span>
-                        </li>
-                        </Link>
                         </ul>
                      </Box>
                 </Box>
