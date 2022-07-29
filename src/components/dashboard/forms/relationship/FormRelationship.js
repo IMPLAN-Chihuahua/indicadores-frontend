@@ -1,180 +1,191 @@
-import { Box, Button, TextField, DialogTitle, DialogContent, DialogActions, Autocomplete} from '@mui/material';
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import {FormProvider, useForm} from "react-hook-form";
+import { Button, TextField, DialogTitle, DialogContent, DialogActions, Autocomplete, Box, Typography } from '@mui/material';
+import React, { useEffect, useReducer, useState } from 'react';
+import { Controller, FormProvider, useForm } from "react-hook-form";
 import { DataSelector } from '../../../common/dataSelector/DataSelector';
-import { useAutocompleteInput } from '../../../../services/userService';
+import { setIndicatorsToUser, useAutocompleteInput } from '../../../../services/userService';
 import { DataContext } from '../../../common/dataSelector/DataContext';
 import { dataReducer } from '../../../common/dataSelector/dataReducer';
 import { authSchema } from '../../../../utils/validator';
-import {yupResolver} from '@hookform/resolvers/yup' 
+import { yupResolver } from '@hookform/resolvers/yup'
 import './FormRelationship.css'
-/*
-mode: 
-UI = Usuario a indicadores
-IU = Indicador a usuarios
-*/
-const FormRelationship = ({ data = 0, handleCloseModal }) => {
-    const init = () => {
-      return []
-    } 
-    const [dataList, dispatch] = React.useReducer(dataReducer, [], init)
-    const [mode, setMode] = useState('Indicadores');
-    const [listAlert, setListAlert] = useState(false);
-    const { register, handleSubmit, formState: { errors }, clearErrors} = useForm(
-      {resolver: yupResolver(authSchema)}
-    );
-    
-    const onSubmit = data => {
-        if(dataList.length <= 0){
-          setListAlert(true)
-        }else{
-          setListAlert(false)
-          const dataAuth = {
-            ...data,
-            list: dataList,
-          }
-          console.log(dataAuth)
-          handleCloseModal()
-          // alert.success('Autorización creada exitosamente');
-        }
-    };
-    const handleChangeMode = (mode) => {
-        setMode(mode)
+import { setUsersToIndicator } from '../../../../services/indicatorService';
+import { useAlert } from '../../../../contexts/AlertContext';
+
+const USER_TO_INDICADORES = 'INDICADORES_TO_USER';
+const INDICADOR_TO_USERS = 'USERS_TO_INDICADOR';
+
+const FormRelationship = ({ handleCloseModal }) => {
+  const [dataList, dispatch] = useReducer(dataReducer, [])
+  const [mode, setMode] = useState(USER_TO_INDICADORES);
+  const [listAlert, setListAlert] = useState(false);
+  const [placeholder, setPlaceholder] = useState()
+  const alert = useAlert();
+
+  const { control, handleSubmit, reset } = useForm({
+    resolver: yupResolver(authSchema)
+  });
+
+  const onSubmit = data => {
+    if (dataList.length === 0) {
+      setListAlert(true)
+      return;
     }
-    
-    let itemListFull = []
-    const {itemList, isLoading, isError} = useAutocompleteInput(
-      mode
-    );
-    (itemList && mode == 'Indicadores') 
-    ? itemList?.data.map((item)=>{
-      itemListFull = [...itemListFull,{
-        label: `${item.id}-${item.nombres} ${item.apellidoPaterno} ${item.apellidoMaterno}`
-      }]
-    })
-    : itemList?.data.map((item)=>{
-      itemListFull = [...itemListFull,{
-        label: `${item.id}-${item.nombre}`
-      }]
-    })
 
-    const [placeholderMode, setPlaceholderMode] = useState('Selecciona un usuario')
-    
-    useEffect(() => {
-      itemListFull = []
-    if (mode == 'Indicadores') {
-      setPlaceholderMode('Selecciona un usuario')
-    }else{
-      setPlaceholderMode('Selecciona un indicador') 
-    } 
-    }, [mode])
+    setListAlert(false)
+    const { one, ...options } = data;
+    const selectedOption = mode === INDICADOR_TO_USERS ? 'usuarios' : 'indicadores';
+    const payload = {
+      ...options,
+      [selectedOption]: dataList.map(e => e.id),
+    }
+    console.log({ ...payload, id: one.id })
+    return
+    if (mode === USER_TO_INDICADORES) {
+      setIndicatorsToUser(one.id, payload)
+        .then(_ => alert.success('Indicador (es) asignado (s) exitosamente'))
+        .catch(err => alert.error(err))
 
-    useEffect(() => {
-      setListAlert(false)
-    }, [dataList])
-    
+    } else {
+      setUsersToIndicator(one.id, payload)
+        .then(_ => alert.success('Usuario (s) asignado (s) exitosamente'))
+        .catch(err => alert.error(err))
+    }
+  };
 
-    return (
-        <>
-          <DataContext.Provider value={dataList}>
-            <DialogTitle>
-            <div className='auth-title'>
-              <div className='auth-title-left'>
+  const handleChangeMode = (mode) => {
+    setMode(mode)
+    reset({ one: null })
+  };
+
+  const { itemList } = useAutocompleteInput(mode === USER_TO_INDICADORES ? 'usuarios' : 'indicadores');
+
+  useEffect(() => {
+    if (mode === USER_TO_INDICADORES) {
+      setPlaceholder('Selecciona un usuario')
+    } else {
+      setPlaceholder('Selecciona un indicador')
+    }
+  }, [mode])
+
+  useEffect(() => {
+    setListAlert(false)
+  }, [dataList])
+
+  return (
+    <>
+      <DataContext.Provider value={{ dataList, dispatch }}>
+        <DialogTitle>
+          <div className='auth-title'>
+            <div className='auth-title-left'>
               Autorizacion
-              </div>
-              <div className='auth-title-right'>
-              <button className={`auth-title-btn${(mode == 'Indicadores')?'-active':``}`} onClick={() => handleChangeMode('Indicadores')}>Usuario a indicadores</button>
-              <button className={`auth-title-btn${(mode == 'Usuarios')?'-active':``}`} onClick={() => handleChangeMode('Usuarios')}>Indicador a usuarios</button>
-              </div>
             </div>
-            </DialogTitle>
-            <FormProvider >
-                <Box
-                    component='div'
-                    // onSubmit={handleSubmit(onSubmit)}
-                >
-                    <DialogContent>
-                    <div className='auth-container'>
-                    <div className='auth-content'>
-                    <div className='auth-header'>
-                    <div className='auth-header-container'>
-                     {
-                       <Autocomplete
-                          onChange= {() => {clearErrors("one")}}
-                          key={mode}
-                          name= 'one'
-                          type='text'
-                          disablePortal
-                          className='auth-one'
-                          isOptionEqualToValue={(option, value) => option.id === value.id}
-                          options={itemListFull}
-                          renderInput={(params) => <TextField {...params}
-                          label={placeholderMode}
-                          error= {(errors.one?.message) ? true : false} 
-                          helperText= {errors.one?.message}
-                          {...register('one')}  
-                          />}
-                          />
-                        }
-                      </div>
-                      <div 
-                      className='auth-date-container'
-                      style={{
-                        display: 'flex'
-                      }}>
-                          <TextField
-                          name='expirationDate'
-                          className='auth-date'
-                          type="date"
-                          label="Fecha de expiracion"
-                          defaultValue= {new Date().toISOString().split('T')[0]}
-                          InputLabelProps={{
-                            shrink: true,
-                          }}
-                          error= {(errors.expirationDate?.message) ? true : false} 
-                          helperText= {errors.expirationDate?.message}
-                          {...register('expirationDate')}  
-                          />     
-                          <TextField
-                          name='expirationDate'
-                          className='auth-date'
-                          type="date"
-                          label="Fecha de expiracion"
-                          defaultValue= {new Date().toISOString().split('T')[0]}
-                          InputLabelProps={{
-                            shrink: true,
-                          }}
-                          error= {(errors.expirationDate?.message) ? true : false} 
-                          helperText= {errors.expirationDate?.message}
-                          {...register('expirationDate')}  
-                          />     
-                          </div>
-                    </div>
-                    <div className='auth-selection'>
-                      {
-                        (mode == 'Indicadores')
-                        ?
-                        <>
-                        <DataSelector topic={'Indicadores'} dispatch={dispatch}/>
-                        {(listAlert) && <p className='msj-error'>*No has hecho ninguna asignación</p>
-                        }
-                        </>
-                        :
-                        <DataSelector topic={'Usuarios'} dispatch={dispatch}/>
-                      }
-                    </div>
-                      </div>
-                    </div>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleCloseModal}>Cancelar</Button>
-                        <Button type='submit' variant='contained' onClick={handleSubmit(onSubmit)} >Guardar</Button>
-                    </DialogActions>
-                </Box>
-            </FormProvider>
-            </DataContext.Provider>
-        </>
-    )
+            <div className='auth-title-right'>
+              <button
+                className={`auth-title-btn${(mode === USER_TO_INDICADORES) ? '-active' : ''}`}
+                onClick={() => handleChangeMode(USER_TO_INDICADORES)}>Usuario a indicadores</button>
+
+              <button
+                className={`auth-title-btn${(mode === INDICADOR_TO_USERS) ? '-active' : ''}`}
+                onClick={() => handleChangeMode(INDICADOR_TO_USERS)}>Indicador a usuarios</button>
+            </div>
+          </div>
+        </DialogTitle>
+        <Box
+          component='form'
+          noValidate
+        >
+          <DialogContent>
+            {itemList &&
+              <Controller
+                name='one'
+                control={control}
+                defaultValue={null}
+                render={({ field: props, fieldState: { error } }) => (
+                  <Autocomplete
+                    {...props}
+                    type='text'
+                    disablePortal
+                    getOptionLabel={item => {
+                      return mode && mode === USER_TO_INDICADORES
+                        ? `${item.nombres} ${item.apellidoPaterno} ${item.apellidoMaterno || ''}`
+                        : item.nombre
+                    }}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                    options={[...itemList.data]}
+                    onChange={(_, data) => props.onChange(data)}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label={placeholder}
+                        error={!!error}
+                        fullWidth
+                        helperText={error?.message}
+                      />
+                    )}
+                  />
+                )}
+              />}
+            <Box sx={{ display: 'flex', mt: 3, columnGap: 2 }}>
+              <Controller
+                name='desde'
+                control={control}
+                defaultValue=''
+                render={({ field: { value, onChange }, fieldState: { error } }) => (
+                  <TextField
+                    type="date"
+                    value={value}
+                    onChange={onChange}
+                    label="Fecha de inicio"
+                    InputLabelProps={{ shrink: true }}
+                    error={!!error}
+                    helperText={error ? error.message : null}
+                    fullWidth
+                  />
+                )}
+              />
+              <Controller
+                name='hasta'
+                control={control}
+                defaultValue=''
+                render={({ field: { value, onChange }, fieldState: { error } }) => (
+                  <TextField
+                    type="date"
+                    value={value}
+                    onChange={onChange}
+                    label="Fecha de expiración"
+                    InputLabelProps={{ shrink: true }}
+                    error={!!error}
+                    helperText={error?.message}
+                    fullWidth
+                  />
+                )}
+              />
+
+            </Box>
+            <div className='auth-selection'>
+              {
+                <DataSelector 
+                  topic={mode === USER_TO_INDICADORES ? 'Indicadores' : 'Usuarios'}
+                />
+              }
+              {
+                listAlert && (
+                  <Typography
+                    textAlign='center'
+                    color='error'
+                    variant='body2'>Selecciona elementos de la lista</Typography>
+                )
+              }
+            </div>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseModal}>Cancelar</Button>
+            <Button variant='contained' onClick={handleSubmit(onSubmit)}>Guardar</Button>
+          </DialogActions>
+        </Box>
+      </DataContext.Provider>
+    </>
+  )
 }
 
 export default FormRelationship;

@@ -100,6 +100,7 @@ export const Indicators = () => {
       isMounted.current = false;
     };
   }, []);
+
   useEffect(() => {
     if (IndicatorsList) {
       let rowsIndicatorsEdited = [];
@@ -327,6 +328,8 @@ export const Indicators = () => {
     setSearch: setSearchIndicator,
     searchValue: searchIndicator
   };
+
+  console.log(dataTable);
 
   return (
     <>

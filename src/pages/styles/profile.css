@@ -72,3 +72,50 @@
   width: 100%;
   text-align: center;
 }
+
+.profile-grid-gral {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.profile-grid-editable-gral {
+  max-width: 50%;
+}
+
+
+.bottom-down-right {
+  position: absolute;
+  top: 0;
+  transform: translate(700%, -90%);
+  z-index: 10000;
+}
+
+@media (min-width: 1800px) {
+  .bottom-right {
+    position: absolute;
+    right: 0;
+    transform: translate(-320%, -350%);
+    z-index: 10000;
+  }
+}
+
+@media (max-width: 800px) {
+  .bottom-right {
+    position: absolute;
+    right: 0;
+    transform: translate(-130%, -350%);
+    z-index: 10000;
+  }
+}
+
+@media (max-width: 487px) {
+  .bottom-right {
+    position: absolute;
+    right: 0;
+    transform: translate(-10%, -350%);
+    z-index: 10000;
+    font-size: 0;
+  }
+
+}
