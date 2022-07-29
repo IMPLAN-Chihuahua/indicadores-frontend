@@ -87,16 +87,18 @@ const FormUser = ({ handleCloseModal }) => {
         >
           <DialogContent>
             <Grid container columnSpacing={2} rowSpacing={2}>
-              <Grid item xs={12} >
-                <Typography variant="subtitle1" component="h4">
-                  Cuenta
-                </Typography>
-              </Grid>
               <Grid item xs={12}>
-                <FileInput
-                  accept='image/png, image/jpg, image/jpeg, image/gif'
-                  name='profileImage'
-                />
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center'
+                  }}
+                >
+                  <FileInput
+                    accept='image/png, image/jpg, image/jpeg, image/gif'
+                    name='profileImage'
+                  />
+                </Box>
               </Grid>
               <Grid item sm={12}>
                 <Controller
