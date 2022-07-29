@@ -2,7 +2,8 @@ import {
   Button, DialogActions,
   DialogContent, Grid,
   Link as MuiLink, Typography,
-  Box
+  Box,
+  TextField
 } from "@mui/material";
 import {
   Controller, FormProvider,
@@ -10,13 +11,12 @@ import {
 } from "react-hook-form";
 import { MathJax } from "better-react-mathjax";
 import EquationEditor from "equation-editor-react";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useCallback, useEffect, useState } from "react";
 import "../../../common/mathInput/mathInput.css";
-import { addFormulaData } from "../../../../features/indicador/indicadorSlice";
-import { isObjEmpty } from "../../../../utils/objects";
 import { Variable } from "../../../common/formula/Variable";
+import { getCatalogosDetails } from "../../../../services/cataloguesService";
 
+const UNIDAD_MEDIDA_ID = 2;
 
 const EquationInput = ({ value, onChange }) => {
   return (
@@ -32,7 +32,7 @@ const EquationInput = ({ value, onChange }) => {
         rel='noopener noreferrer'
         variant='body2'
         href='https://www.latex-project.org/help/documentation/amsldoc.pdf'
-      >Documentación MathJax</MuiLink>
+      >Documentación LaTex</MuiLink>
     </div>
   );
 };
@@ -45,7 +45,7 @@ const EquationViewer = ({ equation }) => {
       </div>
       <Typography
         variant='body2'
-      >Doble click para editar ecuación</Typography>
+      >Doble clic para editar ecuación</Typography>
     </>
   )
 }
@@ -67,86 +67,105 @@ export const FormFormula = ({ handleBack, handleNext }) => {
   });
 
   const { handleSubmit, control, reset } = methods;
+
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'variables'
   })
-
-  const dispatch = useDispatch();
   const addVariable = (variable) => append({ ...variable });
   const deleteVariable = (index) => remove(index);
   const onSubmit = data => {
-    dispatch(addFormulaData(data))
-    handleNext();
+    console.log(data)
   };
 
-  const formulaForm = useSelector((state) => state.indicadores.formula);
+  const [medidaOptions, setMedidaOptions] = useState([]);
+
+  const fetchUnidadMedida = useCallback(async () => {
+    const items = await getCatalogosDetails(UNIDAD_MEDIDA_ID);
+    setMedidaOptions(items);
+  }, [setMedidaOptions]);
 
   useEffect(() => {
-    if (!isObjEmpty(formulaForm)) {
-      reset(formulaForm);
-    }
-  }, []);
+    fetchUnidadMedida();
+  }, [fetchUnidadMedida]);
 
   const [editingEquation, setEditingEquation] = useState(false);
 
   return (
-    <>
-      <DialogContent style={{ height: '60vh' }}>
-        <FormProvider {...methods}>
-          <Box
-            component='form'
-            noValidate
-          >
-            <Grid container gap={2}>
-              <Grid item xs={12}>
-                <Typography component='label'>Ecuación
-                  <Controller
-                    name='ecuacion'
-                    control={control}
-                    render={({
-                      field: { onChange, value }
-                    }) => editingEquation ?
-                        (
-                          <EquationInput
-                            value={value}
-                            onChange={onChange}
-                          />
-                        ) :
-                        (
-                          <Box onDoubleClick={() => setEditingEquation(true)}>
-                            {
-                              value ?
-                                (
-                                  <EquationViewer equation={value} />
-                                ) :
-                                (<Typography
-                                  variant='body1'>
-                                  Doble click para ingresar la ecuación
-                                </Typography>)
-                            }
-                          </Box>
-                        )
-                    }
-                  />
-                </Typography>
-              </Grid>
-              {fields.map((field, i) => (
-                <Variable
-                  index={i}
-                  key={field.id}
-                  addVariable={i === 0 && addVariable}
-                  deleteVariable={i !== 0 && deleteVariable}
+    <FormProvider {...methods}>
+      <Box
+        component='form'
+        noValidate
+      >
+        <Grid container gap={2}>
+          <Grid item xs={12}>
+            <Typography variant='h5' component='h3'>Formula</Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Controller
+              name='descripcion'
+              control={control}
+              render={({ field: { value, onChange }, fieldState: { error } }) => (
+                <TextField
+                  fullWidth
+                  multiline
+                  label='Descripción'
+                  rows={2}
                 />
-              ))}
-            </Grid>
-          </Box>
-        </FormProvider>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleBack}>Atras</Button>
-        <Button variant='contained' onClick={handleSubmit(onSubmit)}>Siguiente</Button>
-      </DialogActions>
-    </>
+              )}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Controller
+              name='ecuacion'
+              control={control}
+              render={({
+                field: { onChange, value }
+              }) => editingEquation ?
+                  (
+                    <EquationInput
+                      value={value}
+                      onChange={onChange}
+                    />
+                  ) :
+                  (
+                    <Box onDoubleClick={() => setEditingEquation(true)}>
+                      {
+                        value ?
+                          (
+                            <EquationViewer equation={value} />
+                          ) :
+                          (<Typography
+                            variant='body2'
+                            sx={{
+                              backgroundColor: 'aliceBlue',
+                              border: '2px dashed rgba(0,0,0,0.6)',
+                              padding: 2,
+                              borderRadius: '5px'
+                            }}
+                          >
+                            Haz doble clic para ingresar la ecuación
+                          </Typography>)
+                      }
+                    </Box>
+                  )
+              }
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant='h5' component='h3'>Variables</Typography>
+          </Grid>
+          {fields.map((field, i) => (
+            <Variable
+              index={i}
+              key={field.id}
+              addVariable={i === 0 && addVariable}
+              deleteVariable={i !== 0 && deleteVariable}
+              medidaOptions={medidaOptions}
+            />
+          ))}
+        </Grid>
+      </Box>
+    </FormProvider>
   );
 };

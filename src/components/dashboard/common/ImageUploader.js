@@ -37,7 +37,6 @@ const ImageUploader = ({ imageSource, badgeContent, type = 'avatar' }) => {
 			{
 				type === 'avatar' ?
 					(
-						console.log('asdadad' + imageSource),
 						<Avatar onClick={() => {
 							handleState(imageSource);
 						}} sx={{ width: 160, height: 160 }}

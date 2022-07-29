@@ -15,8 +15,6 @@ import { DataPagination } from "../components/dashboard/common/DataPagination";
 import { FormIndicador } from "../components/dashboard/forms/indicador/FormIndicador";
 import { HorizontalStepper } from "../components/dashboard/forms/indicador/HorizontalStepper";
 import { FormProvider, useForm } from "react-hook-form";
-import { Provider } from "react-redux";
-import { indicadorStore } from "../components/dashboard/forms/indicador/store";
 import FormDelete from "../components/common/FormDelete";
 import ToggleOnIcon from '@mui/icons-material/ToggleOn';
 import ToggleOffIcon from '@mui/icons-material/ToggleOff';
