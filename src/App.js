@@ -14,6 +14,7 @@ import { Indicators } from "./pages/Indicators";
 import { Relationship } from "./pages/Relationship";
 import { MyComponents } from "./pages/MyComponents";
 import { Profile } from "./pages/Profile";
+import { MathJaxContext } from 'better-react-mathjax';
 import { GeneralView } from "./components/dashboard/components/home/Indicators/GeneralView";
 
 function App() {
@@ -21,43 +22,45 @@ function App() {
     <AuthProvider>
       <AlertProvider>
         <BrowserRouter>
-          <Routes>
-            <Route path='/recuperacion-de-cuenta/*' element={<ForgotPassword />} />
-            <Route
-              path="/login"
-              element={
-                <PublicRoute>
-                  <Login />
-                </PublicRoute>
-              } />
-            <Route
-              path="/"
-              element={
-                <PrivateRoute>
-                  <Dashboard />
-                </PrivateRoute>} >
-              <Route index element={<Home />} />
-              <Route path='*' element={<>Not found</>} />
-              <Route path='/usuarios' element={<Users />} />
-              <Route path='/modulos' element={<Modules />} />
-              <Route path='/indicadores' element={<Indicators />} />
-              <Route path='/indicadores/:id' element={<Indicator />} />
-              <Route path='/indicadores/:id/general' element={<GeneralView />} />
-              <Route path='/indicadores/:id/formula' element={<Indicator />} />
-              <Route path='/indicadores/:id/historicos' element={<Indicator />} />
-              <Route path='/autorizacion' element={<Relationship />} />
-              <Route path='/myComponents' element={<MyComponents />} />
-            </Route>
-            <Route
-              path='/profile'
-              element={
-                <PrivateRoute>
-                  <Profile />
-                </PrivateRoute>
-              }
-            >
-            </Route>
-          </Routes>
+          <MathJaxContext>
+            <Routes>
+              <Route path='/recuperacion-de-cuenta/*' element={<ForgotPassword />} />
+              <Route
+                path="/login"
+                element={
+                  <PublicRoute>
+                    <Login />
+                  </PublicRoute>
+                } />
+              <Route
+                path="/"
+                element={
+                  <PrivateRoute>
+                    <Dashboard />
+                  </PrivateRoute>} >
+                <Route index element={<Home />} />
+                <Route path='*' element={<>Not found</>} />
+                <Route path='/usuarios' element={<Users />} />
+                <Route path='/modulos' element={<Modules />} />
+                <Route path='/indicadores' element={<Indicators />} />
+                <Route path='/indicadores/:id' element={<Indicator />} />
+                <Route path='/indicadores/:id/general' element={<GeneralView />} />
+                <Route path='/indicadores/:id/formula' element={<Indicator />} />
+                <Route path='/indicadores/:id/historicos' element={<Indicator />} />
+                <Route path='/autorizacion' element={<Relationship />} />
+                <Route path='/myComponents' element={<MyComponents />} />
+              </Route>
+              <Route
+                path='/profile'
+                element={
+                  <PrivateRoute>
+                    <Profile />
+                  </PrivateRoute>
+                }
+              >
+              </Route>
+            </Routes>
+          </MathJaxContext>
         </BrowserRouter>
       </AlertProvider>
     </AuthProvider>

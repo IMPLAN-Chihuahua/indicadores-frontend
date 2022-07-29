@@ -37,9 +37,12 @@ protectedApi.interceptors.request.use(
 protectedApi.interceptors.response.use(
   res => res,
   error => {
-    if (error.response
+    if (
+      error.response
       && error.response.status === 403
-      && error.response.data === 'Invalid or expired token') {
+      && (error.response.data === 'Invalid or expired token'
+        || error.response.data === 'Esta cuenta se encuentra deshabilitada')
+    ) {
       eventBus.dispatch('logout');
     }
     const message =

@@ -3,8 +3,7 @@ import { Grid, IconButton, TextField, Autocomplete } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { Controller, useFormContext } from 'react-hook-form';
-
-const options = ['option 1', 'option 2']
+import { CatalogoAutocomplete } from '../../dashboard/common/CatalogPicker';
 
 export const Variable = (props) => {
   const methods = useFormContext();
@@ -12,12 +11,14 @@ export const Variable = (props) => {
   const { getValues } = methods;
   const { index } = props;
   const { addVariable, deleteVariable } = props;
+  
   const handleOnClick = () => {
     if (addVariable) {
       const newVariable = {
         nombre: getValues('nombre'),
         dato: getValues('dato'),
-        anio: getValues('anio')
+        anio: getValues('anio'),
+        medida: getValues('medida'),
       }
       addVariable(newVariable);
     } else if (deleteVariable) {
@@ -31,23 +32,22 @@ export const Variable = (props) => {
       sx={{
         borderRadius: 5,
         alignItems: 'self-start',
-        justifyContent: 'space-evenly',
+        justifyContent: 'center',
         gap: 1
       }}
     >
-      <Grid item xs>
+      <Grid item xs={2}>
         <Controller
           control={methods.control}
           name={`variables[${index}].nombre`}
           defaultValue=''
           render={({
-            field: { onChange, value }
+            field
           }) => (
             <TextField
               label='Variable'
-              placeholder='x'
-              onChange={onChange}
-              value={value}
+              fullWidth
+              {...field}
             />
           )}
         />
@@ -58,13 +58,12 @@ export const Variable = (props) => {
           name={`variables[${index}].dato`}
           defaultValue=''
           render={({
-            field: { onChange, value }
+            field
           }) => (
             <TextField
               label='Dato'
-              placeholder='123'
-              onChange={onChange}
-              value={value}
+              fullWidth
+              {...field}
             />
           )}
         />
@@ -75,30 +74,33 @@ export const Variable = (props) => {
           name={`variables[${index}].anio`}
           defaultValue=''
           render={({
-            field: { onChange, value }
+            field
           }) => (
             <TextField
               label='Año'
-              placeholder={'2022'}
-              onChange={onChange}
-              value={value}
+              {...field}
             />
           )}
         />
       </Grid>
       <Grid item xs={3}>
-        <Autocomplete
-          options={options}
-          renderInput={(params) => <TextField {...params} label="Unidad Medida" />}
-        />
-      </Grid>
-      <Grid item xs={3}>
-        <TextField
-          name='nombreAtributo'
-          label='Descripcion'
-          placeholder='Lorem ipsum'
-          multiline
-          fullWidth
+        <Controller
+          name={`variables[${index}].medida`}
+          control={methods.control}
+          defaultValue={null}
+          render={({
+            field: { value, onChange },
+            fieldState: { error }
+          }) => (
+            <CatalogoAutocomplete
+              id={2}
+              value={value}
+              onChange={onChange}
+              label="Unidad Medida"
+              error={error}
+              opts={props.medidaOptions}
+            />
+          )}
         />
       </Grid>
       <Grid item xs={1} alignSelf='center'>

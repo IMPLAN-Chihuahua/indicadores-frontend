@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { getCatalogos, getCatalogosDetails, getCatalogosFromIndicador, useCatalogos } from '../../../services/cataloguesService';
 import OdsPicker from './OdsPicker';
 import { Controller } from 'react-hook-form';
 import { Grid } from '@mui/material';
-import { BeatLoader } from 'react-spinners';
 
 const CatalogPicker = ({ idIndicatorCatalog = 0, control, xs = 12, md = 4, catalogs = [] }) => {
     const [catalogos, setCatalogos] = useState([]);
@@ -119,4 +118,41 @@ const RegularCatalogs = ({ idCatalog, Catalog, idIndicatorCatalog, control, cata
         </>
     );
 }
+
+
+export const CatalogoAutocomplete = ({ value, onChange, label, id, error, required, opts = [] }) => {
+    const [options, setOptions] = useState([]);
+    const fetchCatalogDetails = useCallback(async () => {
+        const items = await getCatalogosDetails(id);
+        setOptions(items)
+    }, [id]);
+
+    useEffect(() => {
+        if (opts.length === 0) {
+            fetchCatalogDetails();
+        } else {
+            setOptions(opts)
+        }
+    }, []);
+
+    return (<Autocomplete
+        value={value}
+        autoHighlight
+        options={options}
+        getOptionLabel={option => option.nombre}
+        isOptionEqualToValue={(option, value) => option.id === value.id}
+        onChange={(_, data) => onChange(data)}
+        renderInput={(params) => (
+            <TextField
+                {...params}
+                label={label}
+                error={!!error}
+                helperText={error?.message}
+                required={required}
+            />
+        )}
+    />
+    );
+}
+
 export default CatalogPicker;

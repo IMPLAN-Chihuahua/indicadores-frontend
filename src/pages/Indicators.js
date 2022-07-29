@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, DialogContent, DialogTitle } from "@mui/material";
 import React, { useRef } from "react";
 import { useState, useEffect, useMemo } from "react";
 import DatagridTable from "../components/dashboard/common/DatagridTable";
@@ -15,8 +15,6 @@ import { DataPagination } from "../components/dashboard/common/DataPagination";
 import { FormIndicador } from "../components/dashboard/forms/indicador/FormIndicador";
 import { HorizontalStepper } from "../components/dashboard/forms/indicador/HorizontalStepper";
 import { FormProvider, useForm } from "react-hook-form";
-import { Provider } from "react-redux";
-import { indicadorStore } from "../components/dashboard/forms/indicador/store";
 import FormDelete from "../components/common/FormDelete";
 import ToggleOnIcon from '@mui/icons-material/ToggleOn';
 import ToggleOffIcon from '@mui/icons-material/ToggleOff';
@@ -47,15 +45,15 @@ export const Indicators = () => {
   );
 
   const alert = useAlert();
-  const [openModal, setOpenModal] = React.useState(false);
-  const handleOpenModal = () => setOpenModal(true);
-  const handleCloseModal = () => setOpenModal(false);
+  const [isFormVisible, setFormVisible] = useState(false);
+  const handleOpenModal = () => setFormVisible(true);
+  const handleCloseModal = () => setFormVisible(false);
 
-  const [clickInfo, setClickInfo] = React.useState({
+  const [clickInfo, setClickInfo] = useState({
     row: { temaIndicador: "" },
   });
 
-  const [removeOpenModal, setRemoveOpenModal] = React.useState(false);
+  const [removeOpenModal, setRemoveOpenModal] = useState(false);
   const handleRemoveOpenModal = () => setRemoveOpenModal(true);
   const handleRemoveCloseModal = () => setRemoveOpenModal(false);
 
@@ -308,7 +306,7 @@ export const Indicators = () => {
             <span
               className="dt-action-edit"
               onClick={() => {
-                setOpenModal((prev) => !prev);
+                setFormVisible((prev) => !prev);
                 setClickInfo(params.row);
               }}
             >
@@ -325,8 +323,6 @@ export const Indicators = () => {
 
   const dataIndicator = {
     topic: "indicador",
-    // countEnable: activeCounter,
-    // countDisable: inactiveCounter,
     countEnable: 100,
     countDisable: 10,
     setSearch: setSearchIndicator,
@@ -363,17 +359,22 @@ export const Indicators = () => {
           </>
         )}
       </Box>
-      <FormDialog
-        open={openModal}
-        setOpenModal={setOpenModal}
-        fullWidth
-        keepMounted
-        maxWidth='lg'
-      >
-        <Provider store={indicadorStore}>
-          <HorizontalStepper />
-        </Provider>
-      </FormDialog>
+      {
+        isFormVisible && (
+          <FormDialog
+            open={isFormVisible}
+            setOpenModal={setFormVisible}
+            fullWidth
+            keepMounted
+            maxWidth='lg'
+          >
+            <DialogTitle>
+              Nuevo Indicador
+            </DialogTitle>
+            <FormIndicador />
+          </FormDialog>
+        )
+      }
       <FormDialog
         open={removeOpenModal}
         setOpenModal={setRemoveOpenModal}

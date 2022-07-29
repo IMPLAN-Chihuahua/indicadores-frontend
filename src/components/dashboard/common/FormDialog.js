@@ -13,7 +13,6 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const ModalModelo = ({ open, setOpenModal, children, ...props }) => {
     const handleClose = () => setOpenModal(false);
     const theme = useTheme();
-    const fullScreen = useMediaQuery(theme.breakpoints.down('xl'));
     return (
         <>
             <Dialog
