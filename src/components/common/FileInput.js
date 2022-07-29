@@ -93,7 +93,7 @@ const FileInput = (props) => {
             (
               files.map((file, index) => {
                 return (
-                  <>
+                  <div key={index}>
                     <ImageUploader type={type} key={index} imageSource={URL.createObjectURL(file)} badgeContent={
                       <IconButton onClick={handleOpen}>
                         <Avatar>
@@ -101,7 +101,7 @@ const FileInput = (props) => {
                         </Avatar>
                       </IconButton >
                     } />
-                  </>
+                  </div>
                 )
               })
             )
