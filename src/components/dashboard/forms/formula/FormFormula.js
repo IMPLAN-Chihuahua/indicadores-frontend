@@ -1,6 +1,5 @@
 import {
-  Button, DialogActions,
-  DialogContent, Grid,
+  Grid,
   Link as MuiLink, Typography,
   Box,
   TextField
@@ -15,6 +14,7 @@ import { useCallback, useEffect, useState } from "react";
 import "../../../common/mathInput/mathInput.css";
 import { Variable } from "../../../common/formula/Variable";
 import { getCatalogosDetails } from "../../../../services/cataloguesService";
+import { useIndicadorContext } from "../../../../contexts/IndicadorContext";
 
 const UNIDAD_MEDIDA_ID = 2;
 
@@ -50,10 +50,12 @@ const EquationViewer = ({ equation }) => {
   )
 }
 
-export const FormFormula = ({ handleBack, handleNext }) => {
+export const FormFormula = () => {
+  const { indicador, onSubmit } = useIndicadorContext();
   const methods = useForm({
     defaultValues: {
       ecuacion: '',
+      descripcion: '',
       variables: [
         {
           nombre: '',
@@ -65,19 +67,14 @@ export const FormFormula = ({ handleBack, handleNext }) => {
       ]
     }
   });
-
   const { handleSubmit, control, reset } = methods;
-
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'variables'
-  })
+  });
+
   const addVariable = (variable) => append({ ...variable });
   const deleteVariable = (index) => remove(index);
-  const onSubmit = data => {
-    console.log(data)
-  };
-
   const [medidaOptions, setMedidaOptions] = useState([]);
 
   const fetchUnidadMedida = useCallback(async () => {
@@ -86,15 +83,27 @@ export const FormFormula = ({ handleBack, handleNext }) => {
   }, [setMedidaOptions]);
 
   useEffect(() => {
+    if (medidaOptions.length > 0) {
+      return;
+    }
     fetchUnidadMedida();
   }, [fetchUnidadMedida]);
+
+  useEffect(() => {
+    if (indicador.formula.ecuacion === '') {
+      return;
+    }
+    reset(indicador.formula);
+  }, []);
 
   const [editingEquation, setEditingEquation] = useState(false);
 
   return (
     <FormProvider {...methods}>
       <Box
+        id='form-formula'
         component='form'
+        onSubmit={handleSubmit(onSubmit)}
         noValidate
       >
         <Grid container gap={2}>
@@ -105,8 +114,10 @@ export const FormFormula = ({ handleBack, handleNext }) => {
             <Controller
               name='descripcion'
               control={control}
-              render={({ field: { value, onChange }, fieldState: { error } }) => (
+              render={({ field: { value, onChange } }) => (
                 <TextField
+                  value={value}
+                  onChange={onChange}
                   fullWidth
                   multiline
                   label='Descripción'

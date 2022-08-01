@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, IconButton, TextField, Autocomplete } from '@mui/material';
+import { Grid, IconButton, TextField, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { Controller, useFormContext } from 'react-hook-form';
@@ -36,6 +36,9 @@ export const Variable = (props) => {
         gap: 1
       }}
     >
+      <Grid item xs={1} alignSelf='center'>
+        <Typography textAlign='right'>{index + 1}.</Typography>
+      </Grid>
       <Grid item xs={2}>
         <Controller
           control={methods.control}
@@ -107,6 +110,7 @@ export const Variable = (props) => {
         <IconButton
           onClick={handleOnClick}
           color='primary'
+          sx={{backgroundColor: 'aliceBlue'}}
         >
           {
             addVariable ? <AddIcon /> : <RemoveIcon />
