@@ -1,16 +1,19 @@
 import {
-  Box, Grid, TextField, Button, Typography,
+  Box, Grid, TextField, Typography,
 } from "@mui/material";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from 'yup';
-import { useIndicador } from "../../../../contexts/IndicadorContext";
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useIndicadorContext } from "../../../../contexts/IndicadorContext";
 import { CatalogoAutocomplete } from "../../common/CatalogPicker";
 
 const indicadorBasicSchema = yup.object({
-  nombre: yup.string().required('Por favor, ingrese el nombre'),
-  codigo: yup.string().required('Por favor, ingrese el código'),
-  definicion: yup.string().required('Por favor, ingrese la definición'),
+  nombre: yup.string().required('Ingrese el nombre'),
+  codigo: yup.string().required('Ingrese el código'),
+  definicion: yup.string().required('Ingrese la definición'),
+  ultimoValorDisponible: yup.number().typeError('Ingrese una valor válido').required('Ingrese el último valor disponible'),
+  anioUltimoValorDisponible: yup.number().typeError('Ingrese una valor válido').required('Ingrese el año del último valor disponible'),
   medida: yup.object({
     id: yup.number(),
     unidad: yup.string()
@@ -22,22 +25,25 @@ const UNIDAD_MEDIDA_ID = 2;
 const COBERTURA_ID = 3;
 
 export const FormBasic = () => {
-  const { indicador, dispatch } = useIndicador();
-  const methods = useForm();
+  const { indicador, onSubmit } = useIndicadorContext();
+  const methods = useForm({
+    // resolver: yupResolver(indicadorBasicSchema)
+  });
   const { control, reset, handleSubmit } = methods;
 
-  const onSubmit = (data) => {
-    console.log(data)
-  }
-
   useEffect(() => {
-    console.log(indicador.basic);
-  }, []);
+    if (indicador.nombre === '') {
+      return;
+    }
+    reset(indicador);
+  }, [])
 
   return (
     <Box
+      id='form-basic'
       component='form'
       noValidate
+      onSubmit={handleSubmit(onSubmit)}
     >
       <Grid
         container
@@ -105,7 +111,7 @@ export const FormBasic = () => {
             }) => (
               <TextField
                 label='Último valor disponible'
-                type='number'
+                type='text'
                 required
                 error={!!error}
                 helperText={error?.message}
@@ -129,7 +135,7 @@ export const FormBasic = () => {
                 label='Año último valor disponible'
                 type='text'
                 required
-                placeholder={new Date().getFullYear()}
+                placeholder={new Date().getFullYear().toString()}
                 error={!!error}
                 helperText={error?.message}
                 onChange={onChange}

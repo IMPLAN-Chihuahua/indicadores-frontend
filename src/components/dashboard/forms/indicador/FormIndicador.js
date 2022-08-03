@@ -1,14 +1,35 @@
-import { Button, DialogActions, DialogContent } from "@mui/material";
+import { Box, Button, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import { useCallback, useReducer, useState } from "react";
-import { IndicadorProvider } from "../../../../contexts/IndicadorContext";
-import { StepperProvider } from "../../../../contexts/StepperContext";
+import { IndicadorProvider, useIndicadorContext } from "../../../../contexts/IndicadorContext";
 import { FormFormula } from "../formula/FormFormula";
 import { FormMapa } from "../mapa/FormMapa";
 import { FormBasic } from "./FormBasic";
 import { FormExtra } from "./FormExtra";
 import { HorizontalStepper } from "./HorizontalStepper";
 
-const STEP_LABELS = ['Información Básica', 'Formula', 'Mapa', 'Extra'];
+const STEPS = [
+  {
+    idx: 0,
+    label: 'Información Básica',
+    form: 'form-basic'
+  }, {
+    idx: 1,
+    label: 'Formula',
+    form: 'form-formula'
+  }, {
+    idx: 2,
+    label: 'Mapa',
+    form: 'form-mapa'
+  }, {
+    idx: 3,
+    label: 'Extra',
+    form: 'form-extra'
+  }, {
+    idx: 4,
+    label: 'Summary',
+    form: ''
+  }
+];
 
 const getStepContent = (step) => {
   switch (step) {
@@ -20,26 +41,26 @@ const getStepContent = (step) => {
       return <FormMapa />
     case 3:
       return <FormExtra />
+    case 4:
+      return <Summary />;
     default:
-      return 'Step invalido'
+      throw new Error('Step invalido');
   }
 }
 
 const initialState = {
-  basic: {
-    nombre: '',
-    codigo: '',
-    descripcion: '',
-    ultimoValorDisponible: 0,
-    anioUltimoValorDisponible: new Date().getFullYear(),
-    medida: null,
-    cobertura: null,
-    ods: null
-  },
+  nombre: '',
+  codigo: '',
+  definicion: '',
+  ultimoValorDisponible: 0,
+  anioUltimoValorDisponible: new Date().getFullYear(),
+  medida: null,
+  cobertura: null,
+  ods: null,
   formula: {
     ecuacion: '',
-    descipcion: '',
-    variables: [{ nombre: '', dato: '', anio: '', medida: null, descripcion: '' }]
+    descripcion: '',
+    variables: [{ nombre: '', dato: '', anio: '', medida: null, nombreAtributo: '' }]
   },
   mapa: {
     url: '',
@@ -54,8 +75,13 @@ const initialState = {
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case 'update':
+    case 'update-form-basic':
+    case 'update-form-extra':
       return { ...state, ...action.payload };
+    case 'update-form-formula':
+      return { ...state, formula: { ...action.payload } }
+    case 'update-form-mapa':
+      return { ...state, mapa: { ...action.payload } }
     case 'clear':
       return initialState;
     default:
@@ -65,36 +91,70 @@ const reducer = (state, action) => {
 
 export const FormIndicador = () => {
   const [indicador, dispatch] = useReducer(reducer, initialState);
-  const [activeStep, setActiveStep] = useState(0)
+  const [currentStep, setCurrentStep] = useState(0)
 
   const handleBack = useCallback(() => {
-    setActiveStep(prev => prev === 0 ? 0 : prev - 1)
-  }, [setActiveStep]);
+    setCurrentStep(prev => prev === 0 ? 0 : prev - 1)
+  }, [setCurrentStep]);
 
   const handleNext = useCallback(() => {
-    setActiveStep(prev => {
-      const lastValue = (STEP_LABELS.length - 1)
+    setCurrentStep(prev => {
+      const lastValue = (STEPS.length - 1)
       return prev === lastValue ? lastValue : prev + 1
     })
-  }, [setActiveStep]);
+  }, [setCurrentStep]);
+
+  const onSubmit = useCallback((data) => {
+    const currentForm = STEPS[currentStep].form;
+    dispatch({ type: `update-${currentForm}`, payload: { ...data } });
+    handleNext();
+  }, [currentStep]);
+
+  const handleSubmit = () => {
+    console.log('clean everything and send request');
+  };
 
   return (
-    <IndicadorProvider indicador={indicador} dispatch={dispatch}>
-      <DialogContent sx={{ height: '60vh' }}>
+    <>
+      <DialogTitle>
+        Nuevo Indicador
         <HorizontalStepper
-          activeStep={activeStep}
-          stepLabels={STEP_LABELS}
+          activeStep={currentStep}
+          stepLabels={STEPS}
         />
-        {getStepContent(activeStep)}
-      </DialogContent>
-      <DialogActions>
-        <Button
-          onClick={handleBack}
-          disabled={activeStep === 0} >Atras</Button>
-        <Button
-          variant='contained'
-          onClick={handleNext}>Siguiente</Button>
-      </DialogActions>
-    </IndicadorProvider>
+      </DialogTitle>
+      <IndicadorProvider indicador={indicador} dispatch={dispatch} onSubmit={onSubmit}>
+        <DialogContent sx={{ height: '60vh' }}>
+          {getStepContent(currentStep)}
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={handleBack}
+            disabled={currentStep === 0}>Atras</Button>
+          {
+            (currentStep === STEPS.length - 1)
+              ? (<Button
+                variant='contained'
+                onClick={handleSubmit}>
+                Terminar
+              </Button>)
+              : (<Button
+                type='submit'
+                form={STEPS[currentStep].form}
+                variant='contained'>Siguiente</Button>)
+          }
+        </DialogActions>
+      </IndicadorProvider>
+    </>
   );
 };
+
+const Summary = () => {
+  const { indicador } = useIndicadorContext();
+
+  return (
+    <Box backgroundColor='aliceBlue'>
+      <pre>{JSON.stringify(indicador, null, 2)}</pre>
+    </Box>
+  );
+}

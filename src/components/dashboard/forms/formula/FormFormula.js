@@ -150,9 +150,9 @@ export const FormFormula = () => {
                             variant='body2'
                             sx={{
                               backgroundColor: 'aliceBlue',
-                              border: '2px dashed rgba(0,0,0,0.6)',
+                              border: '1px solid rgba(0,0,0,0.6)',
                               padding: 2,
-                              borderRadius: '5px'
+                              borderRadius: '4px'
                             }}
                           >
                             Haz doble clic para ingresar la ecuación

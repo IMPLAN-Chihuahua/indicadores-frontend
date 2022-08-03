@@ -1,20 +1,15 @@
-import { Box, DialogContent, DialogTitle } from "@mui/material";
+import { Box } from "@mui/material";
 import React, { useRef } from "react";
 import { useState, useEffect, useMemo } from "react";
 import DatagridTable from "../components/dashboard/common/DatagridTable";
 import { DataHeader } from "../components/dashboard/common/DataHeader";
 import { useIndicators } from "../services/userService";
 import { BeatLoader } from "react-spinners";
-import ShowImage from "../components/dashboard/common/ShowImage";
 import { Status } from "../components/dashboard/common/Status";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import FormDialog from "../components/dashboard/common/FormDialog";
-import FormModel from "../components/dashboard/forms/model/FormModel";
 import { DataPagination } from "../components/dashboard/common/DataPagination";
 import { FormIndicador } from "../components/dashboard/forms/indicador/FormIndicador";
-import { HorizontalStepper } from "../components/dashboard/forms/indicador/HorizontalStepper";
-import { FormProvider, useForm } from "react-hook-form";
 import FormDelete from "../components/common/FormDelete";
 import ToggleOnIcon from '@mui/icons-material/ToggleOn';
 import ToggleOffIcon from '@mui/icons-material/ToggleOff';
@@ -329,8 +324,6 @@ export const Indicators = () => {
     searchValue: searchIndicator
   };
 
-  console.log(dataTable);
-
   return (
     <>
       <DataHeader
@@ -368,9 +361,6 @@ export const Indicators = () => {
             keepMounted
             maxWidth='lg'
           >
-            <DialogTitle>
-              Nuevo Indicador
-            </DialogTitle>
             <FormIndicador />
           </FormDialog>
         )

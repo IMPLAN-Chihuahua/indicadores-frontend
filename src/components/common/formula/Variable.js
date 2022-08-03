@@ -36,7 +36,7 @@ export const Variable = (props) => {
         gap: 1
       }}
     >
-      <Grid item xs={2}>
+      <Grid item xs>
         <Controller
           control={methods.control}
           name={`variables[${index}].nombre`}
@@ -52,7 +52,7 @@ export const Variable = (props) => {
           )}
         />
       </Grid>
-      <Grid item xs={2}>
+      <Grid item xs={1}>
         <Controller
           control={methods.control}
           name={`variables[${index}].dato`}
@@ -68,7 +68,7 @@ export const Variable = (props) => {
           )}
         />
       </Grid>
-      <Grid item xs>
+      <Grid item xs={1}>
         <Controller
           control={methods.control}
           name={`variables[${index}].anio`}
@@ -83,7 +83,7 @@ export const Variable = (props) => {
           )}
         />
       </Grid>
-      <Grid item xs={2}>
+      <Grid item xs={3}>
         <Controller
           control={methods.control}
           name={`variables[${index}].nombreAtributo`}
@@ -93,6 +93,7 @@ export const Variable = (props) => {
           }) => (
             <TextField
               label='Descripción'
+              multiline
               value={value}
               onChange={onChange}
             />
