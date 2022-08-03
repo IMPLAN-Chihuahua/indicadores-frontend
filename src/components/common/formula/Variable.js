@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, IconButton, TextField, Autocomplete } from '@mui/material';
+import { Grid, IconButton, TextField, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { Controller, useFormContext } from 'react-hook-form';
@@ -11,7 +11,7 @@ export const Variable = (props) => {
   const { getValues } = methods;
   const { index } = props;
   const { addVariable, deleteVariable } = props;
-  
+
   const handleOnClick = () => {
     if (addVariable) {
       const newVariable = {
@@ -68,7 +68,7 @@ export const Variable = (props) => {
           )}
         />
       </Grid>
-      <Grid item xs={1}>
+      <Grid item xs>
         <Controller
           control={methods.control}
           name={`variables[${index}].anio`}
@@ -79,6 +79,22 @@ export const Variable = (props) => {
             <TextField
               label='Año'
               {...field}
+            />
+          )}
+        />
+      </Grid>
+      <Grid item xs={2}>
+        <Controller
+          control={methods.control}
+          name={`variables[${index}].nombreAtributo`}
+          defaultValue=''
+          render={({
+            field: { value, onChange }
+          }) => (
+            <TextField
+              label='Descripción'
+              value={value}
+              onChange={onChange}
             />
           )}
         />
@@ -107,6 +123,7 @@ export const Variable = (props) => {
         <IconButton
           onClick={handleOnClick}
           color='primary'
+          sx={{ backgroundColor: 'aliceBlue' }}
         >
           {
             addVariable ? <AddIcon /> : <RemoveIcon />
