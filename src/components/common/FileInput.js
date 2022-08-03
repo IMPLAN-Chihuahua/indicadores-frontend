@@ -1,10 +1,9 @@
-import { Avatar, Badge, Button, Card, CardContent, FormControl, Grid, IconButton, Modal, Switch, TextField, Typography, Backdrop, Fade } from "@mui/material";
+import { Avatar, Box, Badge, Button, Card, CardContent, FormControl, Grid, IconButton, Modal, Switch, TextField, Typography, Backdrop, Fade } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useFormContext } from "react-hook-form";
 
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import { Box } from '@mui/system';
 
 import ImageUploader from "../dashboard/common/ImageUploader";
 
@@ -76,13 +75,16 @@ const FileInput = (props) => {
         typeof files !== 'object'
           ?
           (
-            <ImageUploader type={type} imageSource={`http://localhost:8080${files}`} badgeContent={
-              <IconButton onClick={handleOpen}>
-                <Avatar>
-                  <EditOutlinedIcon />
-                </Avatar>
-              </IconButton >
-            } />
+            <ImageUploader
+              variant={props.variant || 'rounded'}
+              type={type}
+              imageSource={`http://localhost:8080${files}`}
+              badgeContent={
+                (<IconButton onClick={handleOpen} sx={{ backgroundColor: 'aliceblue' }}>
+                  <EditOutlinedIcon fontSize='large' />
+                </IconButton >)
+              }
+            />
           )
           :
           files === null ?
@@ -91,16 +93,18 @@ const FileInput = (props) => {
             )
             :
             (
-              files.map((file, index) => {
+              files?.map((file, index) => {
                 return (
                   <div key={index}>
-                    <ImageUploader type={type} key={index} imageSource={URL.createObjectURL(file)} badgeContent={
-                      <IconButton onClick={handleOpen}>
-                        <Avatar>
+                    <ImageUploader
+                      variant={props.variant || 'rounded'}
+                      type={type}
+                      imageSource={URL.createObjectURL(file)}
+                      badgeContent={
+                        <IconButton onClick={handleOpen} sx={{ backgroundColor: 'aliceblue' }}>
                           <EditOutlinedIcon />
-                        </Avatar>
-                      </IconButton >
-                    } />
+                        </IconButton >
+                      } />
                   </div>
                 )
               })
@@ -165,7 +169,7 @@ const FileInput = (props) => {
                         !!files?.length && (
                           <div>
                             {
-                              files.map((file, index) => {
+                              files?.map((file, index) => {
                                 return (
                                   <div key={index}>
                                     <img
