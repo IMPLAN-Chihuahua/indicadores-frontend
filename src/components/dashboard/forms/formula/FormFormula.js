@@ -62,7 +62,7 @@ export const FormFormula = () => {
           dato: '',
           anio: '',
           medida: null,
-          descripcion: ''
+          nombreAtributo: ''
         }
       ]
     }
