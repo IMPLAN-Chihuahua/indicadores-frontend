@@ -153,3 +153,7 @@ export const changeStatusUser = async (id) => {
 export const setIndicatorsToUser = (id, data) => {
   return protectedApi.post(`/usuarios/${id}/indicadores`, data);
 }
+
+export const getUserStats = async (id) => {
+  return protectedApi.get(`/me/stats/${id}`);
+}
