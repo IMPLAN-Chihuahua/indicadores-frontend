@@ -1,4 +1,4 @@
-import { Box, Grid } from '@mui/material'
+import { Avatar, Box, Grid } from '@mui/material'
 import React, { useState, useEffect } from 'react'
 import { getLastedIndicators, getLastedModules, getLastedUsers } from '../../../../../services/userService'
 import './lastedRecords.css'
@@ -61,7 +61,7 @@ export const LastedRecords = () => {
                           <Box className='lasted-all-left'>
                             <Box className='lasted-picture'>
                               <Box className='lasted-picture-item'>
-                                ✨
+                                <Avatar alt={user.nombres} src={user.urlImagen} sx={{ height: 45, width: 45 }} />
                               </Box>
                             </Box>
                             <Box className='lasted-all-info'>
@@ -94,7 +94,7 @@ export const LastedRecords = () => {
                         <Box className='lasted-all-left'>
                           <Box className='lasted-picture'>
                             <Box className='lasted-picture-item-modules'>
-                              💫
+                              <Avatar alt={modules.temaIndicador} src={modules.urlImagen} sx={{ height: 45, width: 45 }} />
                             </Box>
                           </Box>
                           <Box className='lasted-all-info'>
@@ -131,9 +131,9 @@ export const LastedRecords = () => {
                             <span className='lasted-all-name'>{indicator.nombre}</span>
                           </Box>
                         </Box>
-                        {/* <Box className='lasted-status'>
-        <span className={`lasted-code-text`}>{modules.codigo}</span>
-      </Box> */}
+                        <Box className='lasted-status'>
+                          <span className={`lasted-code-text`} title="FID">{indicator.id}</span>
+                        </Box>
                       </Box>
                     </Box>
                   )

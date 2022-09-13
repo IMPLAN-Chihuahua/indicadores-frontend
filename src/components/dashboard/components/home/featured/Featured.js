@@ -17,7 +17,7 @@ const handleResponse = ({ indicadoresCount, usuarios, modulosCount }) => {
       title: 'Temas de interés',
       enable: modulosCount[0].modulos,
       disable: modulosCount[0].modulosInactivos,
-      color: '#E38627',
+      color: '#011638',
       icon: <StackedLineChartIcon className="featured-icon" />
     },
     {
@@ -25,7 +25,7 @@ const handleResponse = ({ indicadoresCount, usuarios, modulosCount }) => {
       title: 'Indicadores',
       enable: indicadoresCount[0].indicadoresAsignados,
       disable: indicadoresCount[0].indicadores,
-      color: '#C13C37',
+      color: '#2E294E',
       icon: <InsertChart className="featured-icon" />,
     },
     {
@@ -33,7 +33,7 @@ const handleResponse = ({ indicadoresCount, usuarios, modulosCount }) => {
       title: 'Usuarios',
       enable: usuarios[0].usuarios,
       disable: usuarios[0].usuariosInactivos,
-      color: '#6A2135',
+      color: '#37315E',
       icon: <FaceRetouchingNaturalIcon className="featured-icon" />,
     }
   )
