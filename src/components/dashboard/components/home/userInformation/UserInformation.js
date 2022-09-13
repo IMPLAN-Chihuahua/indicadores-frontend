@@ -14,7 +14,11 @@ export const UserInformation = () => {
           <Box className="user-container">
             <Box className="user-picture">
               <Box className="picture">
-                <span className="picture-text">✦</span>
+                <img
+                  src={user.urlImagen}
+                  alt="user"
+                  style={{ width: 130, height: 90, borderRadius: "10%" }}
+                />
               </Box>
             </Box>
             <Box className="user-information">
