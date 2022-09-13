@@ -1,20 +1,19 @@
-
-.user-general-container{
+.user-general-container {
     display: flex;
-    justify-content: space-between;  
-    background-color: rgb(0,0,0,0.03);
+    justify-content: space-between;
+    background-color: rgb(0, 0, 0, 0.03);
     padding: 10px;
     border-radius: 20px;
 }
 
-.user-container{
+.user-container {
     display: flex;
     justify-content: center;
-    align-items: center;  
+    align-items: center;
     align-content: center;
 }
 
-.user-picture{
+.user-picture {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -23,49 +22,54 @@
     margin-right: 15px;
 }
 
-.picture{
+.picture {
     display: flex;
     justify-content: center;
     align-items: center;
     align-content: center;
-    background-color: pink;
     width: 120px;
     height: 120px;
     border-radius: 50%;
 }
-.picture-text{
+
+.picture-text {
     color: white;
     font-size: 45px;
     font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
 }
 
-.user-information{
+.user-information {
     display: block;
     line-height: 8px;
     margin-top: -30px;
 }
 
-.user-name{
+.user-name {
     line-height: 8px;
+    font-weight: 500 !important;
 }
 
-.user-email{
+.user-email {
     color: darkgray;
 }
 
-.date{
+.date {
     display: flex;
     justify-content: center;
     align-items: top;
 }
 
-.date-text{
+.date-text {
     display: flex;
     justify-content: center;
     align-items: center;
     align-content: center;
     text-align: center;
-    background-color:rgb(0,0,0,0.8);
+    background-color: rgb(0, 0, 0, 0.8);
     color: white;
     border-radius: 10px;
     width: 150px;
@@ -73,7 +77,7 @@
 }
 
 @media (max-width: 650px) {
-    .user-general-container{
+    .user-general-container {
         display: block;
         justify-content: center;
         align-items: center;
@@ -81,22 +85,23 @@
         text-align: center;
     }
 
-    .user-container{
+    .user-container {
         display: block;
         justify-content: center;
         align-items: center;
         align-content: center;
         text-align: center;
     }
-    .user-picture{
+
+    .user-picture {
         width: 100%;
     }
 
-    .user-information{
+    .user-information {
         margin-top: 20px;
     }
 
-    .date{
+    .date {
         display: flex;
         justify-content: center;
         align-items: center;

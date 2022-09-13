@@ -39,6 +39,7 @@
     "react-router-dom": "^6.2.1",
     "react-scripts": "^5.0.0",
     "react-spinners": "^0.11.0",
+    "react-wavify": "^1.6.2",
     "swr": "^1.2.2",
     "web-vitals": "^1.0.1",
     "yup": "^0.32.11"
