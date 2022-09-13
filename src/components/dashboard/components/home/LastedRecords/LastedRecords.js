@@ -1,4 +1,4 @@
-import { Avatar, Box, Grid } from '@mui/material'
+import { Avatar, Box, Grid, Skeleton } from '@mui/material'
 import React, { useState, useEffect } from 'react'
 import { getLastedIndicators, getLastedModules, getLastedUsers } from '../../../../../services/userService'
 import './lastedRecords.css'
@@ -6,7 +6,7 @@ import './lastedRecords.css'
 
 
 export const LastedRecords = () => {
-
+  const skeletonArray = [1, 2, 3, 4, 5];
   const [users, setUsers] = useState([])
   const [modules, setModules] = useState([])
   const [indicators, setIndicators] = useState([])
@@ -54,28 +54,52 @@ export const LastedRecords = () => {
                 <span className='lasted-item-title'>Usuarios</span>
                 <hr />
                 {
-                  users.slice((users.length - 7), users.length).reverse().map((user, i) => {
-                    return (
-                      <Box key={user.id}>
-                        <Box className={`lasted-all-item ${(i % 2 == 1) && 'active'}`}>
-                          <Box className='lasted-all-left'>
-                            <Box className='lasted-picture'>
-                              <Box className='lasted-picture-item'>
-                                <Avatar alt={user.nombres} src={user.urlImagen} sx={{ height: 45, width: 45 }} />
+                  users.length > 0 ?
+                    users.slice((users.length - 7), users.length).reverse().map((user, i) => {
+                      return (
+                        <Box key={user.id}>
+                          <Box className={`lasted-all-item ${(i % 2 == 1) && 'active'}`}>
+                            <Box className='lasted-all-left'>
+                              <Box className='lasted-picture'>
+                                <Box className='lasted-picture-item'>
+                                  <Avatar alt={user.nombres} src={user.urlImagen} sx={{ height: 45, width: 45 }} className="lasted-picture-hoverable" />
+                                </Box>
+                              </Box>
+                              <Box className='lasted-all-info'>
+                                <span className='lasted-all-name'>{user.nombres}</span>
                               </Box>
                             </Box>
-                            <Box className='lasted-all-info'>
-                              <span className='lasted-all-name'>{user.nombres}</span>
+                            <Box className='lasted-status'>
+                              <span className={`lasted-status-text ${(user.activo == 'SI' ? 'active' : '')}`}>{`${(user.activo == 'SI' ? 'Activo' : 'Inactivo')}`}</span>
                             </Box>
                           </Box>
-                          <Box className='lasted-status'>
-                            <span className={`lasted-status-text ${(user.activo == 'SI' ? 'active' : '')}`}>{`${(user.activo == 'SI' ? 'Activo' : 'Inactivo')}`}</span>
+                        </Box>
+                      )
+                    })
+                    :
+                    skeletonArray.map((item, i) => {
+                      return (
+                        <Box key={item}>
+                          <Box>
+                            <Box className='lasted-all-left'>
+                              <Box className=''>
+                                <Box className=''>
+                                  <Skeleton variant="circular" width={45} height={45} className="" />
+                                </Box>
+                              </Box>
+                              <Box className='lasted-all-info'>
+                                <Skeleton variant="text" width={100} height={20} className='lasted-all-name' />
+                                {/* <span className='lasted-all-name'>{user.nombres}</span> */}
+                              </Box>
+                            </Box>
+                            <Box className='lasted-status'>
+                              <Skeleton variant="text" width={'100%'} height={20} className='lasted-status-text' />
+                              {/* <span className={`lasted-status-text ${(user.activo == 'SI' ? 'active' : '')}`}>{`${(user.activo == 'SI' ? 'Activo' : 'Inactivo')}`}</span> */}
+                            </Box>
                           </Box>
                         </Box>
-                      </Box>
-                    )
-                  })
-
+                      )
+                    })
                 }
               </Box>
 
@@ -94,7 +118,7 @@ export const LastedRecords = () => {
                         <Box className='lasted-all-left'>
                           <Box className='lasted-picture'>
                             <Box className='lasted-picture-item-modules'>
-                              <Avatar alt={modules.temaIndicador} src={modules.urlImagen} sx={{ height: 45, width: 45 }} />
+                              <Avatar alt={modules.temaIndicador} src={modules.urlImagen} sx={{ height: 45, width: 45 }} className="lasted-picture-hoverable" />
                             </Box>
                           </Box>
                           <Box className='lasted-all-info'>
