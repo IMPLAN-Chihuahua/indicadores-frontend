@@ -204,6 +204,16 @@
 
 }
 
+.lasted-picture-hoverable {
+    transition: all .1s ease-in-out;
+}
+
+.lasted-picture:hover .lasted-picture-hoverable {
+    transform: scale(3.5);
+    z-index: 10000;
+    transition: all .1s ease-in-out;
+}
+
 /* QUITAR ESTO */
 .lasted-picture-item-modules {
     display: flex;
