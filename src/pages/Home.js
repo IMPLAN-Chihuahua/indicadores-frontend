@@ -7,10 +7,10 @@ import { MathInput } from '../components/common/mathInput/MathInput'
 export const Home = () => {
   return (
     <>
-    <UserInformation/>
-    <Featured />
-    <LastedRecords/>
-    
+      <UserInformation />
+      <Featured />
+      <LastedRecords />
+
     </>
   )
 }

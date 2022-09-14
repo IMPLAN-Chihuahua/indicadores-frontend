@@ -24,8 +24,6 @@ const ModalModelo = ({ open, setOpenModal, children, ...props }) => {
                     maxWidth: '1000px',
                     margin: 'auto'
                 }}
-            
-                
             >
                 {children}
             </Dialog>

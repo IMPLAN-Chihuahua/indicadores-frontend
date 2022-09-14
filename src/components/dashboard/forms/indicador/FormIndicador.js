@@ -1,7 +1,6 @@
 import { Button, DialogActions, DialogContent } from "@mui/material";
 import { useCallback, useReducer, useState } from "react";
 import { IndicadorProvider } from "../../../../contexts/IndicadorContext";
-// import { StepperProvider } from "../../../../contexts/StepperContext";
 import { FormFormula } from "../formula/FormFormula";
 import { FormMapa } from "../mapa/FormMapa";
 import { FormBasic } from "./FormBasic";
