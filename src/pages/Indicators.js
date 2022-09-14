@@ -145,17 +145,6 @@ export const Indicators = () => {
       align,
     },
     {
-      field: "codigoObjeto",
-      headerName: "#S",
-      flex: 1,
-      minWidth: 50,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-    },
-    {
       field: "nombre",
       headerName: "Nombre",
       flex: 1,
@@ -196,20 +185,6 @@ export const Indicators = () => {
       align,
       renderCell: (params) => {
         return (<Status status={params.row.tendenciaActual} />);
-      },
-    },
-    {
-      field: "tendenciaDeseada",
-      headerName: "Deseado",
-      flex: 1,
-      minWidth: 100,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-      renderCell: (params) => {
-        return (<Status status={params.row.tendenciaDeseada} />);
       },
     },
     {
@@ -352,19 +327,15 @@ export const Indicators = () => {
           </>
         )}
       </Box>
-      {
-        isFormVisible && (
-          <FormDialog
-            open={isFormVisible}
-            setOpenModal={setFormVisible}
-            fullWidth
-            keepMounted
-            maxWidth='lg'
-          >
-            <FormIndicador />
-          </FormDialog>
-        )
-      }
+      <FormDialog
+        open={isFormVisible}
+        setOpenModal={setFormVisible}
+        fullWidth
+        keepMounted
+        maxWidth='xl'
+      >
+        <FormIndicador close={() => setFormVisible(false)} />
+      </FormDialog>
       <FormDialog
         open={removeOpenModal}
         setOpenModal={setRemoveOpenModal}
