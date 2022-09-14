@@ -1,11 +1,10 @@
-import { Avatar, Box, Badge, Button, Card, CardContent, FormControl, Grid, IconButton, Modal, Switch, TextField, Typography, Backdrop, Fade } from "@mui/material";
+import { Box, Button, IconButton, Modal, Typography, Backdrop, Fade } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useFormContext } from "react-hook-form";
-
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-
 import ImageUploader from "../dashboard/common/ImageUploader";
+import { Clear } from "@material-ui/icons";
 
 const FileInput = (props) => {
   const { name, label, height, image, type } = props;
@@ -57,10 +56,9 @@ const FileInput = (props) => {
     transform: 'translate(-50%, -50%)',
     width: 400,
     bgcolor: 'background.paper',
-    border: '2px solid #000',
+    border: '1px solid #000',
     boxShadow: 24,
     p: 4,
-    bgcolor: 'white',
   };
 
   const handleCancel = () => {
@@ -122,7 +120,7 @@ const FileInput = (props) => {
       >
         <Fade in={open}>
           <Box sx={style}>
-            <label className=" " htmlFor={name}>
+            <label htmlFor={name}>
               {label}
             </label>
             <div
@@ -130,67 +128,51 @@ const FileInput = (props) => {
               type='file'
               role='button'
               aria-label='Subir archivo'
+              style={{ marginTop: '10px' }}
               id={name}
             >
-              {
-                typeof files === 'string' ?
-                  <>
-                    <input {...props} {...getInputProps()} />
-                    <div
-                      style={{
-                        width: '100%',
-                        border: 'dashed 2px lightgrey',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        borderRadius: 5,
-                        alignItems: 'center',
-                        flexDirection: 'column',
-                        backgroundColor: isDragActive ? '#f8f8f8' : 'white'
-                      }}>
-                      <Typography pt={3} pb={3}>Arrastra la imagen de perfil para subirla</Typography>
-                    </div>
-                  </>
-                  :
-                  <>
-                    <input {...props} {...getInputProps()} />
-                    <div
-                      style={{
-                        width: '100%',
-                        border: 'dashed 2px lightgrey',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        borderRadius: 5,
-                        alignItems: 'center',
-                        flexDirection: 'column',
-                        backgroundColor: isDragActive ? '#f8f8f8' : 'white'
-                      }}>
-                      <Typography pt={3} pb={3}>Arrastra la imagen de perfil para subirla</Typography>
-                      {
-                        !!files?.length && (
-                          <div>
-                            {
-                              files?.map((file, index) => {
-                                return (
-                                  <div key={index}>
-                                    <img
-                                      src={URL.createObjectURL(file)}
-                                      alt={file.name}
-                                      style={{
-                                        height: height || '150px'
-                                      }} />
-                                  </div>
-                                )
-                              })
-                            }
-                          </div>
-                        )
-                      }
-                    </div>
-                  </>
-              }
-
+              <input {...props} {...getInputProps()} />
+              <div
+                style={{
+                  width: '100%',
+                  border: 'dashed 2px lightgrey',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  borderRadius: 5,
+                  alignItems: 'center',
+                  flexDirection: 'column',
+                  backgroundColor: isDragActive ? '#f8f8f8' : 'white',
+                  overflow: 'hidden'
+                }}>
+                {
+                  Array.isArray(files) ? (
+                    <div>{
+                      files?.map((file, index) => (
+                        <img
+                          key={index}
+                          src={URL.createObjectURL(file)}
+                          alt={file.name}
+                          style={{ height: height || '150px' }}
+                        />
+                      ))
+                    }</div>
+                  ) : (
+                    <Typography textAlign='center' pt={3} pb={3} color='#212529'>
+                      Arrastra la imagen para subirla o haz clic para seleccionarla
+                    </Typography>
+                  )
+                }
+              </div>
             </div>
-            <Box className='modal-footer'>
+            <Box mt={2} display='flex' justifyContent='flex-end' columnGap={1}>
+              <Button
+                variant='text'
+                color='primary'
+                className='modal-footer-button'
+                onClick={handleCancel}
+              >
+                Cancelar
+              </Button>
               <Button
                 variant='contained'
                 color='primary'
@@ -198,14 +180,6 @@ const FileInput = (props) => {
                 onClick={handleClose}
               >
                 Guardar
-              </Button>
-              <Button
-                variant='contained'
-                color='primary'
-                className='modal-footer-button'
-                onClick={handleCancel}
-              >
-                Cancelar
               </Button>
             </Box>
           </Box>
@@ -215,7 +189,94 @@ const FileInput = (props) => {
 
     </>
   );
-
 }
+
+export const ImageInput = ({ name, label, ...props }) => {
+  const { register, unregister, setValue, watch } = useFormContext();
+  const files = watch(name)
+  const onDrop = useCallback((droppedFiles) => {
+    setValue(name, droppedFiles, { shouldValidate: true });
+  }, [setValue, name]);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: 'image/png, image/jpg, image/jpeg, image/gif'
+  });
+
+  useEffect(() => {
+    register(name);
+    return () => {
+      unregister(name);
+    }
+  }, [register, unregister, name]);
+
+  const handleClear = (e) => {
+    e.preventDefault();
+    if (!Array.isArray(files)) {
+      return;
+    }
+    setValue(name, '');
+    return;
+  }
+
+  return (
+    <Box position='relative'>
+      <label htmlFor={name}>
+        {label}
+      </label>
+      <div
+        {...getRootProps()}
+        type='file'
+        role='button'
+        aria-label='Subir archivo'
+        style={{ marginTop: '10px', position: 'relative' }}
+        id={name}
+      >
+        <input {...props} {...getInputProps()} />
+        <div
+          style={{
+            width: '100%',
+            border: 'dashed 2px lightgrey',
+            display: 'flex',
+            justifyContent: 'center',
+            borderRadius: 5,
+            alignItems: 'center',
+            flexDirection: 'column',
+            backgroundColor: isDragActive ? '#f8f8f8' : 'white',
+            overflow: 'hidden'
+          }}>
+          {
+            Array.isArray(files) ? (
+              <div>{
+                files?.map((file, index) => (
+                  <img
+                    key={index}
+                    src={URL.createObjectURL(file)}
+                    alt={file.name}
+                    style={{ height: props.height || '150px' }}
+                  />
+                ))
+              }</div>
+            ) : (
+              <Typography textAlign='center' pt={3} pb={3} color='#212529'>
+                Arrastra la imagen para subirla o haz clic para seleccionarla
+              </Typography>
+            )
+          }
+        </div>
+      </div>
+      {
+        Array.isArray(files) && (
+          <IconButton
+            onClick={handleClear}
+            sx={{ position: 'absolute', right: 0, top: 30, margin: 1 }}
+          >
+            <Clear fontSize='large' />
+          </IconButton>
+        )
+      }
+    </Box>
+  );
+};
 
 export default FileInput;
