@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { Avatar, Badge, Modal, Fade } from '@mui/material';
 import './common.css'
 
-const ImageUploader = ({ imageSource, badgeContent, type = 'avatar', variant = 'circular' }) => {
-
+const ImageUploader = ({ imageSource, badgeContent, type = 'avatar', klass, variant = 'circular' }) => {
 	const [openImage, setOpenImage] = useState(false);
 	const [image, setImage] = useState('');
 
@@ -37,7 +36,7 @@ const ImageUploader = ({ imageSource, badgeContent, type = 'avatar', variant = '
 						onClick={() => {
 							handleState(imageSource);
 						}} sx={{ width: 160, height: 160 }}
-							className={`image-indicator image-selector `}
+							className={`${klass} image-indicator image-selector `}
 							src={`${imageSource}`} />
 					)
 					:
@@ -49,7 +48,7 @@ const ImageUploader = ({ imageSource, badgeContent, type = 'avatar', variant = '
 							src={`${imageSource}`}
 							width='100%'
 							alt='map'
-							className='image-selector'
+							className={`${klass} image-selector `}
 						/>
 					)
 			}

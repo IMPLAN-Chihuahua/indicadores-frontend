@@ -7,7 +7,7 @@ import ImageUploader from "../dashboard/common/ImageUploader";
 import { Clear } from "@material-ui/icons";
 
 const FileInput = (props) => {
-  const { name, label, height, image, type } = props;
+  const { name, label, height, image, type, klass } = props;
   const { register, unregister, setValue, watch } = useFormContext();
   const [files, setFiles] = useState(watch(name));
   const [previousImage, setPreviousImage] = useState('');
@@ -76,6 +76,7 @@ const FileInput = (props) => {
             <ImageUploader
               variant={props.variant || 'rounded'}
               type={type}
+              klass={klass}
               imageSource={`http://localhost:8080${files}`}
               badgeContent={
                 (<IconButton onClick={handleOpen} sx={{ backgroundColor: 'aliceblue' }}>
@@ -97,6 +98,7 @@ const FileInput = (props) => {
                     <ImageUploader
                       variant={props.variant || 'rounded'}
                       type={type}
+                      klass={klass}
                       imageSource={URL.createObjectURL(file)}
                       badgeContent={
                         <IconButton onClick={handleOpen} sx={{ backgroundColor: 'aliceblue' }}>

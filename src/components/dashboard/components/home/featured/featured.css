@@ -1,35 +1,80 @@
-
-.featured-title{
-    text-align: center;
-}
-.featured-title hr{
+.featured-title hr {
     opacity: 0.5;
     width: 50%;
 }
 
-.featured-title{
+.featured-center {
+    display: flex;
+    justify-content: center;
+}
+
+.featured-title {
     font-size: 24px;
     font-weight: bold;
     color: #555;
+    text-align: center;
 }
 
-.featured-item{
+
+.featured-subtitle {
+    text-transform: capitalize !important;
+    color: rgba(69, 69, 69, 0.589) !important;
+    padding-left: 5px;
+    padding-top: 5px;
+}
+
+.featured-value {
+    font-weight: bold !important;
+    padding-left: 5px;
+}
+
+.featured-item {
     text-align: center;
-    flex:1;
+    flex: 1;
     margin: 2%;
     padding: 2%;
-    box-shadow: 0px 0px 4px -2px rgba(0,0,0,0.75);
-    -webkit-box-shadow: 0px 0px 4px -2px rgba(0,0,0,0.75);
-    -moz-box-shadow: 0px 0px 6px -2px rgba(0,0,0,0.75);
+    box-shadow: 0px 0px 4px -2px rgba(0, 0, 0, 0.75);
+    -webkit-box-shadow: 0px 0px 4px -2px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 0px 0px 6px -2px rgba(0, 0, 0, 0.75);
 }
 
-.feature-container{
+.featured-item-values {
+    display: flex;
+    justify-content: space-between;
+}
+
+.featured-item-values-top {
+    padding-right: 10px;
+}
+
+.featured-item-values-sub {
+    position: relative;
+    top: -30px;
+}
+
+.feature-container {
     display: flex;
     justify-content: center;
     align-content: center;
 }
 
-.featured-items{
+.featured-circle-icon {
+    border-radius: 100%;
+    padding: 5px;
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+}
+
+.featured-icon {
+    color: white;
+    font-size: 50px !important;
+}
+
+.featured-items {
     display: flex;
     align-content: center;
     justify-content: center;
@@ -37,10 +82,32 @@
     height: 150px;
     width: 100%;
     margin-top: 10px;
-  
- }
- 
- .featured-information{
-     margin-top: 2%;
-     font-size: 21px;
- }
+
+}
+
+.featured-information {
+    margin-top: 2%;
+    font-size: 21px;
+}
+
+.featured-wave {
+    max-height: 50px !important;
+    height: 50px !important;
+}
+
+.featured-footer {
+    background-color: #3e3e96;
+    clip-path: ellipse(300% 100% at 300% 100%);
+}
+
+.test {
+    height: 120px;
+    position: relative;
+}
+
+.chost {
+    position: absolute;
+    left: 0px;
+    bottom: 0px;
+    width: 100%;
+}
