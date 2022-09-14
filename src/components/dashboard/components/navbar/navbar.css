@@ -1,7 +1,7 @@
 .navbar {
     background-color: #263044;
     color: white;
-    height: 60px;
+    height: 70px;
     width: 100%;
     position: sticky;
     top: 0;
@@ -28,7 +28,36 @@
     align-items: center;
 }
 
+.navbar-option {
+    margin: 0px 10px;
+    padding: 10px 10px;
+    border-radius: 10px;
+    transition: all 0.2s ease-in-out;
+}
 
+.element {
+    padding: 0;
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    font-size: 15px;
+}
+
+.element-caption {
+    font-size: 0.7rem !important;
+    color: rgba(224, 224, 224, 0.744);
+    margin: 0;
+    padding: 0;
+    font-style: italic;
+    font-family: 'Ubuntu', sans-serif;
+}
+
+
+.navbar-user-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+}
 
 .navbar-option-close {
     cursor: pointer;
@@ -39,7 +68,7 @@
 }
 
 .navbar-option-icon {
-    margin-right: 5px;
+    margin-right: 10px;
 }
 
 .navbar-option-text {
@@ -56,7 +85,22 @@
     border-radius: 10px;
 }
 
-.link-to-profile:hover {
+.navbar-option:hover {
     background-color: #1d2534;
     transition: 1s;
+    cursor: default;
+}
+
+@media (max-width: 650px) {
+    .navbar-user-info {
+        display: none;
+    }
+
+    .navbar-option-text {
+        display: none;
+    }
+
+    .navbar-option-icon {
+        margin-right: 0px;
+    }
 }

@@ -274,13 +274,16 @@ align-content: center;
     justify-content: space-between;
     width: 86px;
 }
-.dt-btn-container-tri{
+
+.dt-btn-container-tri {
     display: flex;
     gap: 7px;
     width: 120px;
 }
-.dt-action-delete,.dt-action-edit{
-color: white;
+
+.dt-action-delete,
+.dt-action-edit {
+    color: white;
 }
 
 .dt-action-delete,
@@ -299,9 +302,9 @@ color: white;
     cursor: pointer;
 }
 
-.dt-action-delete{
-background-color: #546e7a;
-color: white;
+.dt-action-delete {
+    background-color: #546e7a;
+    color: white;
 }
 
 .dt-action-edit {
@@ -341,6 +344,12 @@ color: white;
 
 .image-selector {
     cursor: pointer;
+}
+
+.profile-picture {
+    margin-bottom: 10px;
+    position: absolute;
+    top: -110px !important;
 }
 
 @media (max-width: 900px) {
