@@ -9,7 +9,7 @@ const getCatalogos = async () => {
         const response = await protectedApi.get('/catalogos');
         return response.data.data;
     } catch (error) {
-        Promise.reject(error);
+        throw error;
     }
 };
 
@@ -18,7 +18,7 @@ const getCatalogosDetails = async (id) => {
         const response = await protectedApi.get(`/catalogos/${id}`);
         return response.data.data;
     } catch (error) {
-        Promise.reject(error);
+        throw error;
     }
 };
 
@@ -28,7 +28,7 @@ const getCatalogosFromIndicador = async (id) => {
         const response = await protectedApi.get(`/catalogos/indicador/${id}`);
         return response.data.data;
     } catch (error) {
-        Promise.reject(error);
+        throw error;
     }
 }
 

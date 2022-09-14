@@ -1,10 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { getCatalogos, getCatalogosDetails, getCatalogosFromIndicador, useCatalogos } from '../../../services/cataloguesService';
 import OdsPicker from './OdsPicker';
 import { Controller } from 'react-hook-form';
 import { Grid } from '@mui/material';
+import useIsMounted from '../../../hooks/useIsMounted';
 
 const CatalogPicker = ({ idIndicatorCatalog = 0, control, xs = 12, md = 4, catalogs = [] }) => {
     const [catalogos, setCatalogos] = useState([]);
@@ -121,6 +122,7 @@ const RegularCatalogs = ({ idCatalog, Catalog, idIndicatorCatalog, control, cata
 
 
 export const CatalogoAutocomplete = ({ value, onChange, label, id, error, required, opts = [] }) => {
+    const isMounted = useIsMounted();
     const [options, setOptions] = useState([]);
     const fetchCatalogDetails = useCallback(async () => {
         const items = await getCatalogosDetails(id);
@@ -128,6 +130,9 @@ export const CatalogoAutocomplete = ({ value, onChange, label, id, error, requir
     }, [id]);
 
     useEffect(() => {
+        if (!isMounted.current) {
+            return;
+        }
         if (opts.length === 0) {
             fetchCatalogDetails();
         } else {

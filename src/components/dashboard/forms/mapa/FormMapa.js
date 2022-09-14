@@ -1,44 +1,80 @@
-import { Box, Grid, TextField } from "@mui/material";
+import { Box, Checkbox, FormControlLabel, FormGroup, Grid, TextField, Typography } from "@mui/material";
+import { useEffect } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
-import FileInput from "../../../common/FileInput";
+import { useIndicadorContext } from "../../../../contexts/IndicadorContext";
+import FileInput, { ImageInput } from "../../../common/FileInput";
+import * as yup from 'yup';
+import { yupResolver } from "@hookform/resolvers/yup";
+
+const mapaSchema = yup.object({
+  url: yup.string().url('Ingresa una URL valida'),
+})
 
 export const FormMapa = () => {
-  const methods = useForm();
-  const { handleSubmit, reset } = methods;
-  const onSubmit = data => {
-    console.log(data)
-  }
+  const { indicador, onSubmit } = useIndicadorContext();
+  const methods = useForm({
+    resolver: yupResolver(mapaSchema)
+  });
+  const { handleSubmit, reset, control } = methods;
+
+  useEffect(() => {
+    reset(indicador.mapa);
+  }, []);
 
   return (
     <FormProvider {...methods}>
       <Box
+        id='form-mapa'
         component='form'
         noValidate
-        onReset={reset}
+        onSubmit={handleSubmit(onSubmit)}
       >
-        <Grid container rowSpacing={2} columnSpacing={2}>
+        <Grid
+          container
+          rowSpacing={2}
+          columnSpacing={2}
+        >
+          <Grid item xs={12}>
+            <Typography variant='h5' component='h3'>Mapa</Typography>
+          </Grid>
           <Grid item xs={12}>
             <Controller
-              control={methods.control}
+              control={control}
               name='url'
               defaultValue=''
-              render={({ field }) => (
+              render={({ field: { value, onChange }, fieldState: { error } }) => (
                 <TextField
-                  {...field}
+                  value={value}
+                  onChange={onChange}
                   fullWidth
-                  label='URL del mapa'
+                  error={!!error}
+                  helperText={error?.message}
+                  label='URL ArcGIS'
                   placeholder="https://geoportal.implanchihuahua.org"
                 />
               )}
             />
           </Grid>
           <Grid item xs={12}>
-            <FileInput
+            <Controller
+              control={control}
+              name='hasMapa'
+              defaultValue={false}
+              render={({ field: { value, onChange } }) => (
+                <FormGroup>
+                  <FormControlLabel
+                    label='Indicador cuenta con cartografía'
+                    control={<Checkbox onChange={onChange} checked={value} />}
+                  />
+                </FormGroup>
+              )}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <ImageInput
               name='image'
-              accept='image/png, image/jpg, image/jpeg, image/gif'
-              type='map'
               label='Imagen del mapa'
-              height='100px'
+              height='300px'
             />
           </Grid>
         </Grid>
