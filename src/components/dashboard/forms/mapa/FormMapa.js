@@ -2,7 +2,7 @@ import { Box, Checkbox, FormControlLabel, FormGroup, Grid, TextField, Typography
 import { useEffect } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { useIndicadorContext } from "../../../../contexts/IndicadorContext";
-import FileInput from "../../../common/FileInput";
+import FileInput, { ImageInput } from "../../../common/FileInput";
 import * as yup from 'yup';
 import { yupResolver } from "@hookform/resolvers/yup";
 
@@ -18,10 +18,7 @@ export const FormMapa = () => {
   const { handleSubmit, reset, control } = methods;
 
   useEffect(() => {
-    if (indicador.mapa.url === '') {
-      return;
-    }
-    reset(indicador.mapa)
+    reset(indicador.mapa);
   }, []);
 
   return (
@@ -31,7 +28,6 @@ export const FormMapa = () => {
         component='form'
         noValidate
         onSubmit={handleSubmit(onSubmit)}
-        onReset={reset}
       >
         <Grid
           container
@@ -75,21 +71,10 @@ export const FormMapa = () => {
             />
           </Grid>
           <Grid item xs={12}>
-            <Controller
-              name="urlImagen"
-              control={methods.control}
-              render={({
-                field: { value },
-              }) => (
-                <FileInput
-                  variant='square'
-                  accept='image/png, image/jpg, image/jpeg, image/gif'
-                  name='urlImagen'
-                  image={value}
-                  type={'map'}
-                  height={'100px'}
-                />
-              )}
+            <ImageInput
+              name='image'
+              label='Imagen del mapa'
+              height='300px'
             />
           </Grid>
         </Grid>

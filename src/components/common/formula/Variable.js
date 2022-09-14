@@ -52,7 +52,7 @@ export const Variable = (props) => {
           )}
         />
       </Grid>
-      <Grid item xs={1}>
+      <Grid item xs={2}>
         <Controller
           control={methods.control}
           name={`variables[${index}].dato`}
@@ -100,7 +100,7 @@ export const Variable = (props) => {
           )}
         />
       </Grid>
-      <Grid item xs={3}>
+      <Grid item xs={2}>
         <Controller
           name={`variables[${index}].medida`}
           control={methods.control}

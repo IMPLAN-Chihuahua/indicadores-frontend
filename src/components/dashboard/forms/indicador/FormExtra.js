@@ -2,14 +2,23 @@ import {
   Box, Grid,
   TextField, Typography
 } from "@mui/material";
+import { useEffect } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { useIndicadorContext } from "../../../../contexts/IndicadorContext";
-import FileInput from "../../../common/FileInput";
+import FileInput, { ImageInput } from "../../../common/FileInput";
 
 export const FormExtra = () => {
   const { indicador, onSubmit } = useIndicadorContext();
   const methods = useForm();
-  const { handleSubmit, control } = methods;
+  const { handleSubmit, control, reset } = methods;
+
+  const initForm = () => {
+    reset(indicador)
+  }
+
+  useEffect(() => {
+    initForm();
+  }, []);
 
   return (
     <FormProvider {...methods}>
@@ -59,16 +68,7 @@ export const FormExtra = () => {
               )}
             />
           </Grid>
-          <Grid item xs={12}>
-            <FileInput
-              variant='square'
-              name="imgIndicador"
-              label="Subir Archivo"
-              height='300px'
-            />
-          </Grid>
         </Grid>
-
       </Box>
     </FormProvider>
   );
