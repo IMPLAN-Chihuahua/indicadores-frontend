@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { getCatalogos, getCatalogosDetails, getCatalogosFromIndicador, useCatalogos } from '../../../services/cataloguesService';
@@ -12,6 +12,7 @@ import ListSubheader from '@mui/material/ListSubheader';
 import Popover from '@mui/material/Popover';
 import MenuIcon from '@mui/icons-material/Menu';
 import { getCatalog } from '../../../utils/getCatalog';
+import isMounted from '../../../hooks/useIsMounted';
 
 const itemData = [
     {
@@ -199,6 +200,9 @@ export const CatalogoAutocomplete = ({ value, onChange, label, id, error, requir
         setOptions(items)
     }, [id]);
     useEffect(() => {
+        if (!isMounted.current) {
+            return;
+        }
         if (opts.length === 0) {
             fetchCatalogDetails();
         } else {

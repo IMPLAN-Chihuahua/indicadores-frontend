@@ -1,20 +1,38 @@
 import {
-  Box, Grid, TextField, Button, Typography,
+  Autocomplete,
+  Box, Grid, TextField, Typography,
 } from "@mui/material";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from 'yup';
-import { useIndicador } from "../../../../contexts/IndicadorContext";
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useIndicadorContext } from "../../../../contexts/IndicadorContext";
 import { CatalogoAutocomplete } from "../../common/CatalogPicker";
+import AutoCompleteInput from "../../../common/AutoCompleteInput";
+import { getTemas } from "../../../../services/moduleService";
 
 const indicadorBasicSchema = yup.object({
-  nombre: yup.string().required('Por favor, ingrese el nombre'),
-  codigo: yup.string().required('Por favor, ingrese el código'),
-  definicion: yup.string().required('Por favor, ingrese la definición'),
+  nombre: yup.string().required('Ingresa el nombre'),
+  codigo: yup.string().required('Ingresa el código'),
+  definicion: yup.string().required('Ingresa la definición'),
+  ultimoValorDisponible: yup.string().required('Ingresa el último valor disponible'),
+  anioUltimoValorDisponible: yup.number().typeError('Ingresa una valor válido').required('Ingresa el año del último valor disponible'),
   medida: yup.object({
     id: yup.number(),
     unidad: yup.string()
-  }).nullable().required('Por favor, seleccione una unidad')
+  }).nullable(),
+  ods: yup.object({
+    id: yup.number(),
+    unidad: yup.string()
+  }).nullable(),
+  cobertura: yup.object({
+    id: yup.number(),
+    unidad: yup.string()
+  }).nullable(),
+  tema: yup.object({
+    id: yup.number(),
+    temaIndicador: yup.string()
+  }).nullable().required('Selecciona un tema')
 })
 
 const ODS_ID = 1;
@@ -22,22 +40,36 @@ const UNIDAD_MEDIDA_ID = 2;
 const COBERTURA_ID = 3;
 
 export const FormBasic = () => {
-  const { indicador, dispatch } = useIndicador();
-  const methods = useForm();
+  const { indicador, onSubmit } = useIndicadorContext();
+  const methods = useForm({
+    resolver: yupResolver(indicadorBasicSchema)
+  });
   const { control, reset, handleSubmit } = methods;
 
-  const onSubmit = (data) => {
-    console.log(data)
-  }
+  const initForm = useCallback(() => {
+    if (indicador.nombre === '') {
+      return;
+    }
+    reset(indicador);
+  }, [indicador]);
+
+  const temasFetcher = async () => {
+    let temas = await getTemas();
+    temas = temas.map(({ id, temaIndicador }) => ({ id, temaIndicador }))
+    return temas;
+  };
 
   useEffect(() => {
-    console.log(indicador.basic);
-  }, []);
+    initForm();
+    temasFetcher();
+  }, [])
 
   return (
     <Box
+      id='form-basic'
       component='form'
       noValidate
+      onSubmit={handleSubmit(onSubmit)}
     >
       <Grid
         container
@@ -46,7 +78,26 @@ export const FormBasic = () => {
         direction="row"
       >
         <Grid item xs={12}>
-          <Typography variant='h5' component='h3'>General</Typography>
+          <Typography variant='h6'>General</Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <Controller
+            control={control}
+            name='tema'
+            defaultValue={null}
+            render={({ field: { value, onChange }, fieldState: { error } }) => (
+              <AutoCompleteInput
+                value={value}
+                onChange={onChange}
+                error={error}
+                label='Tema de interes'
+                helperText='Tema al que pertenece el indicador'
+                getOptionLabel={(item) => item.temaIndicador}
+                fetcher={temasFetcher}
+                required
+              />
+            )}
+          />
         </Grid>
         <Grid item xs={8}>
           <Controller
@@ -105,7 +156,7 @@ export const FormBasic = () => {
             }) => (
               <TextField
                 label='Último valor disponible'
-                type='number'
+                type='text'
                 required
                 error={!!error}
                 helperText={error?.message}
@@ -116,7 +167,7 @@ export const FormBasic = () => {
             )}
           />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={3}>
           <Controller
             name="anioUltimoValorDisponible"
             control={control}
@@ -129,7 +180,29 @@ export const FormBasic = () => {
                 label='Año último valor disponible'
                 type='text'
                 required
-                placeholder={new Date().getFullYear()}
+                placeholder={new Date().getFullYear().toString()}
+                error={!!error}
+                helperText={error?.message}
+                onChange={onChange}
+                value={value}
+                fullWidth
+              />
+            )}
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <Controller
+            name="periodicidad"
+            control={control}
+            defaultValue=''
+            render={({
+              field: { onChange, value },
+              fieldState: { error }
+            }) => (
+              <TextField
+                label='Periodicidad en meses'
+                type='text'
+                placeholder='Tiempo entre actualizaciones'
                 error={!!error}
                 helperText={error?.message}
                 onChange={onChange}
@@ -163,8 +236,9 @@ export const FormBasic = () => {
             )}
           />
         </Grid>
+
         <Grid item xs={12}>
-          <Typography variant='h5' component='h3'>Características</Typography>
+          <Typography variant='h6'>Características</Typography>
         </Grid>
         <Grid item xs={4}>
           <Controller
@@ -181,7 +255,7 @@ export const FormBasic = () => {
                 onChange={onChange}
                 label="Unidad Medida"
                 error={error}
-                required={true}
+                required={false}
               />
             )}
           />
@@ -201,7 +275,7 @@ export const FormBasic = () => {
                 onChange={onChange}
                 label="Cobertura Geográfica"
                 error={error}
-                required={true}
+                required={false}
               />
             )}
           />

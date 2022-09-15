@@ -6,7 +6,7 @@ export const createModule = async (modulo) => {
     return response.data;
 
   } catch (error) {
-    Promise.reject(error)
+    throw error;
   };
 }
 export const changeStatusModule = async (id) => {
@@ -14,10 +14,20 @@ export const changeStatusModule = async (id) => {
     const response = await protectedApi.patch(`/modulos/${id}`);
     return response.data;
   } catch (error) {
-    Promise.reject(error)
+    throw error;
   };
 }
-  
+
+export const getTemas = async () => {
+  try {
+    const res = await protectedApi.get('/modulos');
+    const { data: temas } = res.data;
+    return temas;
+  } catch (error) {
+    throw error;
+  }
+}
+
 
 
 

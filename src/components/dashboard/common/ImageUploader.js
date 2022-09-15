@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { Avatar, Badge, Button, Card, CardContent, FormControl, Grid, IconButton, Modal, Switch, TextField, Typography, Backdrop, Fade, Box } from '@mui/material';
+import { Avatar, Badge, Modal, Fade } from '@mui/material';
 import './common.css'
 
-const ImageUploader = ({ imageSource, badgeContent, type = 'avatar', klass }) => {
-	console.log(klass)
+const ImageUploader = ({ imageSource, badgeContent, type = 'avatar', klass, variant = 'circular' }) => {
 	const [openImage, setOpenImage] = useState(false);
 	const [image, setImage] = useState('');
 
@@ -32,7 +31,9 @@ const ImageUploader = ({ imageSource, badgeContent, type = 'avatar', klass }) =>
 			{
 				type === 'avatar' ?
 					(
-						<Avatar onClick={() => {
+						<Avatar 
+						variant={variant}
+						onClick={() => {
 							handleState(imageSource);
 						}} sx={{ width: 160, height: 160 }}
 							className={`${klass} image-indicator image-selector `}
@@ -45,6 +46,7 @@ const ImageUploader = ({ imageSource, badgeContent, type = 'avatar', klass }) =>
 								handleState(imageSource);
 							}}
 							src={`${imageSource}`}
+							width='100%'
 							alt='map'
 							className={`${klass} image-selector `}
 						/>

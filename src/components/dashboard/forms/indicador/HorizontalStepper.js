@@ -9,8 +9,8 @@ export const HorizontalStepper = ({ activeStep = 0, stepLabels }) => {
       <Box sx={{ p: '16px 24px' }}>
         <Stepper activeStep={activeStep} style={{ justifyContent: 'space-around' }}>
           {
-            stepLabels.map((label, index) => (
-              <Step key={index}>
+            stepLabels.map(({ label, idx }) => (
+              <Step key={idx}>
                 <StepLabel>{label}</StepLabel>
               </Step>
             ))
