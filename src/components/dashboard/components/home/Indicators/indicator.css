@@ -1,9 +1,9 @@
 .indicator {
-	background: hsla(340, 80%, 69%);
-	background: linear-gradient(90deg, hsla(340, 80%, 69%) 0%, hsla(15, 93%, 71%) 100%);
-	background: -moz-linear-gradient(90deg, hsla(340, 80%, 69%) 0%, hsla(15, 93%, 71%) 100%);
-	background: -webkit-linear-gradient(90deg, hsla(340, 80%, 69%) 0%, hsla(15, 93%, 71%) 100%);
-	filter: progid: DXImageTransform.Microsoft.gradient(startColorstr="#EF709B", endColorstr="#FA9372", GradientType=1);
+	background: #712370;
+	background: linear-gradient(90deg, #712370 0%, #D12D6A 100%);
+	background: -moz-linear-gradient(90deg, #712370 0%, #D12D6A 100%);
+	background: -webkit-linear-gradient(90deg, #712370 0%, #D12D6A 100%);
+	filter: progid: DXImageTransform.Microsoft.gradient(startColorstr="#712370", endColorstr="#D12D6A", GradientType=1);
 	padding: 0 0 1% 0;
 }
 
@@ -35,6 +35,14 @@
 	padding: 0 !important;
 }
 
+.indicador-info-input {
+	margin-bottom: 15px !important;
+}
+
+.indicador-info {
+	font-weight: 500 !important;
+}
+
 .tendencia-actual {
 	display: flex;
 	justify-content: space-around;
@@ -63,6 +71,7 @@
 	border-radius: 10px;
 	margin-left: 10%;
 	height: 100%;
+	padding: 20px 0 20px 0;
 }
 
 .image-indicator {
@@ -92,6 +101,7 @@
 	box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 20px, rgba(0, 0, 0, 0.22) 0px 15px 12px;
 	border-radius: 10px;
 	padding: 0 0 2% 0;
+	padding: 30px 0 30px 0;
 }
 
 .body-right-content {
@@ -183,6 +193,20 @@
 	align-items: center;
 	gap: 1%;
 	padding: 1% 2% 0 0;
+
+}
+
+.btn-bg {
+	transition: 0.2s;
+}
+
+.btn-bg:hover {
+	background: var(--gradient);
+	background-size: 600% 600%;
+	transition: 0.2s;
+	-webkit-animation: AnimationName 10s ease infinite;
+	-moz-animation: AnimationName 10s ease infinite;
+	animation: AnimationName 10s ease infinite;
 }
 
 @media (max-width: 900px) {
@@ -202,5 +226,40 @@
 		border-radius: 10px;
 		padding-bottom: 518px;
 		margin: 0% 5% 5% 5%;
+	}
+}
+
+
+@-moz-keyframes AnimationName {
+	0% {
+		background-position: 0% 50%;
+		transition: 0.2s;
+	}
+
+	50% {
+		background-position: 100% 50%;
+		transition: 0.2s;
+	}
+
+	100% {
+		background-position: 0% 50%;
+		transition: 0.2s;
+	}
+}
+
+@keyframes AnimationName {
+	0% {
+		background-position: 0% 50%;
+		transition: 0.2s;
+	}
+
+	50% {
+		background-position: 100% 50%;
+		transition: 0.2s;
+	}
+
+	100% {
+		background-position: 0% 50%;
+		transition: 0.2s;
 	}
 }

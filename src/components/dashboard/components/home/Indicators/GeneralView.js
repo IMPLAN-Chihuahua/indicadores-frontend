@@ -18,14 +18,18 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { createIndicatorSchema } from '../../../../../utils/indicatorValidator';
 import { getIndicator, updateIndicator } from '../../../../../services/indicatorService';
 
-import CatalogPicker from '../../../common/CatalogPicker';
+import { CatalogoAutocomplete, OdsPicker } from '../../../common/CatalogPicker';
 import { BeatLoader } from 'react-spinners';
 import MapInput from '../../../../common/mapInput/MapInput';
-import FileInput from '../../../../common/FileInput';
+import { parseDate } from '../../../../../utils/dateParser';
 
+const ODS_ID = 1;
+const UNIDAD_MEDIDA_ID = 2;
+const COBERTURA_ID = 3;
 
 export const GeneralView = () => {
 	const [editingUltimoValor, setEditingUltimoValor] = useState(false);
+
 
 	const alert = useAlert();
 	const { id } = useParams();
@@ -41,7 +45,6 @@ export const GeneralView = () => {
 		tendenciaActual: '',
 		tendenciaDeseada: '',
 		ultimoValorDisponible: '',
-		urlImagen: '',
 		observaciones: '',
 		codigo: '',
 		codigoObjeto: '',
@@ -58,7 +61,6 @@ export const GeneralView = () => {
 			});
 		})
 	}, [id]);
-
 	const methods = useForm({
 		defaultValues,
 		resolver: yupResolver(createIndicatorSchema),
@@ -235,41 +237,9 @@ export const GeneralView = () => {
 										<Grid container>
 											<Grid item xs={12} md={4}>
 												<Box className='body-left'>
-													<Typography variant="subtitle1" component="h4">
+													<Typography variant="subtitle1" component="h4" className='indicador-info'>
 														Información	del indicador
 													</Typography>
-													<Controller
-														name="urlImagen"
-														control={methods.control}
-														render={({
-															field: { onChange, value },
-															fieldState: { error }
-														}) => (
-															<FileInput
-																accept='image/png, image/jpg, image/jpeg, image/gif'
-																name='urlImagen'
-																image={value}
-																type={'avatar'}
-															/>
-														)}
-													/>
-													<Controller
-														name="mapa.url"
-														control={methods.control}
-														render={({
-															field: { onChange, value },
-															fieldState: { error }
-														}) => (
-															<>
-																<Box className='indicator-with-map'>
-																	<FmdGoodIcon sx={{ fontSize: '18px' }} />
-																	<a href={value} target='_blank' rel="noreferrer">
-																		Ver mapa
-																	</a>
-																</Box>
-															</>
-														)}
-													/>
 													<Controller
 														name='nombre'
 														control={methods.control}
@@ -288,6 +258,7 @@ export const GeneralView = () => {
 																variant='outlined'
 																onChange={onChange}
 																value={value}
+																className='indicador-info-input'
 															/>
 														}
 													/>
@@ -312,6 +283,7 @@ export const GeneralView = () => {
 																helperText={error ? error.message : null}
 																onChange={onChange}
 																value={value}
+																className='indicador-info-input'
 															/>
 														)}
 													/>
@@ -334,7 +306,26 @@ export const GeneralView = () => {
 																helperText={error ? error.message : null}
 																onChange={onChange}
 																value={value}
+																className='indicador-info-input'
 															/>
+														)}
+													/>
+
+													<Controller
+														name="mapa.url"
+														control={methods.control}
+														render={({
+															field: { onChange, value },
+															fieldState: { error }
+														}) => (
+															<>
+																<Box className='indicator-with-map'>
+																	<FmdGoodIcon sx={{ fontSize: '18px' }} />
+																	<a href={value} target='_blank' rel="noreferrer">
+																		Ver mapa
+																	</a>
+																</Box>
+															</>
 														)}
 													/>
 												</Box>
@@ -361,17 +352,17 @@ export const GeneralView = () => {
 														</Box>
 														<Box>
 															<Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-																Código del tema de indicador
+																Última actualización
 															</Typography>
 															<Controller
-																name="codigoObjeto"
+																name="updatedAt"
 																control={methods.control}
 																render={({
 																	field: { onChange, value },
 																	fieldState: { error }
 																}) => (
 																	<Typography variant="h5" component="div">
-																		{value}
+																		{parseDate(value)}
 																	</Typography>
 																)}
 															/>
@@ -390,11 +381,73 @@ export const GeneralView = () => {
 														</Box>
 														<Box container>
 															<Grid container className='body-right-catalogos'>
-																<CatalogPicker idIndicatorCatalog={1} control={methods.control} />
+																<Grid item xs={12} md={4}>
+																	<Controller
+																		name="catalogos[0].id"
+																		control={methods.control}
+																		defaultValue={`default`}
+																		render={({
+																			field: { value, onChange },
+																			fieldState: { error }
+																		}) => (
+																			<OdsPicker
+																				odsId={value}
+																			/>
+																		)}
+																	/>
+																</Grid>
+
+																<Grid item xs={12} md={3}>
+																	<Controller
+																		name="catalogos"
+																		control={methods.control}
+																		defaultValue={`default`}
+																		render={({
+																			field: { value, onChange },
+																			fieldState: { error }
+																		}) => (
+																			<CatalogoAutocomplete
+																				id={UNIDAD_MEDIDA_ID}
+																				value={value}
+																				onChange={onChange}
+																				label="Unidad Medida"
+																				error={error}
+																				required={true}
+																				type={2}
+																				catalog={UNIDAD_MEDIDA_ID}
+																			/>
+																		)}
+																	/>
+																</Grid>
+																<Grid item xs={12} md={3}>
+																	<Controller
+																		name="catalogos"
+																		control={methods.control}
+																		defaultValue={`default`}
+																		render={({
+																			field: { value, onChange },
+																			fieldState: { error }
+																		}) => (
+																			<CatalogoAutocomplete
+																				id={COBERTURA_ID}
+																				value={value}
+																				onChange={onChange}
+																				label="Cobertura geográfica"
+																				error={error}
+																				required={true}
+																				type={2}
+																				catalog={COBERTURA_ID}
+																			/>
+																		)}
+																	/>
+																</Grid>
 															</Grid>
-															<Box item xs={12} md={12} className='body-right-mapa'>
+															{/* TODO¨: KILL MESELF
+																Display map image
+															*/}
+															{/* <Box item xs={12} md={12} className='body-right-mapa'>
 																<MapInput altInput='mapita' value='ww.google.com' />
-															</Box>
+															</Box> */}
 														</Box>
 													</Box>
 												</Box>
@@ -403,7 +456,7 @@ export const GeneralView = () => {
 										<br />
 										<Box className='indicator-buttons'>
 											<Button variant='contained'>Cancelar</Button>
-											<Button type='submit' variant='contained'>Guardar</Button>
+											<Button type='submit' variant='contained' className='btn-bg'>Guardar</Button>
 										</Box>
 									</Box>
 								</Box>
