@@ -1,4 +1,4 @@
-import { Tab, Tabs } from '@mui/material';
+import { Box, Tab, Tabs } from '@mui/material';
 import React from 'react'
 import { GeneralView } from './GeneralView';
 import { HistoricosView } from './Historicos/HistoricosView';
@@ -25,8 +25,8 @@ export const Indicator = () => {
   };
 
   return (
-    <>
-      <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+    <Box >
+      <Tabs value={value} onChange={handleChange} aria-label="basic tabs example" className='indicador-tab'>
         <LinkTab label="Indicador" />
         <LinkTab label="Fórmula" />
         <LinkTab label="Históricos" />
@@ -37,7 +37,7 @@ export const Indicator = () => {
             : value === 2 ? <HistoricosView />
               : null
       }
-    </>
+    </Box>
   )
 }
 

@@ -157,3 +157,7 @@ export const setIndicatorsToUser = (id, data) => {
 export const getUserStats = async (id) => {
   return protectedApi.get(`/me/stats/${id}`);
 }
+
+export const getUsersFromIndicador = async (id) => {
+  return protectedApi.get(`/indicadores/${id}/usuarios`);
+}
