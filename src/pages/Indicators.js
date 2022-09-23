@@ -174,20 +174,6 @@ export const Indicators = () => {
     },
 
     {
-      field: "tendenciaActual",
-      headerName: "Actual",
-      flex: 1,
-      minWidth: 100,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-      renderCell: (params) => {
-        return (<Status status={params.row.tendenciaActual} />);
-      },
-    },
-    {
       field: "urlImagen",
       headerName: "Imagen",
       flex: 0.5,

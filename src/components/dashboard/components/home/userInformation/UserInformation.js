@@ -15,13 +15,11 @@ export const UserInformation = () => {
 
   const handleCloseModal = () => {
     setOpenModal(false);
-    console.log('cerrando modal');
-    console.log(openModal);
   };
 
   return (
     user && (
-      <Box>
+      <Box className='user-big-container'>
         <Box className="user-general-container">
           <Box className="user-container">
             <Box className="user-picture">

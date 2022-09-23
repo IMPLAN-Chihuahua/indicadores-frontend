@@ -1,3 +1,7 @@
+.user-big-container {
+    padding: 30px !important
+}
+
 .user-general-container {
     display: flex;
     justify-content: space-between;

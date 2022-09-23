@@ -1,8 +1,8 @@
 .indicator {
 	background: #712370;
-	background: linear-gradient(90deg, #712370 0%, #D12D6A 100%);
-	background: -moz-linear-gradient(90deg, #712370 0%, #D12D6A 100%);
-	background: -webkit-linear-gradient(90deg, #712370 0%, #D12D6A 100%);
+	background: linear-gradient(90deg, #511750 0%, #D12D6A 100%);
+	background: -moz-linear-gradient(90deg, #511750 0%, #D12D6A 100%);
+	background: -webkit-linear-gradient(90deg, #511750 0%, #D12D6A 100%);
 	filter: progid: DXImageTransform.Microsoft.gradient(startColorstr="#712370", endColorstr="#D12D6A", GradientType=1);
 	padding: 0 0 1% 0;
 }
@@ -35,12 +35,34 @@
 	padding: 0 !important;
 }
 
+
+.indicador-tab {
+	padding-top: 10px;
+	background: rgb(255, 255, 255);
+	background: linear-gradient(176deg, rgba(255, 255, 255, 1) 73%, rgba(255, 143, 185, 1) 91%, rgba(209, 45, 106, 1) 100%);
+	border-top-right-radius: 30%;
+}
+
 .indicador-info-input {
 	margin-bottom: 15px !important;
 }
 
 .indicador-info {
 	font-weight: 500 !important;
+}
+
+.indicador-icon-bg {
+	background: var(--gray-gradient) !important;
+	background-size: 600% 600%;
+	transition: 0.2s;
+	-webkit-animation: AnimationName 10s ease infinite;
+	-moz-animation: AnimationName 10s ease infinite;
+	animation: AnimationName 10s ease infinite;
+}
+
+.indicador-icon {
+	color: rgba(154, 148, 148, 0.429) !important;
+	font-size: 40px !important;
 }
 
 .tendencia-actual {
@@ -71,27 +93,10 @@
 	border-radius: 10px;
 	margin-left: 10%;
 	height: 100%;
-	padding: 20px 0 20px 0;
 }
 
-.image-indicator {
-	margin-bottom: 5%;
-}
-
-.indicator-with-map {
-	display: flex;
-	justify-content: space-around;
-	align-items: center;
-	padding-bottom: 2%;
-	text-decoration: none;
-	gap: 10px;
-	color: rgb(94, 94, 94);
-}
-
-.indicator-with-map a {
-	color: rgb(94, 94, 94);
-	font-weight: bold;
-	text-decoration: none;
+.indicador-metrica-url {
+	text-decoration: none !important;
 }
 
 .body-right {
@@ -100,8 +105,7 @@
 	margin-right: 5%;
 	box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 20px, rgba(0, 0, 0, 0.22) 0px 15px 12px;
 	border-radius: 10px;
-	padding: 0 0 2% 0;
-	padding: 30px 0 30px 0;
+	height: 100%;
 }
 
 .body-right-content {
@@ -113,7 +117,6 @@
 	padding: 2% 0 3% 0;
 }
 
-
 .body-right-title {
 	display: flex;
 	flex-direction: row;
@@ -122,68 +125,10 @@
 	padding: 2% 0 2% 0;
 }
 
-.body-right-title-link {
-	text-decoration: none;
-	color: rgb(94, 94, 94);
-	font-weight: bold;
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: space-evenly;
-	padding: 0.5% 0;
-}
-
 .body-right-catalogos {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-evenly;
-}
-
-.body-right-mapa {
-	display: flex;
-	flex-direction: column;
-	justify-content: space-evenly;
-	align-items: center;
-	gap: 10px;
-}
-
-.indicator-map {
-	width: 70%;
-	border-radius: 10px;
-	box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-	background: blue;
-	margin-bottom: 5%;
-}
-
-.mapa-container {
-	position: relative;
-	width: 90%;
-}
-
-.mapa-container img {
-	width: 100%;
-	height: auto;
-}
-
-.mapa-container .mapa-button {
-	position: absolute;
-	top: 0%;
-	right: 0%;
-	transform: translate(-0%, -0%);
-	-ms-transform: translate(-0%, -0%);
-	font-size: 16px;
-	padding: 12px 24px;
-	border: none;
-	cursor: pointer;
-	border-radius: 5px;
-	text-align: center;
-}
-
-
-.body-down {
-	display: flex;
-	flex-direction: column;
-	justify-content: flex-end;
 }
 
 .indicator-buttons {
@@ -191,9 +136,9 @@
 	flex-direction: row;
 	justify-content: flex-end;
 	align-items: center;
-	gap: 1%;
+	gap: 3%;
 	padding: 1% 2% 0 0;
-
+	margin-top: 20px;
 }
 
 .btn-bg {
@@ -208,6 +153,15 @@
 	-moz-animation: AnimationName 10s ease infinite;
 	animation: AnimationName 10s ease infinite;
 }
+
+.indicator-owner {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	padding: 5vh 0 5vh 0;
+}
+
 
 @media (max-width: 900px) {
 	.body-left {

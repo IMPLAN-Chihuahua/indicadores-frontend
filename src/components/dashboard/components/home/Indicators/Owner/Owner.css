@@ -1,0 +1,43 @@
+.testz {
+  margin-left: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+
+.owner-hr {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  width: 50%;
+  margin-top: 0 !important;
+  margin-left: 0 !important;
+}
+
+.oyster {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.owner-container {
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+}
+
+.moks {
+  padding-bottom: 0 !important;
+}
+
+.owner-iconbutton-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.owner-iconbutton {
+  width: 50px !important;
+  height: 50px !important;
+}
