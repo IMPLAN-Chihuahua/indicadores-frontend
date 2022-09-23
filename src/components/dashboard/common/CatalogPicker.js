@@ -12,7 +12,7 @@ import ListSubheader from '@mui/material/ListSubheader';
 import Popover from '@mui/material/Popover';
 import MenuIcon from '@mui/icons-material/Menu';
 import { getCatalog } from '../../../utils/getCatalog';
-import isMounted from '../../../hooks/useIsMounted';
+import useIsMounted from '../../../hooks/useIsMounted';
 
 const itemData = [
     {
@@ -126,7 +126,7 @@ export const OdsPicker = ({ odsId = 0 }) => {
         setImage(image);
         handleClose();
     };
-
+    console.log(image);
     const open = Boolean(anchor);
     const id = open ? 'image-selector' : undefined;
 
@@ -156,6 +156,7 @@ export const OdsPicker = ({ odsId = 0 }) => {
                     vertical: 'bottom',
                     horizontal: 'center',
                 }}
+                disableScrollLock
             >
                 <ImageList sx={{ width: 350, height: 350 }}>
                     <ImageListItem key="Subheader" cols={2}>
@@ -187,13 +188,13 @@ export const OdsPicker = ({ odsId = 0 }) => {
 }
 
 export const CatalogoAutocomplete = ({ value, onChange, label, id, error, required, opts = [], type, catalog }) => {
+    const isMounted = useIsMounted();
     const [options, setOptions] = useState([]);
     let items = [];
     const fetchCatalogDetails = useCallback(async () => {
         if (type === 2) {
             const catalogInput = getCatalog(value, catalog);
             items = await getCatalogosDetails(catalog);
-            console.log(catalogInput);
         } else {
             items = await getCatalogosDetails(id);
         }
