@@ -1,10 +1,7 @@
 :root,
 body {
   height: 100%;
-  margin: 0;
-  padding: 0;
   width: 100%;
-
   --blue: #2043db;
   --purple: #7b1ee3;
   --pink: #ee59e9;
@@ -14,6 +11,8 @@ body {
   --soft-black: #1f2d3d;
   --green: #88c000;
   --darker-green: #053d13;
+  --pink-gradient: linear-gradient(90deg, #ee59e9 0%, #7b1ee3 100%);
+  --gray-gradient: linear-gradient(90deg, #d1d1d1 0%, #a6a6a6 100%);
   --gradient: linear-gradient(90deg, hsla(219, 60%, 49%, 1) 0%, rgb(9, 7, 45) 100%) border-box;
   --darker-gradient: linear-gradient(45deg, #1e165a, #95a9ff, #60225e);
   --really-darker-gradient: linear-gradient(45deg, #251a75, #4c138e, #60225e);
