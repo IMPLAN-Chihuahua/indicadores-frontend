@@ -38,7 +38,6 @@ const FormRelationship = ({ handleCloseModal }) => {
       ...options,
       [selectedOption]: dataList.map(e => e.id),
     }
-    console.log({ ...payload, id: one.id })
     return
     if (mode === USER_TO_INDICADORES) {
       setIndicatorsToUser(one.id, payload)
@@ -164,7 +163,7 @@ const FormRelationship = ({ handleCloseModal }) => {
             </Box>
             <div className='auth-selection'>
               {
-                <DataSelector 
+                <DataSelector
                   topic={mode === USER_TO_INDICADORES ? 'Indicadores' : 'Usuarios'}
                 />
               }
