@@ -35,7 +35,7 @@ export const Sidebar = () => {
     icon: <ViewModuleIcon className='sidebar-icon' />
   },
   {
-    to: '/modulos',
+    to: '/indicadores',
     label: 'Indicadores',
     icon: <BubbleChartIcon className='sidebar-icon' />
   }, {
