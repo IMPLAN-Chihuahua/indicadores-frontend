@@ -1,46 +1,26 @@
-import { Box } from "@mui/material";
-import React, { useRef } from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import DatagridTable from "../components/dashboard/common/DatagridTable";
 import { DataHeader } from "../components/dashboard/common/DataHeader";
-import { BeatLoader } from "react-spinners";
-import ShowImage from "../components/dashboard/common/ShowImage";
 import { Status } from "../components/dashboard/common/Status";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import FormDialog from "../components/dashboard/common/FormDialog";
-import { DataPagination } from "../components/dashboard/common/DataPagination";
-
 import { changeStatusUser, useUsers } from "../services/userService";
 import FormUser from "../components/dashboard/forms/user/FormUser";
 import ToggleOnIcon from '@mui/icons-material/ToggleOn';
 import ToggleOffIcon from '@mui/icons-material/ToggleOff';
 import { useAlert } from "../contexts/AlertContext";
 import FormDelete from "../components/common/FormDelete";
+import { getGlobalPerPage } from "../utils/objects";
+import { Avatar } from "@mui/material";
 
 
 export const Users = () => {
-
-  let perPage = localStorage.getItem("perPage") || 5;
-  let totalPages = 1;
-  let rowsUsers = [];
-
-  const [searchUser, setSearchUser] = useState("");
-  const [paginationCounter, setPaginationCounter] = useState(1);
-  const [perPaginationCounter, setPerPaginationCounter] = useState(perPage);
-
-  const [activeCounter, setActiveCounter] = useState(0);
-  const [inactiveCounter, setInactiveCounter] = useState(0);
-
-  const isMounted = useRef(true);
-  const { usersList, isLoading, isError } = useUsers(
-    perPaginationCounter,
-    paginationCounter,
-    searchUser
-  );
-
+  const [perPage, setPerPage] = useState(getGlobalPerPage);
+  const [page, setPage] = useState(1);
+  const [searchUser, setSearchUser] = useState('');
+  const { usersList, isLoading, hasError } = useUsers(perPage, page, searchUser);
   const alert = useAlert();
-  const [openModal, setOpenModal] = React.useState(false);
+  const [openModal, setOpenModal] = useState(false);
   const handleOpenModal = () => setOpenModal(true);
   const handleCloseModal = () => setOpenModal(false);
 
@@ -48,7 +28,7 @@ export const Users = () => {
     row: { temaIndicador: "" },
   });
 
-  const [removeOpenModal, setRemoveOpenModal] = React.useState(false);
+  const [removeOpenModal, setRemoveOpenModal] = useState(false);
   const handleRemoveOpenModal = () => setRemoveOpenModal(true);
   const handleRemoveCloseModal = () => setRemoveOpenModal(false);
 
@@ -65,41 +45,10 @@ export const Users = () => {
     handleRemoveOpenModal();
   }
 
-  if (activeCounter === 0 && inactiveCounter === 0 && usersList) {
-    setActiveCounter(usersList.total - usersList.totalInactivos);
-    setInactiveCounter(usersList.totalInactivos);
-  }
-
-  usersList && (totalPages = usersList.totalPages);
-  usersList && (rowsUsers = usersList.data);
-
-  // let rowsUsersEdited = [];
-  // rowsUsers.forEach((data) => {
-  //   rowsUsersEdited = [
-  //     ...rowsUsersEdited,
-  //     {
-  //       ...data,
-  //       createdAt: data.createdAt.split("T")[0],
-  //       updatedAt: data.updatedAt.split("T")[0],
-  //       idRol: data.idRol === 1 ? "Administrador" : data.idRol === 2 ? "Usuario" : "N/A",
-  //       activo: data.activo === "SI" ? "Activo" : "Inactivo",
-  //       actions: "Acciones",
-  //      
-  //     },
-  //   ];
-  //});
-
-
-  useEffect(() => {
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
-
   useEffect(() => {
     if (usersList) {
       let rowsUsersEdited = [];
-      rowsUsers.map((data) => {
+      usersList.data.map((data) => {
         rowsUsersEdited = [
           ...rowsUsersEdited,
           {
@@ -116,56 +65,46 @@ export const Users = () => {
     }
   }, [usersList]);
 
-  const editable = true,
-    headerClassName = "dt-theme--header",
-    sortable = false,
-    headerAlign = "center",
-    align = "center",
-    filterable = false;
+  const editable = true;
+  const headerClassName = "dt-theme--header";
+  const sortable = true;
+  const headerAlign = "center";
+  const align = "center";
+  const filterable = false;
+
   const columnsUsers = [
     {
       field: "id",
       headerName: "ID ",
-      flex: 0.1,
+      flex: .5,
       editable,
       headerClassName,
       sortable,
       headerAlign,
       align
     },
-
     {
-      field: "nombres",
-      headerName: "Nombre (s)",
-      flex: 1,
-      minWidth: 130,
-      editable,
+      field: "urlImagen",
+      headerName: "Imagen",
+      flex: 0.5,
+      minWidth: 80,
       headerClassName,
-      sortable,
+      editable: false,
+      sortable: false,
+      filterable: false,
       headerAlign,
       align,
+      renderCell: (params) => <Avatar alt={params.row.nombres} src={params.row.urlImagen} />,
     },
     {
-      field: "apellidoPaterno",
-      headerName: "Apellido Paterno ",
-      flex: 1,
-      minWidth: 160,
-      editable,
+      field: 'nombre',
+      headerName: 'Nombre',
       headerClassName,
-      sortable,
       headerAlign,
-      align,
-    },
-    {
-      field: "apellidoMaterno",
-      headerName: "Apellido Materno ",
+      valueGetter: ({ row }) => `${row.nombres} ${row.apellidoPaterno} ${row.apellidoMaterno}`,
       flex: 1,
-      minWidth: 160,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
       align,
+      minWidth: 200
     },
     {
       field: "correo",
@@ -199,28 +138,6 @@ export const Users = () => {
       sortable,
       headerAlign,
       align,
-    },
-    {
-      field: "urlImagen",
-      headerName: "Avatar ",
-      flex: 0.5,
-      minWidth: 80,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-      filterable,
-      renderCell: (params) => {
-        return (
-          <ShowImage
-            data={{
-              title: params.row.correo,
-              url: params.row.urlImagen,
-            }}
-          />
-        );
-      },
     },
     {
       field: "idRol",
@@ -260,7 +177,6 @@ export const Users = () => {
       align,
       filterable,
       renderCell: (params) => {
-        // console.log(params.row)
         return (
           <div className="dt-btn-container">
             {
@@ -294,43 +210,31 @@ export const Users = () => {
   ];
 
   const dataTable = [columnsUsers, dataStore];
-
   const dataUser = {
     topic: "usuario",
-    countEnable: activeCounter,
-    countDisable: inactiveCounter,
+    countEnable: usersList?.total - usersList?.totalInactivos,
+    countDisable: usersList?.totalInactivos,
     setSearch: setSearchUser,
     searchValue: searchUser
   };
   return (
     <>
       <DataHeader
+        isLoading={isLoading}
         data={dataUser}
         handleOpenModal={handleOpenModal}
       />
-      <Box className="dt-table">
-        {isLoading ? (
-          <Box className="dt-loading">
-            <BeatLoader size={15} color="#1976D2" />
-          </Box>
-        ) : (
-          <>
-            <DatagridTable data={dataTable} />
-            <DataPagination
-              data={{
-                dataRecords: dataUser,
-                paginationCounter,
-                setPaginationCounter,
-                perPaginationCounter,
-                setPerPaginationCounter,
-                totalPages,
-                perPage,
-              }}
-            />
-          </>
-        )}
-      </Box>
-
+      <div className='datagrid-container'>
+        <DatagridTable
+          page={page}
+          data={dataTable}
+          perPage={perPage}
+          total={usersList?.total}
+          isLoading={isLoading}
+          handlePageSizeChange={size => setPerPage(size)}
+          handlePageChange={page => setPage(page + 1)}
+        />
+      </div>
       <FormDialog
         open={openModal}
         setOpenModal={setOpenModal}

@@ -1,6 +1,6 @@
 .dh-container {
     position: sticky;
-    top: 60px;
+    top: var(--navbar-height);
     display: flex;
     justify-content: center;
     padding: 20px;
@@ -97,7 +97,6 @@ align-content: center;
     justify-content: left;
     align-items: center;
     align-content: center;
-    margin-top: 1%;
 }
 
 .dt-perPage-options--text {
@@ -120,8 +119,6 @@ align-content: center;
     justify-content: left;
     align-items: center;
     align-content: center;
-    right: 1;
-    bottom: 1;
     padding-top: 15px;
     padding-right: 20px;
     z-index: 777;
@@ -155,12 +152,11 @@ align-content: center;
     align-items: center;
     align-content: center;
     text-align: center;
+    flex: 1 1 auto;
     height: 200px;
 }
 
 .dt-theme--header {
-    background-color: #3d5a80;
-    color: white;
     font-weight: 600;
     font-size: 18px;
 }

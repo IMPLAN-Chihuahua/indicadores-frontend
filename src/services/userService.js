@@ -60,11 +60,16 @@ export const useIndicators = (perPage, page, search) => {
 };
 
 export const useUsers = (perPage, page, search) => {
-  const { data, error } = useSWR(`usuarios?perPage=${perPage}&page=${page}&searchQuery=${search}`, fetcher)
+  const endpoint = new URLSearchParams({
+    perPage,
+    page,
+    searchQuery: search
+  })
+  const { data, error } = useSWR(`usuarios?${endpoint.toString()}`, fetcher)
   return {
     usersList: data,
     isLoading: !error && !data,
-    isError: error,
+    hasError: error,
   }
 };
 

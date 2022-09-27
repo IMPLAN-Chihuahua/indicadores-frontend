@@ -1,36 +1,30 @@
 import React from 'react';
 import { DataGrid, esES } from '@mui/x-data-grid';
-import { useNavigate } from 'react-router-dom';
 import './common.css'
+import { setGlobalPerPage } from '../../../utils/objects';
 
-const DatagridTable = ({ data }) => {
-  const [columns, rows, topic] = data;
-  const navigate = useNavigate();
+const DatagridTable = ({ data, handlePageChange, handlePageSizeChange, perPage, page, isLoading, total }) => {
+  const [columns, rows] = data;
   return (
-    <>
-      <DataGrid
-        editMode='row'
-        rows={rows}
-        autoHeight
-        columns={columns}
-        disableSelectionOnClick
-        hideFooter={true}
-        columnBuffer={2}
-        columnThreshold={2}
-        // onRowClick={(params) => {
-        //   if (topic === 'indicador') {
-        //     navigate(`/indicadores/${params.id}`, [navigate])
-        //   }
-        // }}
-        localeText={esES.components.MuiDataGrid.defaultProps.localeText}
-        sx={{
-          border: 'none',
-          '& .MuiDataGrid-cell:hover': {
-            color: 'primary.main',
-          },
-        }}
-      />
-    </>
+    <DataGrid
+      loading={isLoading}
+      editMode='row'
+      paginationMode='server'
+      rows={rows}
+      columns={columns}
+      rowsPerPageOptions={[5, 10, 20, 100]}
+      pageSize={perPage}
+      page={page - 1}
+      rowCount={total}
+      onPageChange={handlePageChange}
+      onPageSizeChange={size => {
+        setGlobalPerPage(size)
+        handlePageSizeChange(size)
+      }}
+      onFilterModelChange={(filters) => console.log(filters)}
+      disableSelectionOnClick
+      localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+    />
   )
 }
 
