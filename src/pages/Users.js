@@ -18,7 +18,9 @@ export const Users = () => {
   const [perPage, setPerPage] = useState(getGlobalPerPage);
   const [page, setPage] = useState(1);
   const [searchUser, setSearchUser] = useState('');
-  const { usersList, isLoading, hasError } = useUsers(perPage, page, searchUser);
+  const [total, setTotal] = useState(0);
+  const { users, isLoading, hasError } = useUsers(perPage, page, searchUser);
+
   const alert = useAlert();
   const [openModal, setOpenModal] = useState(false);
   const handleOpenModal = () => setOpenModal(true);
@@ -33,37 +35,34 @@ export const Users = () => {
   const handleRemoveCloseModal = () => setRemoveOpenModal(false);
 
   const [changeData, setChangeData] = useState({});
-  const [dataStore, setDataStore] = useState([]);
+  const [rows, setRows] = useState([]);
 
   const handleStatus = (id, topic, element, type) => {
-    setChangeData({
-      id,
-      topic,
-      element,
-      type
-    });
+    setChangeData({ id, topic, element, type });
     handleRemoveOpenModal();
   }
 
   useEffect(() => {
-    if (usersList) {
-      let rowsUsersEdited = [];
-      usersList.data.map((data) => {
-        rowsUsersEdited = [
-          ...rowsUsersEdited,
-          {
-            ...data,
-            createdAt: data.createdAt.split("T")[0],
-            updatedAt: data.updatedAt.split("T")[0],
-            idRol: data.idRol === 1 ? "Administrador" : data.idRol === 2 ? "Usuario" : "N/A",
-            activo: data.activo === "SI" ? "Activo" : "Inactivo",
-            actions: "Acciones",
-          },
-        ];
-      })
-      setDataStore(rowsUsersEdited)
+    if (!users) {
+      return;
     }
-  }, [usersList]);
+    let rowsUsersEdited = [];
+    users.data.map((data) => {
+      rowsUsersEdited = [
+        ...rowsUsersEdited,
+        {
+          ...data,
+          createdAt: data.createdAt.split("T")[0],
+          updatedAt: data.updatedAt.split("T")[0],
+          idRol: data.idRol === 1 ? "Administrador" : data.idRol === 2 ? "Usuario" : "N/A",
+          activo: data.activo === "SI" ? "Activo" : "Inactivo",
+          actions: "Acciones",
+        },
+      ];
+    })
+    setRows(rowsUsersEdited)
+    setTotal(users.total)
+  }, [users]);
 
   const editable = true;
   const headerClassName = "dt-theme--header";
@@ -72,7 +71,7 @@ export const Users = () => {
   const align = "center";
   const filterable = false;
 
-  const columnsUsers = [
+  const columns = [
     {
       field: "id",
       headerName: "ID ",
@@ -208,12 +207,11 @@ export const Users = () => {
       },
     },
   ];
-
-  const dataTable = [columnsUsers, dataStore];
+    
   const dataUser = {
     topic: "usuario",
-    countEnable: usersList?.total - usersList?.totalInactivos,
-    countDisable: usersList?.totalInactivos,
+    countEnable: users?.total - users?.totalInactivos,
+    countDisable: users?.totalInactivos,
     setSearch: setSearchUser,
     searchValue: searchUser
   };
@@ -227,9 +225,10 @@ export const Users = () => {
       <div className='datagrid-container'>
         <DatagridTable
           page={page}
-          data={dataTable}
+          columns={columns}
+          rows={rows}
           perPage={perPage}
-          total={usersList?.total}
+          total={total}
           isLoading={isLoading}
           handlePageSizeChange={size => setPerPage(size)}
           handlePageChange={page => setPage(page + 1)}
@@ -253,10 +252,10 @@ export const Users = () => {
               changeStatusUser(changeData?.id)
                 .then(res => res.data)
                 .then(res => {
-                  if (dataStore.find(x => x.id === changeData?.id).activo === 'Activo') {
-                    dataStore.find(x => x.id === changeData?.id).activo = 'Inactivo';
+                  if (rows.find(x => x.id === changeData?.id).activo === 'Activo') {
+                    rows.find(x => x.id === changeData?.id).activo = 'Inactivo';
                   } else {
-                    dataStore.find(x => x.id === changeData?.id).activo = 'Activo';
+                    rows.find(x => x.id === changeData?.id).activo = 'Activo';
                   }
                   alert.success('Estado del usuario cambiado exitosamente');
                   handleRemoveCloseModal();

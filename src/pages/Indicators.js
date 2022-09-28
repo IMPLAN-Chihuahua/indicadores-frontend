@@ -1,14 +1,10 @@
-import { Box } from "@mui/material";
-import React, { useRef } from "react";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import DatagridTable from "../components/dashboard/common/DatagridTable";
 import { DataHeader } from "../components/dashboard/common/DataHeader";
 import { useIndicators } from "../services/userService";
-import { BeatLoader } from "react-spinners";
 import { Status } from "../components/dashboard/common/Status";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import FormDialog from "../components/dashboard/common/FormDialog";
-import { DataPagination } from "../components/dashboard/common/DataPagination";
 import { FormIndicador } from "../components/dashboard/forms/indicador/FormIndicador";
 import FormDelete from "../components/common/FormDelete";
 import ToggleOnIcon from '@mui/icons-material/ToggleOn';
@@ -17,28 +13,15 @@ import { useAlert } from "../contexts/AlertContext";
 import { changeStatusIndicator } from "../services/indicatorService";
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { useNavigate } from 'react-router-dom';
-
+import { getGlobalPerPage } from "../utils/objects";
 
 export const Indicators = () => {
-
-  let perPage = localStorage.getItem("perPage") || 5;
-  let totalPages = 1;
-  let rowsIndicators = [];
-
+  const navigate = useNavigate();
   const [searchIndicator, setSearchIndicator] = useState("");
-  const [paginationCounter, setPaginationCounter] = useState(1);
-  const [perPaginationCounter, setPerPaginationCounter] = useState(perPage);
-
-  const [activeCounter, setActiveCounter] = useState(0);
-  const [inactiveCounter, setInactiveCounter] = useState(0);
-
-  const isMounted = useRef(true);
-  const { IndicatorsList, isLoading, isError } = useIndicators(
-    perPaginationCounter,
-    paginationCounter,
-    searchIndicator
-  );
-
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(getGlobalPerPage);
+  const [total, setTotal] = useState(0)
+  const { indicadores, isLoading, hasError } = useIndicators(perPage, page, searchIndicator);
   const alert = useAlert();
   const [isFormVisible, setFormVisible] = useState(false);
   const handleOpenModal = () => setFormVisible(true);
@@ -53,75 +36,28 @@ export const Indicators = () => {
   const handleRemoveCloseModal = () => setRemoveOpenModal(false);
 
   const [changeData, setChangeData] = useState({});
-  const [dataStore, setDataStore] = useState([]);
-
-  const navigate = useNavigate();
-
+  const [rows, setRows] = useState([]);
   const handleStatus = (id, topic, element, type) => {
-    setChangeData({
-      id,
-      topic,
-      element,
-      type
-    });
+    setChangeData({ id, topic, element, type });
     handleRemoveOpenModal();
   }
 
-  if (activeCounter == 0 && inactiveCounter == 0 && IndicatorsList) {
-    setActiveCounter(IndicatorsList.total - IndicatorsList.totalInactivos);
-    setInactiveCounter(IndicatorsList.totalInactivos);
-  }
-  IndicatorsList && (totalPages = IndicatorsList.totalPages);
-  IndicatorsList && (rowsIndicators = IndicatorsList.data);
-
-  let rowsIndicatorsEdited = [];
-  useMemo(() => {
-    rowsIndicators.map((data) => {
-      rowsIndicatorsEdited = [
-        ...rowsIndicatorsEdited,
-        {
-          ...data,
-          createdAt: data.createdAt.split("T")[0],
-          updatedAt: data.updatedAt.split("T")[0],
-          activo: data.activo == "SI" ? "Activo" : "Inactivo",
-          actions: "Acciones",
-        },
-      ];
-    })
-  });
-
   useEffect(() => {
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (IndicatorsList) {
-      let rowsIndicatorsEdited = [];
-      rowsIndicators.map((data) => {
-        rowsIndicatorsEdited = [
-          ...rowsIndicatorsEdited,
-          {
-            ...data,
-            createdAt: data.createdAt.split("T")[0],
-            updatedAt: data.updatedAt.split("T")[0],
-            activo: data.activo == "SI" ? "Activo" : "Inactivo",
-            actions: "Acciones",
-          },
-        ];
-      })
-      setDataStore(rowsIndicatorsEdited)
+    if (!indicadores) {
+      return;
     }
-  }, [IndicatorsList]);
+    setRows(indicadores.data);
+    setTotal(indicadores.total);
+  }, [indicadores]);
 
-  const editable = true,
-    headerClassName = "dt-theme--header",
-    sortable = false,
-    headerAlign = "center",
-    align = "center",
-    filterable = false;
-  const columnsIndicator = [
+  const editable = true;
+  const headerClassName = "dt-theme--header";
+  const sortable = false;
+  const headerAlign = "center";
+  const align = "center";
+  const filterable = false;
+
+  const columns = [
     {
       field: "id",
       headerName: "ID ",
@@ -135,7 +71,7 @@ export const Indicators = () => {
     },
     {
       field: "codigo",
-      headerName: "#",
+      headerName: "Código",
       flex: 0.5,
       minWidth: 50,
       editable,
@@ -245,7 +181,7 @@ export const Indicators = () => {
               <OpenInNewIcon />
             </span>
             {
-              (params.row.activo == 'Activo')
+              (params.row.activo === 'Activo')
                 ?
                 <span className="dt-action-delete"
                   onClick={() => handleStatus(params.row.id, "indicador", params.row.nombre, "off")}
@@ -275,8 +211,6 @@ export const Indicators = () => {
     },
   ];
 
-  const dataTable = [columnsIndicator, dataStore];
-
   const dataIndicator = {
     topic: "indicador",
     countEnable: 100,
@@ -291,37 +225,31 @@ export const Indicators = () => {
         data={dataIndicator}
         handleOpenModal={handleOpenModal}
       />
-      <Box className="dt-table">
-        {isLoading ? (
-          <Box className="dt-loading">
-            <BeatLoader size={15} color="#1976D2" />
-          </Box>
-        ) : (
-          <>
-            <DatagridTable data={dataTable} />
-            <DataPagination
-              data={{
-                dataIndicator,
-                paginationCounter,
-                setPaginationCounter,
-                perPaginationCounter,
-                setPerPaginationCounter,
-                totalPages,
-                perPage,
-              }}
-            />
-          </>
-        )}
-      </Box>
-      <FormDialog
-        open={isFormVisible}
-        setOpenModal={setFormVisible}
-        fullWidth
-        keepMounted
-        maxWidth='xl'
-      >
-        <FormIndicador close={() => setFormVisible(false)} />
-      </FormDialog>
+      <div className='datagrid-container'>
+        <DatagridTable
+          rows={rows}
+          columns={columns}
+          isLoading={isLoading}
+          page={page}
+          total={total}
+          perPage={perPage}
+          handlePageChange={newPage => setPage(newPage + 1)}
+          handlePageSizeChange={size => setPerPage(size)}
+        />
+      </div>
+      {
+        isFormVisible && (
+          <FormDialog
+            open={isFormVisible}
+            setOpenModal={setFormVisible}
+            fullWidth
+            keepMounted
+            maxWidth='xl'
+          >
+            <FormIndicador close={() => setFormVisible(false)} />
+          </FormDialog>
+        )
+      }
       <FormDialog
         open={removeOpenModal}
         setOpenModal={setRemoveOpenModal}
@@ -331,10 +259,10 @@ export const Indicators = () => {
             () => {
               try {
                 changeStatusIndicator(changeData?.id);
-                if (dataStore.find(x => x.id == changeData?.id).activo == 'Activo') {
-                  dataStore.find(x => x.id == changeData?.id).activo = 'Inactivo';
+                if (rows.find(x => x.id === changeData?.id).activo === 'Activo') {
+                  rows.find(x => x.id === changeData?.id).activo = 'Inactivo';
                 } else {
-                  dataStore.find(x => x.id == changeData?.id).activo = 'Activo';
+                  rows.find(x => x.id === changeData?.id).activo = 'Activo';
                 }
                 alert.success('Estado del modulo cambiado exitosamente');
                 handleRemoveCloseModal();

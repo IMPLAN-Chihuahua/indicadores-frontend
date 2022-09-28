@@ -1,10 +1,10 @@
-import React from 'react';
 import { DataGrid, esES } from '@mui/x-data-grid';
 import './common.css'
 import { setGlobalPerPage } from '../../../utils/objects';
 
-const DatagridTable = ({ data, handlePageChange, handlePageSizeChange, perPage, page, isLoading, total }) => {
-  const [columns, rows] = data;
+const DatagridTable = (props) => {
+  const { columns, rows, handlePageChange,
+    handlePageSizeChange, perPage, page, isLoading, total } = props
   return (
     <DataGrid
       loading={isLoading}
