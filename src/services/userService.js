@@ -45,7 +45,7 @@ export const getLastedModules = async () => {
 export const useModules = (perPage, page, search) => {
   const { data, error } = useSWR(`me/modulos?perPage=${perPage}&page=${page}&searchQuery=${search}`, fetcher)
   return {
-    modulesList: data,
+    modulos: data,
     isLoading: !error && !data,
     isError: error,
   }
@@ -53,18 +53,23 @@ export const useModules = (perPage, page, search) => {
 export const useIndicators = (perPage, page, search) => {
   const { data, error } = useSWR(`indicadores?perPage=${perPage}&page=${page}&searchQuery=${search}`, fetcher)
   return {
-    IndicatorsList: data,
+    indicadores: data,
     isLoading: !error && !data,
-    isError: error,
+    hasError: error,
   }
 };
 
 export const useUsers = (perPage, page, search) => {
-  const { data, error } = useSWR(`usuarios?perPage=${perPage}&page=${page}&searchQuery=${search}`, fetcher)
+  const endpoint = new URLSearchParams({
+    perPage,
+    page,
+    searchQuery: search
+  })
+  const { data, error } = useSWR(`usuarios?${endpoint.toString()}`, fetcher)
   return {
-    usersList: data,
+    users: data,
     isLoading: !error && !data,
-    isError: error,
+    hasError: error,
   }
 };
 

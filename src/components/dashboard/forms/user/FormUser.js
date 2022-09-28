@@ -2,7 +2,10 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
-import { DialogActions, DialogContent, DialogTitle, FormControl, FormHelperText, InputLabel, MenuItem, Select, Switch } from '@mui/material';
+import {
+  Checkbox, DialogActions, DialogContent, DialogTitle,
+  FormControl, FormHelperText, InputLabel, MenuItem, Select, Switch
+} from '@mui/material';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Typography from '@mui/material/Typography';
@@ -198,7 +201,7 @@ const FormUser = ({ handleCloseModal }) => {
                   render={({ field }) => (
                     <FormGroup>
                       <FormControlLabel
-                        control={<Switch {...field} defaultChecked={true} />}
+                        control={<Checkbox {...field} defaultChecked={true} />}
                         label="Activo" />
                     </FormGroup>
                   )} />
