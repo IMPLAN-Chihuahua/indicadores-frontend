@@ -16,7 +16,6 @@ export const useHistoricos = (perPage, page, idIndicador, sortBy, order) => {
 export const deleteHistorico = (idHistorico) => {
   try {
     const response = protectedApi.delete(`/historicos/${idHistorico}`);
-    console.log(response);
     return response;
   } catch (error) {
     Promise.reject(error);

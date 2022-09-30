@@ -126,7 +126,6 @@ export const OdsPicker = ({ odsId = 0 }) => {
         setImage(image);
         handleClose();
     };
-    console.log(image);
     const open = Boolean(anchor);
     const id = open ? 'image-selector' : undefined;
 
