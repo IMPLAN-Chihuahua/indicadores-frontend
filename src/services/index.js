@@ -3,7 +3,7 @@ import eventBus from "../utils/EventBus";
 import { getAuthHeaders } from "./authService";
 
 const options = {
-  baseURL: "http://localhost:8080/api/v1",
+  baseURL: process.env.REACT_APP_LOCAL_URL,
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",

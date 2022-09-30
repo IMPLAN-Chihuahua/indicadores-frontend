@@ -4,7 +4,6 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import './Owner.css';
 import { OwnerListDropdown } from './OwnerList';
-import { getUsersFromIndicador } from '../../../../../../services/userService';
 
 //Type puede ser 1 o 2 dependiendo del scope que se tenga planeado:
 //1: General (Todos los usuarios)

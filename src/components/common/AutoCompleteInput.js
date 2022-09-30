@@ -7,7 +7,6 @@ export default function AutoCompleteInput(props) {
     opts = [], fetcher, getOptionLabel, helperText = '' } = props;
   const [options, setOptions] = useState([]);
   const isMounted = useIsMounted();
-
   const fetchOptions = async () => {
     const items = await fetcher();
     setOptions(items)
