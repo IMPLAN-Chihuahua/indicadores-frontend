@@ -274,7 +274,7 @@ align-content: center;
 .dt-btn-container-tri {
     display: flex;
     gap: 7px;
-    width: 120px;
+    width: 80px;
 }
 
 .dt-action-delete,

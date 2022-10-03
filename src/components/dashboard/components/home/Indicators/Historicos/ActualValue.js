@@ -29,8 +29,11 @@ export const ActualValue = ({ value, date }) => {
 
   return (
     <Box className='actual-value-elements'>
-      <Typography variant="h3" gutterBottom>
+      <Typography variant="h3">
         {value}
+      </Typography>
+      <Typography variant="caption" gutterBottom>
+        Último valor disponible
       </Typography>
       <Typography variant="h5" gutterBottom>
         Actualizado {dateDifferenceText}
