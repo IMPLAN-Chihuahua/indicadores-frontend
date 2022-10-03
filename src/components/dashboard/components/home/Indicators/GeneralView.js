@@ -91,18 +91,6 @@ export const GeneralView = () => {
 	const onSubmit = async (data) => {
 		const { activo, catalogos, definicion, fuente, idModulo, modulo, nombre, observaciones, owner, ultimoValorDisponible, updatedBy } = data;
 
-		console.log('Activo', activo);
-		console.log('Catalogos', catalogos);
-		console.log('Definicion', definicion);
-		console.log('Fuente', fuente);
-		console.log('IdModulo', idModulo);
-		console.log('Modulo', modulo);
-		console.log('Nombre', nombre);
-		console.log('Observaciones', observaciones);
-		console.log('Owner', owner);
-		console.log('UltimoValorDisponible', ultimoValorDisponible);
-		console.log('UpdatedBy', updatedBy);
-
 		// const { ...indicator } = data;
 		// const formData = new FormData();
 
