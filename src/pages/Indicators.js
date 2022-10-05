@@ -195,15 +195,6 @@ export const Indicators = () => {
                   <ToggleOffIcon />
                 </span>
             }
-            <span
-              className="dt-action-edit"
-              onClick={() => {
-                setFormVisible((prev) => !prev);
-                setClickInfo(params.row);
-              }}
-            >
-              <ModeEditIcon />
-            </span>
 
           </div>
         );

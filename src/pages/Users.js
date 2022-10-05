@@ -207,7 +207,7 @@ export const Users = () => {
       },
     },
   ];
-    
+
   const dataUser = {
     topic: "usuario",
     countEnable: users?.total - users?.totalInactivos,
@@ -233,6 +233,7 @@ export const Users = () => {
           handlePageSizeChange={size => setPerPage(size)}
           handlePageChange={page => setPage(page + 1)}
         />
+
       </div>
       <FormDialog
         open={openModal}

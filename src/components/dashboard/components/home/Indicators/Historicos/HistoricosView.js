@@ -24,7 +24,6 @@ export const HistoricosView = () => {
   let totalPages = 1;
   let rowsHistoricos = [];
 
-  const alert = useAlert();
   const { id } = useParams();
 
   const [perPaginationCounter, setPerPaginationCounter] = useState(perPage);
@@ -44,15 +43,6 @@ export const HistoricosView = () => {
     order,
   );
 
-  const [dataStore, setDataStore] = useState([]);
-
-  const handleDelete = (id) => {
-    deleteHistorico(id)
-      .then(
-        alert.success('Historico eliminado exitosamente.'))
-      .catch(err => { console.log(err); });
-
-  }
 
   if (activeCounter == 0 && inactiveCounter == 0 && historicosList) {
     setActiveCounter(historicosList.total - historicosList.totalInactivos);
@@ -68,7 +58,6 @@ export const HistoricosView = () => {
         ...rowsHistoricosEdited,
         {
           ...data,
-          fechaIngreso: data.fechaIngreso.split('T')[0],
         },
       ];
     })
@@ -88,101 +77,37 @@ export const HistoricosView = () => {
           ...rowsHistoricosEdited,
           {
             ...data,
-            fechaIngreso: data.fechaIngreso.split('T')[0],
           },
         ];
       })
-      setDataStore(rowsHistoricosEdited);
     }
   }, [historicosList]);
 
-  const editable = false,
-    headerClassName = "dt-theme--header",
-    sortable = false,
-    headerAlign = "center",
-    align = "center",
-    filterable = false;
-
-  const columnHistoricos = [
-    {
-      field: 'id',
-      headerName: 'ID',
-      flex: 0.1,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-      hide: true,
-    },
-    {
-      field: 'valor',
-      headerName: 'Valor',
-      flex: 0.1,
-      minWidth: 50,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-    },
-    {
-      field: 'fuente',
-      headerName: 'Fuente',
-      flex: 0.5,
-      minWidth: 50,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-    },
-    {
-      field: "fechaIngreso",
-      headerName: "Registro",
-      flex: 0.1,
-      minWidth: 100,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-    },
-    {
-      field: "actions",
-      headerName: "Acciones",
-      flex: 0.3,
-      editable: false,
-      minWidth: 100,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-      filterable,
-      renderCell: (params) => {
-        return (
-          <div className="dt-btn-container">
-            <span className="dt-action-delete"
-              onClick={() => handleDelete(params.row.id)}
-            >
-              <DeleteForeverIcon />
-            </span>
-            <span
-              className="dt-action-edit"
-            >
-              <ModeEditIcon />
-            </span>
-          </div>
-        );
-      },
-    },
-  ];
-
-  const dataTable = [columnHistoricos, dataStore];
   return (
     <>
       <br />
-      <Box className="dt-container">
+      {
+        isLoading ? (
+          <Box>
+            <BeatLoader size={15} color="#1976D2" />
+          </Box>
+        ) : (
+          <Grid container className='bottom-panel'>
+            <Grid item xs={12} md={6} className='bottom-panel-left'>
+              <Box className='left-item'>
+                <HistoricosGraph historicosData={historicosList.data} ultimoValor={historicosList.indicadorLastValue} ultimaFecha={historicosList.indicadorLastUpdateDate} />
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={6} className='bottom-panel-right'>
+              <Box className='actual-value-container right-item'>
+                <ActualValue value={historicosList.indicadorLastValue} date={historicosList.indicadorLastUpdateDate} />
+              </Box>
+            </Grid>
+          </Grid>
+        )
+      }
+
+      {/* <Box className="dt-container">
         {
           isLoading ? (
             <Box>
@@ -217,7 +142,7 @@ export const HistoricosView = () => {
             </>
           )
         }
-      </Box>
+      </Box> */}
     </>
   )
 }
