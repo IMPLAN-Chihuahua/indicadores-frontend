@@ -22,11 +22,15 @@ ChartJS.register(
 );
 
 
-export const HistoricosGraph = ({ historicosData }) => {
+export const HistoricosGraph = ({ historicosData, ultimoValor, ultimaFecha }) => {
+  const actualDate = new Date(ultimaFecha).getFullYear();
+  console.log(actualDate);
+
   const labels = historicosData.map(historico => {
-    const localDate = new Date(historico.fechaIngreso);
-    return localDate.toLocaleString('es-ES', { month: 'long' })
+    return historico.anio;
   });
+
+  labels.push(actualDate);
   //const labels = historicosData.map(({ anio }) => anio);
   // const labels = [123, 321, 456, 123, 4568]
   const data = {
@@ -50,6 +54,9 @@ export const HistoricosGraph = ({ historicosData }) => {
       },
     ],
   };
+
+  data.datasets[0].data.push(ultimoValor);
+
   const options = {
     responsive: true,
     plugins: {

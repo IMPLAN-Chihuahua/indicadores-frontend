@@ -24,7 +24,7 @@
 .owner-container {
   cursor: pointer;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
 }
 
 .moks {

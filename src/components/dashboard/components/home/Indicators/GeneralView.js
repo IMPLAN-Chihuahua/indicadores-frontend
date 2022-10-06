@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import './indicator.css'
 
-import { Avatar, Button, Card, CardContent, FormControl, Grid, TextField, Typography, ClickAwayListener, Checkbox } from '@mui/material';
+import { Button, Card, CardContent, Grid, TextField, Typography, ClickAwayListener, Checkbox, FormControlLabel, Autocomplete } from '@mui/material';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import TodayRoundedIcon from '@mui/icons-material/TodayRounded';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
@@ -13,21 +13,20 @@ import TroubleshootIcon from '@mui/icons-material/Troubleshoot';
 import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
 import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
 
-import FmdGoodIcon from '@mui/icons-material/FmdGood';
 import { useAlert } from '../../../../../contexts/AlertContext';
-
 import { yupResolver } from '@hookform/resolvers/yup';
-
 
 import { createIndicatorSchema } from '../../../../../utils/indicatorValidator';
 import { getIndicator, updateIndicator } from '../../../../../services/indicatorService';
+import { getTemas } from '../../../../../services/moduleService';
 
 import { CatalogoAutocomplete, OdsPicker } from '../../../common/CatalogPicker';
 import { BeatLoader } from 'react-spinners';
 import { parseDate } from '../../../../../utils/dateParser';
-import Owner from './Owner/Owner';
 import { isArrayEmpty } from '../../../../../utils/objects';
 import { displayLabel } from '../../../../../utils/getCatalog';
+import OwnerListDropdown from './Owner/OwnerList';
+import AutoCompleteInput from '../../../../common/AutoCompleteInput';
 
 const ODS_ID = 1;
 const UNIDAD_MEDIDA_ID = 2;
@@ -37,10 +36,13 @@ const CATALOGOS = [ODS_ID, UNIDAD_MEDIDA_ID, COBERTURA_ID];
 export const GeneralView = () => {
 	const [editingUltimoValor, setEditingUltimoValor] = useState(false);
 	const [indicadorInfo, setIndicadorInfo] = useState(null);
-	let ods, unidadMedida, cobertura;
-
-	const alert = useAlert();
 	const { id } = useParams();
+
+	const temasFetcher = async () => {
+		let temas = await getTemas();
+		temas = temas.map(({ id, temaIndicador }) => ({ id, temaIndicador }))
+		return temas;
+	};
 
 	let defaultValues = {
 		activo: '',
@@ -87,8 +89,8 @@ export const GeneralView = () => {
 	});
 
 	const onSubmit = async (data) => {
-		console.log(data);
-		console.log(unidadMedida);
+		const { activo, catalogos, definicion, fuente, idModulo, modulo, nombre, observaciones, owner, ultimoValorDisponible, updatedBy } = data;
+
 		// const { ...indicator } = data;
 		// const formData = new FormData();
 
@@ -145,7 +147,7 @@ export const GeneralView = () => {
 																field,
 																fieldState: { error }
 															}) => (
-																editingUltimoValor ?
+																!editingUltimoValor ?
 																	(
 																		<ClickAwayListener
 																			onClickAway={() => {
@@ -255,6 +257,23 @@ export const GeneralView = () => {
 													Información	del indicador
 												</Typography>
 												<Controller
+													control={methods.control}
+													name='modulo'
+													defaultValue={null}
+													render={({ field: { value, onChange }, fieldState: { error } }) => (
+														<AutoCompleteInput
+															value={value}
+															onChange={onChange}
+															error={error}
+															label='Tema de interes'
+															helperText='Tema al que pertenece el indicador'
+															getOptionLabel={(item) => item.temaIndicador}
+															fetcher={temasFetcher}
+															required
+														/>
+													)}
+												/>
+												<Controller
 													name='nombre'
 													control={methods.control}
 													render={({ field: { onChange, value }, fieldState: { error }
@@ -356,11 +375,35 @@ export const GeneralView = () => {
 														</a>
 													</Box>
 													<Box className='body-right-title-link'>
-														<Checkbox
-															icon={<SentimentVeryDissatisfiedIcon />}
-															checkedIcon={<EmojiEmotionsIcon />}
+														<Controller
+															name="activo"
+															control={methods.control}
+															render={({
+																field: { onChange, value },
+																fieldState: { error }
+															}) => (
+																<FormControlLabel
+																	control={
+																		<Checkbox
+																			label='Activo'
+																			type='checkbox'
+																			onChange={onChange}
+																			checked={value === 'SI' ? true : value === 'NO' ? false : value}
+																			className='indicador-info-input-checkbox'
+																			icon={<SentimentVeryDissatisfiedIcon sx={{ fontSize: '30px', color: '#8D7C87' }} />}
+																			checkedIcon={<EmojiEmotionsIcon sx={{ fontSize: '30px', color: '#1C7C54' }} />}
+																		/>
+																	}
+																	label={value === 'SI' ? 'Activo' : value === 'NO' ? 'Inactivo' : value ? 'Activo' : 'Inactivo'}
+																/>
+															)}
 														/>
-														Activado
+
+														{/* // <Checkbox
+															// 	icon={<SentimentVeryDissatisfiedIcon />}
+															// 	checkedIcon={<EmojiEmotionsIcon />}
+															// /> */}
+
 													</Box>
 												</Box>
 												{/* Sección que contiene los catálogos del indicador */}
@@ -435,68 +478,58 @@ export const GeneralView = () => {
 															</Grid> */}
 
 															{
-																!isArrayEmpty(indicadorInfo.catalogos) ?
-																	indicadorInfo.catalogos.map((catalogo, index) => {
-																		return (
-																			<Grid item xs={12} md={index == 0 || index == 1 ? 4 : 3} key={catalogo.id}>
-																				<Controller
-																					name={`catalogos[${index}]`}
-																					control={methods.control}
-																					defaultValue={`default`}
-																					render={({
-																						field: { value, onChange },
-																						fieldState: { error }
-																					}) => {
-																						return (
-																							<CatalogoAutocomplete
-																								id={catalogo.idCatalogo}
-																								value={value}
-																								onChange={onChange}
-																								label={displayLabel(catalogo.idCatalogo)}
-																								error={error}
-																								required={true}
-																								type={1}
-																								catalog={catalogo.idCatalogo}
-																							/>
-																						)
-																					}}
-																				/>
-																			</Grid>
-																		)
-																	})
-																	:
-																	CATALOGOS.map((catalogo, index) => {
-																		return (
-																			<Grid item xs={12} md={4} key={index}>
-																				<Controller
-																					name={`catalogos[${index}]`}
-																					control={methods.control}
-																					defaultValue={`default`}
-																					render={({
-																						field: { value, onChange },
-																						fieldState: { error }
-																					}) => {
-																						return (
-																							<CatalogoAutocomplete
-																								id={catalogo}
-																								value={value}
-																								onChange={onChange}
-																								label={displayLabel(catalogo)}
-																								error={error}
-																								required={true}
-																								type={1}
-																								catalog={catalogo}
-																							/>
-																						)
-																					}}
-																				/>
-																			</Grid>
-																		)
-																	})
+																CATALOGOS.map((catalogo, index) => {
+																	return (
+																		<Grid item xs={12} md={index == 0 || index == 1 ? 4 : 3} key={index}>
+																			<Controller
+																				name={`catalogos[${index}]`}
+																				control={methods.control}
+																				defaultValue={`default`}
+																				render={({
+																					field: { value, onChange },
+																					fieldState: { error }
+																				}) => {
+																					return (
+																						<CatalogoAutocomplete
+																							id={catalogo}
+																							value={value === 'default' ? null : value}
+																							onChange={onChange}
+																							label={displayLabel(catalogo)}
+																							error={error}
+																							required={true}
+																							type={1}
+																							catalog={catalogo}
+																						/>
+																					)
+																				}}
+																			/>
+																		</Grid>
+																	)
+																})
 															}
 														</Grid>
 														<Box className="indicator-owner">
-															<Owner id={id} type={2} actualOwner={indicadorInfo.owner} />
+															<Controller
+																name="owner"
+																control={methods.control}
+																defaultValue={1}
+																render={({
+																	field: { value, onChange },
+																	fieldState: { error }
+																}) => {
+																	return (
+																		<OwnerListDropdown
+																			id={id}
+																			type={2}
+																			actualOwner={value}
+																			onChange={onChange}
+																			error={error}
+																		/>
+																	)
+																}}
+															/>
+
+															{/* <Owner id={id} type={2} actualOwner={indicadorInfo.owner} /> */}
 														</Box>
 														<Box>
 															<Controller
