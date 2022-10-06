@@ -21,18 +21,14 @@ ChartJS.register(
   Legend
 );
 
-
 export const HistoricosGraph = ({ historicosData, ultimoValor, ultimaFecha }) => {
   const actualDate = new Date(ultimaFecha).getFullYear();
-  console.log(actualDate);
 
   const labels = historicosData.map(historico => {
     return historico.anio;
   });
 
   labels.push(actualDate);
-  //const labels = historicosData.map(({ anio }) => anio);
-  // const labels = [123, 321, 456, 123, 4568]
   const data = {
     labels,
     datasets: [
