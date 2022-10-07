@@ -1,23 +1,21 @@
-import { Container, Grid } from '@mui/material';
+import { Button, Container, Grid } from '@mui/material';
 import { Box } from '@mui/system';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { BeatLoader } from 'react-spinners';
 
 import { useHistoricos, deleteHistorico } from '../../../../../../services/historicosService';
 import DatagridTable from '../../../../common/DatagridTable';
-import { DataHeader } from '../../../../common/DataHeader';
-import { DataPagination } from '../../../../common/DataPagination';
 import { ActualValue } from './ActualValue';
 import { HistoricosGraph } from './HistoricosGraph';
 
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import { useAlert } from '../../../../../../contexts/AlertContext';
-
-import { useNavigate } from 'react-router-dom';
 
 import './historicos.css';
 import { useParams } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import FormDialog from '../../../../common/FormDialog';
+import FormHistoricos from './FormHistoricos';
 
 export const HistoricosView = () => {
   let perPage = localStorage.getItem('perPage') || 5;
@@ -30,12 +28,20 @@ export const HistoricosView = () => {
   const [paginationCounter, setPaginationCounter] = useState(1);
   const [order, setOrder] = useState('desc');
   const [sortBy, setSortBy] = useState('id');
+  const [clickInfo, setClickInfo] = useState([]);
 
-  const [activeCounter, setActiveCounter] = useState(0);
-  const [inactiveCounter, setInactiveCounter] = useState(0);
+
+  const [openModal, setOpenModal] = useState(false);
+  const handleOpenModal = () => {
+    setOpenModal(true)
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
 
   const isMounted = useRef(true);
-  const { historicosList, isLoading, isError } = useHistoricos(
+  const { historicosList, isLoading, isError, mutate } = useHistoricos(
     perPaginationCounter,
     paginationCounter,
     id,
@@ -43,11 +49,26 @@ export const HistoricosView = () => {
     order,
   );
 
-
-  if (activeCounter == 0 && inactiveCounter == 0 && historicosList) {
-    setActiveCounter(historicosList.total - historicosList.totalInactivos);
-    setInactiveCounter(historicosList.totalInactivos);
+  const handleDeleteHistorico = ({ id }) => {
+    Swal.fire({
+      title: '¿Deseas eliminar este valor histórico?',
+      text: 'Al eliminar este registro, dejará de ser visible en la tabla de valores históricos de Chihuahua Métrica y en el sistema de gestión de Chihuahua en Datos.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#F14156',
+      cancelButtonColor: '#B7BFCC',
+      cancelButtonText: '<div style="color: #7A7A7A; font-weight: 600; font-family: sans-serif">Cancelar, conservar registro</div>',
+      confirmButtonText: '<div style="font-weight: 500; font-family: sans-serif">Aceptar, eliminar registro</div>',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteHistorico(id);
+        Swal.fire('Eliminado!', 'El registro ha sido eliminado.', 'success');
+        mutate();
+      }
+    });
+    // deleteHistorico(id);
   }
+
   historicosList && (totalPages = historicosList.totalPages);
   historicosList && (rowsHistoricos = historicosList.data);
 
@@ -57,7 +78,10 @@ export const HistoricosView = () => {
       rowsHistoricosEdited = [
         ...rowsHistoricosEdited,
         {
-          ...data,
+          id: data.id,
+          anio: data.anio,
+          valor: data.valor,
+          fuente: data.fuente,
         },
       ];
     })
@@ -76,12 +100,88 @@ export const HistoricosView = () => {
         rowsHistoricosEdited = [
           ...rowsHistoricosEdited,
           {
-            ...data,
+            id: data.id,
+            anio: data.anio,
+            valor: data.valor,
+            fuente: data.fuente,
           },
         ];
       })
     }
   }, [historicosList]);
+
+  const editable = true;
+  const headerClassName = "dt-theme--header";
+  const sortable = true;
+  const headerAlign = "center";
+  const align = "center";
+  const filterable = false;
+
+  const columns = [
+    {
+      field: 'anio',
+      headerName: 'Año de referencia',
+      flex: 0.5,
+      headerClassName,
+      sortable,
+      headerAlign,
+      align
+    },
+    {
+      field: 'valor',
+      headerName: 'Valor',
+      flex: 1,
+      minWidth: 80,
+      headerClassName,
+      headerAlign,
+      align
+    },
+    {
+      field: 'fuente',
+      headerName: 'Fuente',
+      flex: 1,
+      minWidth: 80,
+      headerClassName,
+      headerAlign,
+    },
+    {
+      field: "actions",
+      headerName: "Acciones",
+      flex: 0.5,
+      editable: false,
+      minWidth: 100,
+      headerClassName,
+      sortable,
+      headerAlign,
+      align,
+      filterable,
+      renderCell: (params) => {
+        return (
+          <div className="dt-btn-container">
+            {
+              <span
+                className="dt-action-delete"
+                onClick={() => {
+                  handleDeleteHistorico(params.row);
+                }}
+              >
+                <DeleteForeverIcon />
+              </span>
+            }
+            <span
+              className="dt-action-edit"
+              onClick={() => {
+                handleOpenModal();
+                setClickInfo({ type: 1, ...params.row });
+              }}
+            >
+              <ModeEditIcon />
+            </span>
+          </div>
+        );
+      },
+    },
+  ]
 
   return (
     <>
@@ -92,57 +192,43 @@ export const HistoricosView = () => {
             <BeatLoader size={15} color="#1976D2" />
           </Box>
         ) : (
-          <Grid container className='bottom-panel'>
-            <Grid item xs={12} md={6} className='bottom-panel-left'>
-              <Box className='left-item'>
-                <HistoricosGraph historicosData={historicosList.data} ultimoValor={historicosList.indicadorLastValue} ultimaFecha={historicosList.indicadorLastUpdateDate} />
-              </Box>
+          <>
+            <Grid container className='bottom-panel'>
+              <Grid item xs={12} md={6} className='bottom-panel-left'>
+                <Box className='left-item'>
+                  <HistoricosGraph historicosData={historicosList.data} ultimoValor={historicosList.indicadorLastValue} ultimaFecha={historicosList.indicadorLastUpdateDate} />
+                </Box>
+              </Grid>
+              <Grid item xs={12} md={6} className='bottom-panel-right'>
+                <Box className='actual-value-container right-item'>
+                  <ActualValue value={historicosList.indicadorLastValue} date={historicosList.indicadorLastUpdateDate} />
+                </Box>
+              </Grid>
             </Grid>
-            <Grid item xs={12} md={6} className='bottom-panel-right'>
-              <Box className='actual-value-container right-item'>
-                <ActualValue value={historicosList.indicadorLastValue} date={historicosList.indicadorLastUpdateDate} />
-              </Box>
-            </Grid>
-          </Grid>
+            <br />
+            <Box className='add-historico'>
+              <Button variant='contained' onClick={() => { handleOpenModal(); setClickInfo({ type: 2 }); }}>
+                Agregar histórico
+              </Button>
+            </Box>
+            <DatagridTable
+              page={historicosList.page}
+              columns={columns}
+              rows={rowsHistoricosEdited}
+              perPage={historicosList.perPage}
+              total={historicosList.total}
+              isLoading={isLoading}
+            />
+
+            <FormDialog
+              open={openModal}
+              setOpenModal={setOpenModal}
+            >
+              <FormHistoricos type={clickInfo.type} id={clickInfo.id} anio={clickInfo.anio} valor={clickInfo.valor} fuente={clickInfo.fuente} handleCloseModal={handleCloseModal} mutate={mutate} />
+            </FormDialog>
+          </>
         )
       }
-
-      {/* <Box className="dt-container">
-        {
-          isLoading ? (
-            <Box>
-              <BeatLoader size={15} color="#1976D2" />
-            </Box>
-          ) : (
-            <>
-              <DatagridTable data={dataTable} className='upper-panel' />
-              <br />
-              <Grid container className='bottom-panel'>
-                <Grid item xs={12} md={6} className='bottom-panel-left'>
-                  <Box className='left-item'>
-                    <HistoricosGraph historicosData={dataTable[1]} />
-                  </Box>
-                </Grid>
-                <Grid item xs={12} md={6} className='bottom-panel-right'>
-                  <Box className='actual-value-container right-item'>
-                    <ActualValue value={historicosList.indicadorLastValue} date={historicosList.indicadorLastUpdateDate} />
-                  </Box>
-                </Grid>
-              </Grid>
-              <DataPagination
-                data={{
-                  paginationCounter,
-                  setPaginationCounter,
-                  perPaginationCounter,
-                  setPerPaginationCounter,
-                  totalPages,
-                  perPage,
-                }}
-              />
-            </>
-          )
-        }
-      </Box> */}
     </>
   )
 }

@@ -10,6 +10,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import { orderHistoricos } from "../../../../../../utils/historicoValidator";
 
 ChartJS.register(
   CategoryScale,
@@ -21,18 +22,16 @@ ChartJS.register(
   Legend
 );
 
-
 export const HistoricosGraph = ({ historicosData, ultimoValor, ultimaFecha }) => {
   const actualDate = new Date(ultimaFecha).getFullYear();
-  console.log(actualDate);
 
-  const labels = historicosData.map(historico => {
+  const orderedHistoricos = orderHistoricos(historicosData);
+
+  const labels = orderedHistoricos.map(historico => {
     return historico.anio;
   });
 
   labels.push(actualDate);
-  //const labels = historicosData.map(({ anio }) => anio);
-  // const labels = [123, 321, 456, 123, 4568]
   const data = {
     labels,
     datasets: [
@@ -50,7 +49,7 @@ export const HistoricosGraph = ({ historicosData, ultimoValor, ultimaFecha }) =>
         pointHoverBorderWidth: 10,
         pointRadius: 10,
         pointHitRadius: 10,
-        data: historicosData.map(({ valor }) => valor),
+        data: orderedHistoricos.map(({ valor }) => valor),
       },
     ],
   };

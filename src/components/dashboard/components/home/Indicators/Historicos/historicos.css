@@ -43,3 +43,10 @@
   background-color: rgba(219, 218, 218, 0.196);
   transition: 1s;
 }
+
+.add-historico {
+  width: 100% !important;
+  display: flex;
+  flex-direction: row-reverse;
+  margin-bottom: 10px;
+}
