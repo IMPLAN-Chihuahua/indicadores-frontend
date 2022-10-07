@@ -348,6 +348,10 @@ align-content: center;
     top: -110px !important;
 }
 
+.my-swal {
+    z-index: 1000000 !important;
+}
+
 @media (max-width: 900px) {
     .dt-pagination {
         display: inline-block;

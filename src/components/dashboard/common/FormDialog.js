@@ -24,6 +24,7 @@ const ModalModelo = ({ open, setOpenModal, children, ...props }) => {
                     maxWidth: '1000px',
                     margin: 'auto'
                 }}
+                disableScrollLock={true}
             >
                 {children}
             </Dialog>
