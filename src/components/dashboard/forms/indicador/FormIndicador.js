@@ -1,9 +1,12 @@
 import { Button, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import { useCallback, useReducer, useState } from "react";
+import { useAlert } from "../../../../contexts/AlertContext";
 import { IndicadorProvider } from "../../../../contexts/IndicadorContext";
-import { protectedApi } from "../../../../services";
+import useIsMounted from "../../../../hooks/useIsMounted";
+import { createIndicador } from "../../../../services/indicatorService";
 import { FormFormula } from "../formula/FormFormula";
 import { FormMapa } from "../mapa/FormMapa";
+import ErrorContent from "./ErrorContent";
 import { FormBasic } from "./FormBasic";
 import { FormExtra } from "./FormExtra";
 import { HorizontalStepper } from "./HorizontalStepper";
@@ -46,7 +49,7 @@ const getStepContent = (step) => {
     case 4:
       return <Summary />;
     default:
-      throw new Error('Step invalido');
+      return <ErrorContent error='Invalid Step' />
   }
 }
 
@@ -56,6 +59,7 @@ const initialState = {
   definicion: '',
   ultimoValorDisponible: 0,
   anioUltimoValorDisponible: new Date().getFullYear(),
+  periodicidad: 0,
   tema: null,
   medida: null,
   cobertura: null,
@@ -63,12 +67,12 @@ const initialState = {
   formula: {
     ecuacion: '',
     descripcion: '',
-    variables: [{ nombre: '', dato: '', anio: '', medida: null, nombreAtributo: '' }]
+    variables: [{ nombre: '', dato: '', anio: '', medida: null, variableDesc: '' }]
   },
   mapa: {
     url: '',
-    hasMapa: false,
-    image: ''
+    ubicacion: '',
+    image: null,
   },
   observaciones: '',
   fuente: '',
@@ -91,9 +95,9 @@ const reducer = (state, action) => {
   }
 }
 
-const sanitizeIndicador = (indicador) => {
+const createIndicadorFormData = (indicador) => {
   const formData = new FormData();
-  for (const field of Object.keys(indicador)) {
+  for (const field in indicador) {
     if (!indicador[field]) {
       continue;
     }
@@ -106,31 +110,58 @@ const sanitizeIndicador = (indicador) => {
       continue;
     }
     if (field === 'formula') {
-      const formula = indicador[field];
-      for (const key of Object.keys(formula)) {
-        if (key === 'variables') {
-          const variable = formula[key];
-          for (const varField of Object.keys(variable)) {
-            formData.append(`formula[variables][${varField}]`, variable[varField]);
-          }
-          continue;
-        }
-        formData.append(`formula[${key}]`, formula[key])
+      if (!indicador[field].ecuacion) {
+        continue;
       }
+      formData.append('formula[ecuacion]', encodeURIComponent(indicador[field].ecuacion));
+      formData.append('formula[descripcion]', indicador[field].descripcion);
+      for (const variable of indicador[field].variables) {
+        const { nombre, dato, anio, medida, variableDesc } = variable;
+        formData.append('formula[variables][]',
+          JSON.stringify({
+            nombre,
+            dato: Number(dato),
+            anio: Number(anio),
+            idUnidad: medida.id,
+            descripcion: variableDesc
+          }));
+      }
+
+      continue;
     }
     if (field === 'mapa') {
+      if (indicador[field].url) {
+        formData.append('mapa[url]', indicador[field].url);
+      }
+      if (indicador[field].ubicacion) {
+        formData.append('mapa[ubicacion]', indicador[field].ubicacion)
+      }
+      if (indicador[field].image.length > 0) {
+        formData.append('urlImagen', indicador[field].image[0]);
+      }
       continue;
+    }
+    if (field === 'periodicidad') {
+      formData.append('periodicidad', typeof indicador[field] === 'number' ? indicador[field] : null)
     }
     formData.append(field, indicador[field])
   }
   return formData;
 }
 
+const formStateInitial = {
+  error: null,
+  uploading: false,
+}
+
 export const FormIndicador = (props) => {
+  const alert = useAlert();
+  const isMounted = useIsMounted();
   const [indicador, dispatch] = useReducer(reducer, initialState);
   const [currentStep, setCurrentStep] = useState(0)
-
+  const [formState, setFormState] = useState(formStateInitial);
   const handleBack = useCallback(() => {
+    setFormState(formStateInitial)
     setCurrentStep(prev => prev === 0 ? 0 : prev - 1)
   }, [setCurrentStep]);
 
@@ -148,11 +179,29 @@ export const FormIndicador = (props) => {
   }, [currentStep]);
 
   const handleSubmit = async () => {
-    console.log('POST request')
+    const payload = createIndicadorFormData(indicador);
+    setFormState(prev => ({ ...prev, uploading: true }))
+    try {
+      const created = await createIndicador(payload);
+      alert.success(`Indicador ${created.nombre} creado exitosamente`)
+      props.close();
+    } catch (error) {
+      setFormState(prev => ({ ...prev, error }))
+    } finally {
+      if (isMounted()) {
+        setFormState(prev => ({ ...prev, uploading: false }))
+      }
+    }
   };
 
   return (
-    <IndicadorProvider indicador={indicador} dispatch={dispatch} onSubmit={onSubmit}>
+    <IndicadorProvider
+      indicador={indicador}
+      dispatch={dispatch}
+      onSubmit={onSubmit}
+      formState={formState}
+      setFormState={setFormState}
+    >
       <DialogTitle>
         Nuevo Indicador
         <HorizontalStepper
@@ -177,7 +226,7 @@ export const FormIndicador = (props) => {
               <Button
                 variant='contained'
                 onClick={handleSubmit}>
-                Terminar
+                {formState.error ? 'Intentar de nuevo' : 'Terminar'}
               </Button>)
             : (<Button
               type='submit'
