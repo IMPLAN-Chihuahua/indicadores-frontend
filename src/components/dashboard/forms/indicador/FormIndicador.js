@@ -136,7 +136,7 @@ const createIndicadorFormData = (indicador) => {
       if (indicador[field].ubicacion) {
         formData.append('mapa[ubicacion]', indicador[field].ubicacion)
       }
-      if (indicador[field].image.length > 0) {
+      if (indicador[field]?.image && indicador[field].image.length > 0) {
         formData.append('urlImagen', indicador[field].image[0]);
       }
       continue;
