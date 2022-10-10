@@ -95,7 +95,7 @@ export const GeneralView = () => {
 		const { id: idIndicador, activo, catalogos, definicion, fuente, idModulo, modulo, nombre, observaciones, owner, anioUltimoValorDisponible, ultimoValorDisponible, updatedBy, periodicidad } = data;
 
 		const status = activo ? 'SI' : 'NO';
-
+		console.log(owner)
 		const indicadorData = {
 			nombre,
 			definicion,
