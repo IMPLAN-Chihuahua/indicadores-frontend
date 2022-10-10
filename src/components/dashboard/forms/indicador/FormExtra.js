@@ -5,7 +5,6 @@ import {
 import { useEffect } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { useIndicadorContext } from "../../../../contexts/IndicadorContext";
-import FileInput, { ImageInput } from "../../../common/FileInput";
 
 export const FormExtra = () => {
   const { indicador, onSubmit } = useIndicadorContext();

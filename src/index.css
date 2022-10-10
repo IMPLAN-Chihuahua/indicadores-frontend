@@ -61,3 +61,7 @@ code {
   margin-right: 20px;
   flex: 1 1 auto;
 }
+
+.semibold {
+  font-weight: 500;
+}
