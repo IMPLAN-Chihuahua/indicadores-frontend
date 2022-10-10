@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
 import './indicator.css'
 
-import { Button, Card, CardContent, Grid, TextField, Typography, ClickAwayListener, Checkbox, FormControlLabel, Autocomplete } from '@mui/material';
+import { Button, Card, CardContent, Grid, TextField, Typography, ClickAwayListener, Checkbox, FormControlLabel } from '@mui/material';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import TodayRoundedIcon from '@mui/icons-material/TodayRounded';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
@@ -13,8 +13,8 @@ import TroubleshootIcon from '@mui/icons-material/Troubleshoot';
 import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
 import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
 
-import { useAlert } from '../../../../../contexts/AlertContext';
 import { yupResolver } from '@hookform/resolvers/yup';
+import Swal from 'sweetalert2';
 
 import { createIndicatorSchema } from '../../../../../utils/indicatorValidator';
 import { getIndicator, updateIndicator } from '../../../../../services/indicatorService';
@@ -23,10 +23,10 @@ import { getTemas } from '../../../../../services/moduleService';
 import { CatalogoAutocomplete, OdsPicker } from '../../../common/CatalogPicker';
 import { BeatLoader } from 'react-spinners';
 import { parseDate } from '../../../../../utils/dateParser';
-import { isArrayEmpty } from '../../../../../utils/objects';
 import { displayLabel } from '../../../../../utils/getCatalog';
 import OwnerListDropdown from './Owner/OwnerList';
 import AutoCompleteInput from '../../../../common/AutoCompleteInput';
+import { createHistoricos } from '../../../../../services/historicosService';
 
 const ODS_ID = 1;
 const UNIDAD_MEDIDA_ID = 2;
@@ -71,6 +71,7 @@ export const GeneralView = () => {
 		updatedAt: '',
 		updatedBy: '',
 		urlImagen: '',
+		periodicidad: 0,
 	}
 
 	useEffect(() => {
@@ -89,28 +90,69 @@ export const GeneralView = () => {
 	});
 
 	const onSubmit = async (data) => {
-		const { activo, catalogos, definicion, fuente, idModulo, modulo, nombre, observaciones, owner, ultimoValorDisponible, updatedBy } = data;
+		let updatedVals = 0;
 
-		// const { ...indicator } = data;
-		// const formData = new FormData();
+		const { id: idIndicador, activo, catalogos, definicion, fuente, idModulo, modulo, nombre, observaciones, owner, anioUltimoValorDisponible, ultimoValorDisponible, updatedBy, periodicidad } = data;
 
-		// for (const key in indicator) {
-		// 	if (key === 'urlImagen' && indicator[key]) {
-		// 		formData.append(key, indicator[key][0])
-		// 		continue;
-		// 	}
+		const status = activo ? 'SI' : 'NO';
 
-		// 	if (indicator[key]) {
-		// 		formData.append(key, indicator[key]);
-		// 	}
-		// };
+		const indicadorData = {
+			nombre,
+			definicion,
+			observaciones,
+			ultimoValorDisponible,
+			updatedBy: id,
+			activo: status,
+			fuente,
+			owner,
+			periodicidad,
+			anioUltimoValorDisponible,
+		};
 
-		// try {
-		// 	await updateIndicator(id, formData);
-		// 	alert.success('Indicador actualizado exitosamente');
-		// } catch (error) {
-		// 	alert.error(error);
-		// }
+		const historicoData = {
+			fuente,
+			valor: ultimoValorDisponible,
+			anio: anioUltimoValorDisponible,
+		}
+
+		Swal.fire({
+			title: '¿Deseas actualizar la información del indicador o sólo guardar los cambios?',
+			text: "Al guardar la información del indicador no se generará un valor histórico. Si lo que quieres es actualizar el último valor disponible y generar un dato histórico, selecciona la segunda opción.",
+			showDenyButton: true,
+			showCancelButton: true,
+			confirmButtonText: `Guardar cambios`,
+			denyButtonText: `Actualizar indicador`,
+		}).then(async (result) => {
+			if (result.isConfirmed) {
+				await updateIndicator(idIndicador, indicadorData);
+				Swal.fire('Cambios guardados', '', 'success');
+			} else if (result.isDenied) {
+				try {
+					await updateIndicator(idIndicador, indicadorData, historicoData);
+					updatedVals++;
+					try {
+						console.log('entering here');
+						await createHistoricos(idIndicador, historicoData);
+						updatedVals++;
+					} catch (err) {
+						console.log(err);
+					}
+				} catch (error) {
+					console.log(error);
+				}
+
+				if (updatedVals === 2) {
+					Swal.fire('Cambios guardados', '', 'success');
+				} else if (updatedVals === 1) {
+					Swal.fire('Algunos cambios no se pudieron guardar', 'Intenta nuevamente', 'error');
+				} else {
+					Swal.fire('No se pudieron guardar los cambios', 'Intenta nuevamente', 'error');
+				}
+			}
+		});
+
+		console.log(historicoData);
+		// updateIndicador(idIndicador, indicadorData);
 	};
 
 	const toggleEditing = () => {
@@ -147,32 +189,19 @@ export const GeneralView = () => {
 																field,
 																fieldState: { error }
 															}) => (
-																!editingUltimoValor ?
-																	(
-																		<ClickAwayListener
-																			onClickAway={() => {
-																				setEditingUltimoValor(false);
-																			}}
-																		>
-																			<TextField
-																				type='text'
-																				size='small'
-																				required
-																				autoComplete='off'
-																				sx={{ width: '70%' }}
-																				error={!!error}
-																				helperText={error ? error.message : null}
-																				variant='outlined'
-																				{...field}
-																			/>
-																		</ClickAwayListener>
-																	)
-																	:
-																	(
-																		<Typography variant='h5' component='div' onDoubleClick={toggleEditing}>
-																			{field.value}
-																		</Typography>
-																	)
+																(
+																	<TextField
+																		type='text'
+																		size='small'
+																		required
+																		autoComplete='off'
+																		sx={{ width: '70%' }}
+																		error={!!error}
+																		helperText={error ? error.message : null}
+																		variant='outlined'
+																		{...field}
+																	/>
+																)
 															)}
 														/>
 													</Box>
@@ -193,14 +222,23 @@ export const GeneralView = () => {
 															name='anioUltimoValorDisponible'
 															control={methods.control}
 															render={({
-																field: { onChange, value },
+																field,
 																fieldState: { error }
 															}) => (
-																<Typography variant='h5' component='div'>
-																	{value}
-																</Typography>
-															)
-															}
+																(
+																	<TextField
+																		type='text'
+																		size='small'
+																		required
+																		autoComplete='off'
+																		sx={{ width: '70%' }}
+																		error={!!error}
+																		helperText={error ? error.message : null}
+																		variant='outlined'
+																		{...field}
+																	/>
+																)
+															)}
 														/>
 													</Box>
 													<Box className='information-card-icon'>
@@ -322,6 +360,27 @@ export const GeneralView = () => {
 													)}
 												/>
 												<Controller
+													name="periodicidad"
+													control={methods.control}
+													render={({
+														field: { onChange, value },
+														fieldState: { error }
+													}) => (
+														<TextField
+															label='Periodicidad del indicador en meses'
+															type='number'
+															placeholder='1'
+															size='small'
+															sx={{ width: '70%' }}
+															error={!!error}
+															helperText={error ? error.message : null}
+															onChange={onChange}
+															value={value}
+															className='indicador-info-input'
+														/>
+													)}
+												/>
+												<Controller
 													name="observaciones"
 													control={methods.control}
 													render={({
@@ -388,13 +447,13 @@ export const GeneralView = () => {
 																			label='Activo'
 																			type='checkbox'
 																			onChange={onChange}
-																			checked={value === 'SI' ? true : value === 'NO' ? false : value}
+																			checked={value === 'SI' || value === 'true' ? true : value === 'NO' || value === 'false' ? false : value}
 																			className='indicador-info-input-checkbox'
 																			icon={<SentimentVeryDissatisfiedIcon sx={{ fontSize: '30px', color: '#8D7C87' }} />}
 																			checkedIcon={<EmojiEmotionsIcon sx={{ fontSize: '30px', color: '#1C7C54' }} />}
 																		/>
 																	}
-																	label={value === 'SI' ? 'Activo' : value === 'NO' ? 'Inactivo' : value ? 'Activo' : 'Inactivo'}
+																	label={value === 'SI' || value === 'true' ? 'Activo' : value === 'NO' || value === 'false' ? 'Inactivo' : value ? 'Activo' : 'Inactivo'}
 																/>
 															)}
 														/>
