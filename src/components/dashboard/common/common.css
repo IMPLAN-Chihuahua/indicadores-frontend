@@ -1,3 +1,7 @@
+.cell-overflow {
+    overflow: visible !important;
+}
+
 .dh-container {
     position: sticky;
     top: var(--navbar-height);
