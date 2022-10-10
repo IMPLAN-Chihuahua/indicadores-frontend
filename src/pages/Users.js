@@ -11,7 +11,7 @@ import ToggleOffIcon from '@mui/icons-material/ToggleOff';
 import { useAlert } from "../contexts/AlertContext";
 import FormDelete from "../components/common/FormDelete";
 import { getGlobalPerPage } from "../utils/objects";
-import { Avatar } from "@mui/material";
+import { Avatar, Typography } from "@mui/material";
 
 
 export const Users = () => {
@@ -52,8 +52,6 @@ export const Users = () => {
         ...rowsUsersEdited,
         {
           ...data,
-          createdAt: data.createdAt.split("T")[0],
-          updatedAt: data.updatedAt.split("T")[0],
           idRol: data.idRol === 1 ? "Administrador" : data.idRol === 2 ? "Usuario" : "N/A",
           activo: data.activo === "SI" ? "Activo" : "Inactivo",
           actions: "Acciones",
@@ -70,7 +68,7 @@ export const Users = () => {
   const headerAlign = "center";
   const align = "center";
   const filterable = false;
-
+  const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
   const columns = [
     {
       field: "id",
@@ -118,25 +116,31 @@ export const Users = () => {
     },
     {
       field: "createdAt",
-      headerName: "Creacion",
-      flex: 0.5,
+      headerName: "Creación",
+      flex: 1,
       minWidth: 100,
       editable,
       headerClassName,
       sortable,
       headerAlign,
-      align,
+      align: 'left',
+      renderCell: (params) => (<Typography>
+        {new Date(params.row.createdAt).toLocaleDateString('es-ES', dateOptions)}
+      </Typography>)
     },
     {
       field: "updatedAt",
-      headerName: "Edicion",
-      flex: 0.5,
+      headerName: "Edición",
+      flex: 1,
       minWidth: 100,
       editable,
       headerClassName,
       sortable,
       headerAlign,
-      align,
+      align: 'left',
+      renderCell: (params) => (<Typography>
+        {new Date(params.row.updatedAt).toLocaleDateString('es-ES', dateOptions)}
+      </Typography>)
     },
     {
       field: "idRol",

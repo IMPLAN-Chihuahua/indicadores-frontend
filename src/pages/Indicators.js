@@ -14,6 +14,7 @@ import { changeStatusIndicator } from "../services/indicatorService";
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { useNavigate } from 'react-router-dom';
 import { getGlobalPerPage } from "../utils/objects";
+import { Typography } from "@mui/material";
 
 export const Indicators = () => {
   const navigate = useNavigate();
@@ -56,7 +57,7 @@ export const Indicators = () => {
   const headerAlign = "center";
   const align = "center";
   const filterable = false;
-
+  const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
   const columns = [
     {
       field: "id",
@@ -89,24 +90,20 @@ export const Indicators = () => {
       headerClassName,
       sortable,
       headerAlign,
-      align,
-      renderCell: (params) => {
-        return (
-          <span className="dt-theme--text">{params.row.nombre}</span>
-        );
-      },
+      align: 'left',
+      renderCell: (params) => <Typography noWrap>{params.row.nombre}</Typography>,
     },
 
     {
       field: "ultimoValorDisponible",
       headerName: "Valor actual",
-      flex: 1,
-      minWidth: 150,
+      flex: .5,
+      minWidth: 100,
       editable,
       headerClassName,
       sortable,
       headerAlign,
-      align,
+      align: 'right',
     },
 
     {
@@ -124,25 +121,31 @@ export const Indicators = () => {
     },
     {
       field: "createdAt",
-      headerName: "Creacion",
+      headerName: "Creación",
       flex: 0.5,
       minWidth: 100,
       editable,
       headerClassName,
       sortable,
       headerAlign,
-      align,
+      align: 'left',
+      renderCell: (params) => (<Typography noWrap>
+        {new Date(params.row.createdAt).toLocaleDateString('es-ES', dateOptions)}
+      </Typography>)
     },
     {
       field: "updatedAt",
-      headerName: "Edicion",
+      headerName: "Edición",
       flex: 0.5,
       minWidth: 100,
       editable,
       headerClassName,
       sortable,
       headerAlign,
-      align,
+      align: 'left',
+      renderCell: (params) => (<Typography noWrap>
+        {new Date(params.row.updatedAt).toLocaleDateString('es-ES', dateOptions)}
+      </Typography>)
     },
     {
       field: "activo",
