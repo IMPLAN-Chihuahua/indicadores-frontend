@@ -9,21 +9,22 @@ export default function AutoCompleteInput(props) {
   const isMounted = useIsMounted();
   const fetchOptions = async () => {
     const items = await fetcher();
-    setOptions(items)
+    if (isMounted()) {
+      setOptions(items)
+    }
   }
 
-  const initOptions = useCallback(() => {
-    if (opts.length === 0) {
-      fetchOptions();
+  const initOptions = useCallback(async () => {
+    if (fetcher || opts.length === 0) {
+      await fetchOptions();
     } else {
-      setOptions(opts)
+      if (isMounted()) {
+        setOptions(opts)
+      }
     }
-  }, [opts, fetcher]);
+  }, [opts, fetchOptions, isMounted]);
 
   useEffect(() => {
-    if (!isMounted.current) {
-      return;
-    }
     initOptions();
   }, []);
 

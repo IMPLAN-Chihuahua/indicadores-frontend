@@ -186,27 +186,28 @@ export const OdsPicker = ({ odsId = 0 }) => {
     );
 }
 
-export const CatalogoAutocomplete = ({ value, onChange, label, id, error, required, opts = [], type, catalog }) => {
+export const CatalogoAutocomplete = (props) => {
+    const { value, onChange, label, id,
+        error, required, opts = [], type, catalog } = props;
+
     const isMounted = useIsMounted();
     const [options, setOptions] = useState([]);
-    let items = [];
+
     const fetchCatalogDetails = useCallback(async () => {
+        let items = [];
         if (type === 2) {
-            const catalogInput = getCatalog(value, catalog);
             items = await getCatalogosDetails(catalog);
         } else {
             items = await getCatalogosDetails(id);
         }
-        setOptions(items)
-    }, [id]);
-    useEffect(() => {
-        if (!isMounted.current) {
-            return;
+        if (isMounted()) {
+            setOptions(items)
         }
+    }, [id, isMounted]);
+
+    useEffect(() => {
         if (opts.length === 0) {
             fetchCatalogDetails();
-        } else {
-            setOptions(opts)
         }
     }, []);
 
@@ -214,7 +215,7 @@ export const CatalogoAutocomplete = ({ value, onChange, label, id, error, requir
         <Autocomplete
             value={type === 2 ? getCatalog(value, catalog) : value}
             autoHighlight
-            options={options}
+            options={opts.length === 0 ? options : opts}
             getOptionLabel={option => option.nombre ? option.nombre : ''}
             isOptionEqualToValue={(option, value) => option.id === value.id}
             onChange={(_, data) => onChange(data)}

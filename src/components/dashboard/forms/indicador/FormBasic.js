@@ -3,7 +3,7 @@ import {
   Box, Grid, TextField, Typography,
 } from "@mui/material";
 import { useCallback, useEffect } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useIndicadorContext } from "../../../../contexts/IndicadorContext";
@@ -16,7 +16,13 @@ const indicadorBasicSchema = yup.object({
   codigo: yup.string().required('Ingresa el código'),
   definicion: yup.string().required('Ingresa la definición'),
   ultimoValorDisponible: yup.string().required('Ingresa el último valor disponible'),
-  anioUltimoValorDisponible: yup.number().typeError('Ingresa una valor válido').required('Ingresa el año del último valor disponible'),
+  anioUltimoValorDisponible: yup
+    .number().typeError('Ingresa una valor válido')
+    .required('Ingresa el año del último valor disponible')
+    .positive('El año debe ser positivo')
+    .integer('El año debe ser un número entero')
+    .max(new Date().getFullYear(), 'El año no puede ser mayor que el actual')
+  ,
   medida: yup.object({
     id: yup.number(),
     unidad: yup.string()
@@ -29,6 +35,12 @@ const indicadorBasicSchema = yup.object({
     id: yup.number(),
     unidad: yup.string()
   }).nullable(),
+  periodicidad: yup.number()
+    .integer()
+    .typeError('Periodicidad debe ser un número')
+    .min(1)
+    .nullable()
+    .transform((value, originalValue) => originalValue.trim() === "" ? null : value),
   tema: yup.object({
     id: yup.number(),
     temaIndicador: yup.string()
@@ -44,7 +56,18 @@ export const FormBasic = () => {
   const methods = useForm({
     resolver: yupResolver(indicadorBasicSchema)
   });
-  const { control, reset, handleSubmit } = methods;
+  const { control, reset, handleSubmit, setValue } = methods;
+  const selectedTema = useWatch({ control, name: 'tema' });
+
+  useEffect(() => {
+    if (!selectedTema) {
+      setValue('codigo', '');
+      return;
+    }
+    const { codigo, indicadoresCount } = selectedTema;
+    const count = (parseInt(indicadoresCount) + 1).toString();
+    setValue('codigo', `${codigo}${count.padStart(3, '0')}`);
+  }, [selectedTema]);
 
   const initForm = useCallback(() => {
     if (indicador.nombre === '') {
@@ -53,16 +76,9 @@ export const FormBasic = () => {
     reset(indicador);
   }, [indicador]);
 
-  const temasFetcher = async () => {
-    let temas = await getTemas();
-    temas = temas.map(({ id, temaIndicador }) => ({ id, temaIndicador }))
-    return temas;
-  };
-
   useEffect(() => {
     initForm();
-    temasFetcher();
-  }, [])
+  }, [initForm])
 
   return (
     <Box
@@ -93,7 +109,7 @@ export const FormBasic = () => {
                 label='Tema de interes'
                 helperText='Tema al que pertenece el indicador'
                 getOptionLabel={(item) => item.temaIndicador}
-                fetcher={temasFetcher}
+                fetcher={getTemas}
                 required
               />
             )}
@@ -125,8 +141,8 @@ export const FormBasic = () => {
         <Grid item xs={4}>
           <Controller
             name="codigo"
-            control={control}
             defaultValue=''
+            control={control}
             render={({
               field: { onChange, value },
               fieldState: { error }
@@ -137,7 +153,7 @@ export const FormBasic = () => {
                 required
                 placeholder='DRY'
                 error={!!error}
-                helperText={error ? error.message : null}
+                helperText={error ? error.message : value ? 'Código recomendado' : null}
                 onChange={onChange}
                 value={value}
                 fullWidth
@@ -204,7 +220,7 @@ export const FormBasic = () => {
                 type='text'
                 placeholder='Tiempo entre actualizaciones'
                 error={!!error}
-                helperText={error?.message}
+                helperText={error && error.message}
                 onChange={onChange}
                 value={value}
                 fullWidth

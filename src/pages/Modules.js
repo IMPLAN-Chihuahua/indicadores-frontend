@@ -13,6 +13,7 @@ import ToggleOnIcon from '@mui/icons-material/ToggleOn';
 import ToggleOffIcon from '@mui/icons-material/ToggleOff';
 import { useAlert } from "../contexts/AlertContext";
 import { getGlobalPerPage } from "../utils/objects";
+import { Avatar, Box, Typography } from "@mui/material";
 
 export const Modules = () => {
   const [searchModule, setSearchModule] = useState("");
@@ -66,7 +67,7 @@ export const Modules = () => {
   const headerAlign = "center";
   const align = "center";
   const filterable = false;
-
+  const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
   const columns = [
     {
       field: "id",
@@ -91,6 +92,31 @@ export const Modules = () => {
       align,
     },
     {
+      field: "urlImagen",
+      headerName: "Imagen",
+      flex: 0.5,
+      minWidth: 100,
+      editable,
+      headerClassName,
+      cellClassName: 'cell-overflow',
+      sortable,
+      headerAlign,
+      align,
+      filterable,
+      renderCell: (params) => {
+        return (
+          <Box className='lasted-picture'>
+              <Avatar
+                className='lasted-picture-hoverable'
+                variant='rounded'
+                src={params.row.urlImagen}
+                alt={params.row.temaIndicador}
+              />
+          </Box>
+        );
+      },
+    },
+    {
       field: "temaIndicador",
       headerName: "Tema",
       flex: 1,
@@ -99,56 +125,36 @@ export const Modules = () => {
       headerClassName,
       sortable,
       headerAlign,
-      align,
-      renderCell: (params) => {
-        return (
-          <span className="dt-theme--text">{params.row.temaIndicador}</span>
-        );
-      },
+      align: 'left',
+      renderCell: (params) => <Typography noWrap>{params.row.temaIndicador}</Typography>
     },
     {
       field: "createdAt",
-      headerName: "Creacion",
-      flex: 0.5,
+      headerName: "Creación",
+      flex: 1,
       minWidth: 100,
       editable,
       headerClassName,
       sortable,
       headerAlign,
-      align,
+      align: 'left',
+      renderCell: (params) => (<Typography noWrap>
+        {new Date(params.row.createdAt).toLocaleDateString('es-ES', dateOptions)}
+      </Typography>)
     },
     {
       field: "updatedAt",
-      headerName: "Edicion",
-      flex: 0.5,
+      headerName: "Edición",
+      flex: 1,
       minWidth: 100,
       editable,
       headerClassName,
       sortable,
       headerAlign,
-      align,
-    },
-    {
-      field: "urlImagen",
-      headerName: "Imagen",
-      flex: 0.5,
-      minWidth: 100,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-      filterable,
-      renderCell: (params) => {
-        return (
-          <ShowImage
-            data={{
-              title: params.row.temaIndicador,
-              url: params.row.urlImagen,
-            }}
-          />
-        );
-      },
+      align: 'left',
+      renderCell: (params) => (<Typography noWrap>
+        {new Date(params.row.updatedAt).toLocaleDateString('es-ES', dateOptions)}
+      </Typography>)
     },
     {
       field: "color",
@@ -184,11 +190,7 @@ export const Modules = () => {
       sortable,
       headerAlign,
       align,
-      renderCell: (params) => {
-        return (
-          <span className="dt-theme--text">{params.row.observaciones}</span>
-        );
-      },
+      renderCell: (params) => <Typography noWrap>{params.row.observaciones}</Typography>
     },
     {
       field: "activo",

@@ -1,13 +1,5 @@
-import {
-  Grid,
-  Link as MuiLink, Typography,
-  Box,
-  TextField
-} from "@mui/material";
-import {
-  Controller, FormProvider,
-  useFieldArray, useForm
-} from "react-hook-form";
+import { Grid, Link as MuiLink, Typography, Box, TextField, CircularProgress, Button } from "@mui/material";
+import { Controller, FormProvider, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { MathJax } from "better-react-mathjax";
 import EquationEditor from "equation-editor-react";
 import { useCallback, useEffect, useState } from "react";
@@ -15,8 +7,34 @@ import "../../../common/mathInput/mathInput.css";
 import { Variable } from "../../../common/formula/Variable";
 import { getCatalogosDetails } from "../../../../services/cataloguesService";
 import { useIndicadorContext } from "../../../../contexts/IndicadorContext";
+import useIsMounted from "../../../../hooks/useIsMounted";
+import { UNIDAD_MEDIDA_ID } from "../../../../utils/getCatalog";
+import * as Yup from 'yup';
+import { yupResolver } from "@hookform/resolvers/yup";
 
-const UNIDAD_MEDIDA_ID = 2;
+const formulaSchema = Yup.object().shape({
+  ecuacion: Yup.string().trim(),
+  descripcion: Yup.string(),
+  variables: Yup.array().when('ecuacion', {
+    is: (ecuacion) => !!ecuacion,
+    then: Yup.array().of(Yup.object().shape({
+      nombre: Yup.string().trim().min(1, 'Ingresa un nombre valido').required('Ingresa una variable'),
+      dato: Yup
+        .string()
+        .default('No aplica')
+        .notRequired(),
+      anio: Yup
+        .number()
+        .transform(value => isNaN(value) ? undefined : value)
+        .max(new Date().getFullYear(), 'El año no puede ser mayor al actual')
+        .default(0)
+        .notRequired(),
+      descripcion: Yup.string().optional(),
+      medida: Yup.object().typeError('Selecciona una unidad de medida').required()
+    })
+    )
+  })
+});
 
 const EquationInput = ({ value, onChange }) => {
   return (
@@ -52,7 +70,9 @@ const EquationViewer = ({ equation }) => {
 
 export const FormFormula = () => {
   const { indicador, onSubmit } = useIndicadorContext();
+  const isMounted = useIsMounted();
   const methods = useForm({
+    resolver: yupResolver(formulaSchema),
     defaultValues: {
       ecuacion: '',
       descripcion: '',
@@ -62,34 +82,33 @@ export const FormFormula = () => {
           dato: '',
           anio: '',
           medida: null,
-          nombreAtributo: ''
+          descripcion: ''
         }
       ]
     }
   });
-  const { handleSubmit, control, reset } = methods;
+  const { handleSubmit, control, reset, setValue } = methods;
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'variables'
   });
 
-  const addVariable = (variable) => append({ ...variable });
-  const deleteVariable = (index) => remove(index);
+  const addVariable = variable => append({ ...variable });
+  const deleteVariable = idx => remove(idx);
   const [medidaOptions, setMedidaOptions] = useState([]);
 
   const fetchUnidadMedida = useCallback(async () => {
-    const items = await getCatalogosDetails(UNIDAD_MEDIDA_ID);
-    setMedidaOptions(items);
-  }, [setMedidaOptions]);
-
-  useEffect(() => {
     if (medidaOptions.length > 0) {
       return;
     }
-    fetchUnidadMedida();
-  }, [fetchUnidadMedida]);
+    const items = await getCatalogosDetails(UNIDAD_MEDIDA_ID);
+    if (isMounted()) {
+      setMedidaOptions(items);
+    }
+  }, [medidaOptions, isMounted]);
 
   useEffect(() => {
+    fetchUnidadMedida();
     if (indicador.formula.ecuacion === '') {
       return;
     }
@@ -114,16 +133,18 @@ export const FormFormula = () => {
             <Controller
               name='descripcion'
               control={control}
-              render={({ field: { value, onChange } }) => (
-                <TextField
-                  value={value}
-                  onChange={onChange}
-                  fullWidth
-                  multiline
-                  label='Descripción'
-                  rows={2}
-                />
-              )}
+              render={({ field: { value, onChange } }) => {
+                return (
+                  <TextField
+                    value={value}
+                    onChange={onChange}
+                    fullWidth
+                    multiline
+                    label='Descripción'
+                    rows={2}
+                  />
+                )
+              }}
             />
           </Grid>
           <Grid item xs={12}>
@@ -142,11 +163,8 @@ export const FormFormula = () => {
                   (
                     <Box onDoubleClick={() => setEditingEquation(true)}>
                       {
-                        value ?
-                          (
-                            <EquationViewer equation={value} />
-                          ) :
-                          (<Typography
+                        value ? <EquationViewer equation={value} /> : (
+                          <Typography
                             variant='body2'
                             sx={{
                               backgroundColor: 'aliceBlue',
@@ -166,15 +184,19 @@ export const FormFormula = () => {
           <Grid item xs={12}>
             <Typography variant='h5' component='h3'>Variables</Typography>
           </Grid>
-          {fields.map((field, i) => (
-            <Variable
-              index={i}
-              key={field.id}
-              addVariable={i === 0 && addVariable}
-              deleteVariable={i !== 0 && deleteVariable}
-              medidaOptions={medidaOptions}
-            />
-          ))}
+          {
+            medidaOptions.length > 0 ? fields.map((field, i) => (
+              <Variable
+                index={i}
+                key={field.id}
+                addVariable={i === 0 && addVariable}
+                deleteVariable={i !== 0 && deleteVariable}
+                medidaOptions={medidaOptions}
+              />
+            )) : (
+              <CircularProgress color='primary' />
+            )
+          }
         </Grid>
       </Box>
     </FormProvider>
