@@ -1,8 +1,8 @@
-import { Box, Checkbox, FormControlLabel, FormGroup, Grid, TextField, Typography } from "@mui/material";
+import { Box, Grid, TextField, Typography } from "@mui/material";
 import { useEffect } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { useIndicadorContext } from "../../../../contexts/IndicadorContext";
-import FileInput, { ImageInput } from "../../../common/FileInput";
+import { ImageInput } from "../../../common/FileInput";
 import * as yup from 'yup';
 import { yupResolver } from "@hookform/resolvers/yup";
 
@@ -58,15 +58,18 @@ export const FormMapa = () => {
           <Grid item xs={12}>
             <Controller
               control={control}
-              name='hasMapa'
-              defaultValue={false}
-              render={({ field: { value, onChange } }) => (
-                <FormGroup>
-                  <FormControlLabel
-                    label='Indicador cuenta con cartografía'
-                    control={<Checkbox onChange={onChange} checked={value} />}
-                  />
-                </FormGroup>
+              name='ubicacion'
+              defaultValue=''
+              render={({ field: { value, onChange }, fieldState: { error } }) => (
+                <TextField
+                  value={value}
+                  onChange={onChange}
+                  fullWidth
+                  error={!!error}
+                  helperText={error?.message}
+                  label='Ubicación'
+                  placeholder="\\10.218.108.49\Geomatica\Activo\IMPLAN2022\GM2201_Datos_para_todos\Octubre\octubre_rosa.shp"
+                />
               )}
             />
           </Grid>
