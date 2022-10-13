@@ -27,6 +27,9 @@ import { displayLabel } from '../../../../../utils/getCatalog';
 import OwnerListDropdown from './Owner/OwnerList';
 import AutoCompleteInput from '../../../../common/AutoCompleteInput';
 import { createHistoricos } from '../../../../../services/historicosService';
+import { useAuth } from '../../../../../contexts/AuthContext';
+import { isNumber } from '../../../../../utils/stringsValidator';
+import { updateOrCreateCatalogo } from '../../../../../services/cataloguesService';
 
 const ODS_ID = 1;
 const UNIDAD_MEDIDA_ID = 2;
@@ -37,6 +40,7 @@ export const GeneralView = () => {
 	const [editingUltimoValor, setEditingUltimoValor] = useState(false);
 	const [indicadorInfo, setIndicadorInfo] = useState(null);
 	const { id } = useParams();
+	const { user } = useAuth();
 
 	const temasFetcher = async () => {
 		let temas = await getTemas();
@@ -95,7 +99,6 @@ export const GeneralView = () => {
 		const { id: idIndicador, activo, catalogos, definicion, fuente, idModulo, modulo, nombre, observaciones, owner, anioUltimoValorDisponible, ultimoValorDisponible, updatedBy, periodicidad } = data;
 
 		const status = activo ? 'SI' : 'NO';
-		console.log(owner)
 		const indicadorData = {
 			nombre,
 			definicion,
@@ -113,7 +116,18 @@ export const GeneralView = () => {
 			fuente,
 			valor: ultimoValorDisponible,
 			anio: anioUltimoValorDisponible,
+			idUsuario: user.id,
 		}
+
+		const catalogosData = {
+			catalogos,
+			idIndicador,
+		}
+		console.log('kosita')
+
+		console.log(indicadorInfo.catalogos)
+		console.log('kosota');
+		updateOrCreateCatalogo(idIndicador, catalogosData);
 
 		Swal.fire({
 			title: '¿Deseas actualizar la información del indicador o sólo guardar los cambios?',
@@ -123,41 +137,55 @@ export const GeneralView = () => {
 			confirmButtonText: `Guardar cambios`,
 			denyButtonText: `Actualizar indicador`,
 		}).then(async (result) => {
-			if (result.isConfirmed) {
-				await updateIndicator(idIndicador, indicadorData);
-				Swal.fire('Cambios guardados', '', 'success');
-			} else if (result.isDenied) {
-				try {
-					await updateIndicator(idIndicador, indicadorData, historicoData);
-					updatedVals++;
-					try {
-						console.log('entering here');
-						await createHistoricos(idIndicador, historicoData);
-						updatedVals++;
-					} catch (err) {
-						console.log(err);
-					}
-				} catch (error) {
-					console.log(error);
-				}
-
-				if (updatedVals === 2) {
-					Swal.fire('Cambios guardados', '', 'success');
-				} else if (updatedVals === 1) {
-					Swal.fire('Algunos cambios no se pudieron guardar', 'Intenta nuevamente', 'error');
+			if (result.isConfirmed || result.isDenied) {
+				if (isNumber(ultimoValorDisponible)) {
+					updateData(result, idIndicador, indicadorData, historicoData, updatedVals);
 				} else {
-					Swal.fire('No se pudieron guardar los cambios', 'Intenta nuevamente', 'error');
+					Swal.fire({
+						title: 'El último valor disponible no es un valor numérico válido',
+						text: 'El valor del indicador no es un valor numérico cerrado, esto quiere decir que no es un número entero o decimal. Si estás seguro de guardar el valor de esta forma, por favor, ten en cuenta que es posible que no se pueda gráficar. Recuerda que el indicador ya cuenta con una unidad de medida.',
+						showCancelButton: true,
+						confirmButtonText: `Guardar`,
+						cancelButtonText: `Cancelar`,
+					}).then(async (result) => {
+						if (result.isConfirmed) {
+							updateData(result, idIndicador, indicadorData, historicoData, updatedVals);
+						}
+					})
 				}
 			}
 		});
 
-		console.log(historicoData);
-		// updateIndicador(idIndicador, indicadorData);
 	};
 
-	const toggleEditing = () => {
-		setEditingUltimoValor(true);
+	const updateData = async (result, idIndicador, indicadorData, historicoData, updatedVals) => {
+		if (result.isConfirmed) {
+			await updateIndicator(idIndicador, indicadorData);
+			Swal.fire('Cambios guardados', '', 'success');
+		} else if (result.isDenied) {
+			try {
+				await updateIndicator(idIndicador, indicadorData);
+				updatedVals++;
+				try {
+					await createHistoricos(idIndicador, historicoData);
+					updatedVals++;
+				} catch (err) {
+					console.log(err);
+				}
+			} catch (error) {
+				console.log(error);
+			}
+
+			if (updatedVals === 2) {
+				Swal.fire('Cambios guardados', '', 'success');
+			} else if (updatedVals === 1) {
+				Swal.fire('Algunos cambios no se pudieron guardar', 'Intenta nuevamente', 'error');
+			} else {
+				Swal.fire('No se pudieron guardar los cambios', 'Intenta nuevamente', 'error');
+			}
+		}
 	}
+
 
 	return (
 		(
@@ -227,7 +255,7 @@ export const GeneralView = () => {
 															}) => (
 																(
 																	<TextField
-																		type='text'
+																		type='number'
 																		size='small'
 																		required
 																		autoComplete='off'

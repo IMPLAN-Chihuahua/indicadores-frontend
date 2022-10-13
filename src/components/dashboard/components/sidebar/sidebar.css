@@ -28,13 +28,16 @@
   align-items: flex-end;
   column-gap: 5px;
   width: 100%;
+  cursor: pointer;
 }
 
 .sidebar-list-item a {
+  cursor: pointer;
   padding: .5rem 1rem;
 }
 
-.sidebar-list-item:hover, .sidebar-link-active {
+.sidebar-list-item:hover,
+.sidebar-link-active {
   background-color: var(--blue-100);
 }
 
