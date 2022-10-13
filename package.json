@@ -25,6 +25,7 @@
     "better-react-mathjax": "^2.0.0",
     "chart.js": "^3.7.1",
     "equation-editor-react": "^0.0.10",
+    "html2canvas": "^1.4.1",
     "install": "^0.13.0",
     "jwt-decode": "^3.1.2",
     "lodash.debounce": "^4.0.8",
@@ -43,6 +44,7 @@
     "react-wavify": "^1.6.2",
     "sweetalert2": "^11.4.37",
     "swr": "^1.2.2",
+    "use-react-screenshot": "^3.0.0",
     "web-vitals": "^1.0.1",
     "yup": "^0.32.11"
   },

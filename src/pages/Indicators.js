@@ -50,7 +50,7 @@ export const Indicators = () => {
     setRows(indicadores.data);
     setTotal(indicadores.total);
   }, [indicadores]);
-
+  console.log(indicadores);
   const editable = true;
   const headerClassName = "dt-theme--header";
   const sortable = false;
@@ -207,8 +207,8 @@ export const Indicators = () => {
 
   const dataIndicator = {
     topic: "indicador",
-    countEnable: 100,
-    countDisable: 10,
+    countEnable: indicadores ? indicadores.total - indicadores.totalInactive : '',
+    countDisable: indicadores ? indicadores.totalInactive : '',
     setSearch: setSearchIndicator,
     searchValue: searchIndicator
   };

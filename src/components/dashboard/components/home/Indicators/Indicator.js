@@ -3,6 +3,7 @@ import React from 'react'
 import { GeneralView } from './GeneralView';
 import { HistoricosView } from './Historicos/HistoricosView';
 import './indicator.css'
+import MapView from './Mapa/MapView';
 
 function LinkTab(props) {
   return (
@@ -30,12 +31,14 @@ export const Indicator = () => {
         <LinkTab label="Indicador" />
         <LinkTab label="Fórmula" />
         <LinkTab label="Históricos" />
+        <LinkTab label="Mapa" />
       </Tabs>
       {
         value === 0 ? <GeneralView />
           : value === 1 ? <h1>TBD</h1>
             : value === 2 ? <HistoricosView />
-              : null
+              : value === 3 ? <MapView />
+                : null
       }
     </Box>
   )
