@@ -37,7 +37,6 @@ export const editHistoricos = (idHistorico, data) => {
 };
 
 export const createHistoricos = (idIndicador, data) => {
-  console.log(idIndicador, data);
   try {
     const response = protectedApi.post(`/historicos/${idIndicador}`, data);
     return response;
