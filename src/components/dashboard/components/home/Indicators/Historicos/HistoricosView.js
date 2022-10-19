@@ -66,7 +66,6 @@ export const HistoricosView = () => {
         mutate();
       }
     });
-    // deleteHistorico(id);
   }
 
   historicosList && (totalPages = historicosList.totalPages);
