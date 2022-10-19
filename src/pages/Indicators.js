@@ -50,7 +50,6 @@ export const Indicators = () => {
     setRows(indicadores.data);
     setTotal(indicadores.total);
   }, [indicadores]);
-  console.log(indicadores);
   const editable = true;
   const headerClassName = "dt-theme--header";
   const sortable = false;
@@ -175,14 +174,6 @@ export const Indicators = () => {
       renderCell: (params) => {
         return (
           <div className="dt-btn-container-tri">
-            <span
-              className="dt-action-delete"
-              onClick={() => {
-                navigate(`/indicadores/${params.id}`, [navigate])
-              }}
-            >
-              <OpenInNewIcon />
-            </span>
             {
               (params.row.activo === 'Activo')
                 ?
@@ -198,7 +189,14 @@ export const Indicators = () => {
                   <ToggleOffIcon />
                 </span>
             }
-
+            <span
+              className="dt-action-delete"
+              onClick={() => {
+                navigate(`/indicadores/${params.id}`, [navigate])
+              }}
+            >
+              <OpenInNewIcon />
+            </span>
           </div>
         );
       },
