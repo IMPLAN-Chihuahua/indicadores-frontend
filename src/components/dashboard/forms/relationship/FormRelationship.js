@@ -6,28 +6,30 @@ import { useAutocompleteInput } from '../../../../services/userService';
 import { createRelation } from '../../../../services/usuarioIndicadorService';
 import { DataContext } from '../../../common/dataSelector/DataContext';
 import { dataReducer } from '../../../common/dataSelector/dataReducer';
-import { authSchema } from '../../../../utils/validator';
+import { updateAuthSchema, createAuthSchema } from '../../../../utils/validator';
 import { yupResolver } from '@hookform/resolvers/yup'
 import './FormRelationship.css'
-import { setUsersToIndicator } from '../../../../services/indicatorService';
 import { useAlert } from '../../../../contexts/AlertContext';
 
 const USER_TO_INDICADORES = 'INDICADORES_TO_USER';
 const INDICADOR_TO_USERS = 'USERS_TO_INDICADOR';
 
-const FormRelationship = ({ handleCloseModal, mutate }) => {
+const FormRelationship = ({ handleCloseModal, mutate, isEdit, indicador }) => {
   const [dataList, dispatch] = useReducer(dataReducer, [])
-  const [mode, setMode] = useState(USER_TO_INDICADORES);
+  const [mode, setMode] = useState(isEdit ? INDICADOR_TO_USERS : USER_TO_INDICADORES);
   const [listAlert, setListAlert] = useState(false);
   const [placeholder, setPlaceholder] = useState()
   const [expires, setExpires] = useState(true);
   const alert = useAlert();
 
-  const { control, handleSubmit, reset } = useForm({
-    resolver: yupResolver(authSchema)
-  });
+  const { control, handleSubmit, reset } = useForm(
+    {
+      resolver: isEdit ? yupResolver(updateAuthSchema) : yupResolver(createAuthSchema),
+    }
+  );
 
   const onSubmit = data => {
+
     if (dataList.length === 0) {
       setListAlert(true)
       return;
@@ -35,7 +37,7 @@ const FormRelationship = ({ handleCloseModal, mutate }) => {
 
     setListAlert(false)
     const { one, ...options } = data;
-
+    options.expires = expires === true ? 'SI' : 'NO';
     const selectedOption = mode === INDICADOR_TO_USERS ? 'relationIds' : 'relationIds';
     const payload = {
       ...options,
@@ -45,19 +47,28 @@ const FormRelationship = ({ handleCloseModal, mutate }) => {
     if (mode === USER_TO_INDICADORES) {
       createRelation(one.id, payload, 'indicadores')
         .then(_ => {
-
           alert.success('Indicador (es) asignado (s) exitosamente')
           mutate();
         })
         .catch(err => alert.error(err))
 
     } else {
-      createRelation(one.id, payload, 'usuarios')
-        .then(_ => {
-          alert.success('Usuario (s) asignado (s) exitosamente')
-          mutate();
-        })
-        .catch(err => alert.error(err))
+      if (isEdit) {
+        createRelation(indicador.id, payload, 'usuarios')
+          .then(_ => {
+            alert.success('Usuario (s) asignado (s) exitosamente')
+            mutate();
+          })
+          .catch(err => alert.error(err))
+      } else {
+        createRelation(one.id, payload, 'usuarios')
+          .then(_ => {
+            alert.success('Usuario (s) asignado (s) exitosamente')
+            mutate();
+          })
+          .catch(err => alert.error(err))
+      }
+
     }
   };
 
@@ -94,9 +105,14 @@ const FormRelationship = ({ handleCloseModal, mutate }) => {
               Autorizacion
             </div>
             <div className='auth-title-right'>
-              <button
-                className={`auth-title-btn${(mode === USER_TO_INDICADORES) ? '-active' : ''}`}
-                onClick={() => handleChangeMode(USER_TO_INDICADORES)}>Usuario a indicadores</button>
+              {
+                isEdit ?
+                  <></>
+                  :
+                  <button
+                    className={`auth-title-btn${(mode === USER_TO_INDICADORES) ? '-active' : ''}`}
+                    onClick={() => handleChangeMode(USER_TO_INDICADORES)}>Usuario a indicadores</button>
+              }
 
               <button
                 className={`auth-title-btn${(mode === INDICADOR_TO_USERS) ? '-active' : ''}`}
@@ -115,28 +131,31 @@ const FormRelationship = ({ handleCloseModal, mutate }) => {
                 control={control}
                 defaultValue={null}
                 render={({ field: props, fieldState: { error } }) => (
-                  <Autocomplete
-                    {...props}
-                    type='text'
-                    disablePortal
-                    getOptionLabel={item => {
-                      return mode && mode === USER_TO_INDICADORES
-                        ? `${item.nombres} ${item.apellidoPaterno} ${item.apellidoMaterno || ''}`
-                        : item.nombre
-                    }}
-                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                    options={[...itemList.data]}
-                    onChange={(_, data) => props.onChange(data)}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label={placeholder}
-                        error={!!error}
-                        fullWidth
-                        helperText={error?.message}
-                      />
-                    )}
-                  />
+                  isEdit ?
+                    <Typography variant='h6' align='center'>{indicador.nombre}</Typography>
+                    :
+                    <Autocomplete
+                      {...props}
+                      type='text'
+                      disablePortal
+                      getOptionLabel={item => {
+                        return mode && mode === USER_TO_INDICADORES
+                          ? `${item.nombres} ${item.apellidoPaterno} ${item.apellidoMaterno || ''}`
+                          : item.nombre
+                      }}
+                      isOptionEqualToValue={(option, value) => option.id === value.id}
+                      options={[...itemList.data]}
+                      onChange={(_, data) => props.onChange(data)}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label={placeholder}
+                          error={!!error}
+                          fullWidth
+                          helperText={error?.message}
+                        />
+                      )}
+                    />
                 )}
               />}
             <Box sx={{ display: 'flex', mt: 3, columnGap: 2 }}>
