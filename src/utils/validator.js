@@ -9,11 +9,31 @@ const emailSchema = yup.object().shape({
   correo: yup.string().email().required(),
 });
 
-const authSchema = yup.object().shape({
+const createAuthSchema = yup.object().shape({
   one: yup.object({
     id: yup.number(),
     nombre: yup.string()
   }).nullable().required('Por favor, selecciona un elemento'),
+
+  expires: yup.boolean(),
+  desde: yup.string()
+    .nullable()
+    .when('expires', {
+      is: true,
+      then: yup.string().required('Por favor, selecciona una fecha de inicio'),
+      otherwise: yup.string().nullable()
+    }),
+  hasta: yup.string()
+    .nullable()
+    .transform((curr, orig) => orig === '' ? null : curr)
+    .when('expires', {
+      is: true,
+      then: yup.string().required('Por favor, selecciona una fecha de expiración'),
+      otherwise: yup.string().nullable()
+    })
+});
+
+const updateAuthSchema = yup.object().shape({
   expires: yup.boolean(),
   desde: yup.string()
     .nullable()
@@ -61,4 +81,4 @@ const moduleSchema = yup.object({
 
 });
 
-export { loginSchema, moduleSchema, emailSchema, confirmPasswordSchema, authSchema }
+export { loginSchema, moduleSchema, emailSchema, confirmPasswordSchema, createAuthSchema, updateAuthSchema }
