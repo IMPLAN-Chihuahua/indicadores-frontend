@@ -6,12 +6,13 @@ import { useParams } from 'react-router-dom'
 import { getRelationUsers } from '../../../../../services/usuarioIndicadorService';
 import DatagridTable from '../../../common/DatagridTable';
 import { Status } from '../../../common/Status';
-import './responsables.css';
 import Checkbox from '@mui/material/Checkbox';
 import Autocomplete from '@mui/material/Autocomplete';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import PersonalLoader from '../../../../common/PersonalLoader/PersonalLoader';
+import './responsables.css';
+
 
 const Relation = () => {
   const { id } = useParams();
@@ -38,8 +39,6 @@ const Relation = () => {
   const sortable = false;
   const headerAlign = "center";
   const align = "center";
-  const filterable = false;
-  const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 
   const columns = [
     {
@@ -107,7 +106,6 @@ const Relation = () => {
       field: "expires",
       headerName: "¿Expira?",
       flex: 0.5,
-      editable: true,
       minWidth: 100,
       headerClassName,
       sortable,
@@ -129,45 +127,47 @@ const Relation = () => {
   return (
     <>
       {
-        loading ? <>
-          <Box className='responsables-header'>
-            <h1>Indicador: {indicador?.nombre}</h1>
-            <Box className='responsables-header-button'>
-              <Autocomplete
-                multiple
-                id="checkboxes-tags-demo"
-                options={top100Films}
-                disableCloseOnSelect
-                getOptionLabel={(option) => option.title}
-                renderOption={(props, option, { selected }) => (
-                  <li {...props}>
-                    <Checkbox
-                      icon={icon}
-                      checkedIcon={checkedIcon}
-                      style={{ marginRight: 8 }}
-                      checked={selected}
-                    />
-                    {option.title}
-                  </li>
-                )}
-                style={{ width: 500 }}
-                renderInput={(params) => (
-                  <TextField {...params} label="Checkboxes" placeholder="Favorites" />
-                )}
-              />
-              <Button variant='contained'>+</Button>
+        loading ?
+          <>
+            <Box className='responsables-header '>
+              <h1>Indicador: {indicador?.nombre}</h1>
+              <Box className='responsables-header-button'>
+                <Autocomplete
+                  multiple
+                  id="checkboxes-tags-demo"
+                  options={top100Films}
+                  disableCloseOnSelect
+                  getOptionLabel={(option) => option.title}
+                  renderOption={(props, option, { selected }) => (
+                    <li {...props}>
+                      <Checkbox
+                        icon={icon}
+                        checkedIcon={checkedIcon}
+                        style={{ marginRight: 8 }}
+                        checked={selected}
+                      />
+                      {option.title}
+                    </li>
+                  )}
+                  style={{ width: 500 }}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Checkboxes" placeholder="Favorites" />
+                  )}
+                />
+                <Button variant='contained'>+</Button>
+              </Box>
             </Box>
-          </Box>
 
-          <DatagridTable
-            rows={indicador?.data}
-            columns={columns}
-            total={indicador?.total}
-            page={1}
-            pageSize={10}
-            perPage={10}
-          />
-        </> :
+            <DatagridTable
+              rows={indicador?.data}
+              columns={columns}
+              total={indicador?.total}
+              page={1}
+              pageSize={10}
+              perPage={10}
+            />
+          </>
+          :
           <PersonalLoader color="#1976D2" />
       }
     </>
