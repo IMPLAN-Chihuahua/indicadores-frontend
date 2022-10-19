@@ -1,0 +1,13 @@
+.responsables-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.responsables-header-button {
+  padding: 20px;
+
+}
+
+.responsables-textfield {
+  padding-right: 20px;
+}

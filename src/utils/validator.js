@@ -14,18 +14,22 @@ const authSchema = yup.object().shape({
     id: yup.number(),
     nombre: yup.string()
   }).nullable().required('Por favor, selecciona un elemento'),
-  desde: yup.date()
+  expires: yup.boolean(),
+  desde: yup.string()
+    .nullable()
+    .when('expires', {
+      is: true,
+      then: yup.string().required('Por favor, selecciona una fecha de inicio'),
+      otherwise: yup.string().nullable()
+    }),
+  hasta: yup.string()
     .nullable()
     .transform((curr, orig) => orig === '' ? null : curr)
-    .required("Selecciona una fecha"),
-  hasta: yup.date()
-    .nullable()
-    .transform((curr, orig) => orig === '' ? null : curr)
-    .required("Selecciona una fecha")
-    .when(
-      "desde",
-      (desde, schema) => desde && schema.min(desde, "Selecciona una fecha valida")
-    ),
+    .when('expires', {
+      is: true,
+      then: yup.string().required('Por favor, selecciona una fecha de expiración'),
+      otherwise: yup.string().nullable()
+    })
 });
 
 const loginSchema = yup.object({
