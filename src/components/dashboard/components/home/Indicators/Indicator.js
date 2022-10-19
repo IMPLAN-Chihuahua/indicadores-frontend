@@ -26,7 +26,7 @@ export const Indicator = () => {
   };
 
   return (
-    <Box >
+    <>
       <Tabs value={value} onChange={handleChange} aria-label="basic tabs example" className='indicador-tab'>
         <LinkTab label="Indicador" />
         <LinkTab label="Fórmula" />
@@ -40,7 +40,7 @@ export const Indicator = () => {
               : value === 3 ? <MapView />
                 : null
       }
-    </Box>
+    </>
   )
 }
 

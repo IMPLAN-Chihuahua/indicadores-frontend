@@ -1,8 +1,9 @@
-import { Button, TextField, DialogTitle, DialogContent, DialogActions, Autocomplete, Box, Typography } from '@mui/material';
+import { Button, TextField, DialogTitle, DialogContent, DialogActions, Autocomplete, Box, Typography, FormControlLabel, Checkbox } from '@mui/material';
 import React, { useEffect, useReducer, useState } from 'react';
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { DataSelector } from '../../../common/dataSelector/DataSelector';
-import { setIndicatorsToUser, useAutocompleteInput } from '../../../../services/userService';
+import { useAutocompleteInput } from '../../../../services/userService';
+import { createRelation } from '../../../../services/usuarioIndicadorService';
 import { DataContext } from '../../../common/dataSelector/DataContext';
 import { dataReducer } from '../../../common/dataSelector/dataReducer';
 import { authSchema } from '../../../../utils/validator';
@@ -14,11 +15,12 @@ import { useAlert } from '../../../../contexts/AlertContext';
 const USER_TO_INDICADORES = 'INDICADORES_TO_USER';
 const INDICADOR_TO_USERS = 'USERS_TO_INDICADOR';
 
-const FormRelationship = ({ handleCloseModal }) => {
+const FormRelationship = ({ handleCloseModal, mutate }) => {
   const [dataList, dispatch] = useReducer(dataReducer, [])
   const [mode, setMode] = useState(USER_TO_INDICADORES);
   const [listAlert, setListAlert] = useState(false);
   const [placeholder, setPlaceholder] = useState()
+  const [expires, setExpires] = useState(true);
   const alert = useAlert();
 
   const { control, handleSubmit, reset } = useForm({
@@ -33,20 +35,28 @@ const FormRelationship = ({ handleCloseModal }) => {
 
     setListAlert(false)
     const { one, ...options } = data;
-    const selectedOption = mode === INDICADOR_TO_USERS ? 'usuarios' : 'indicadores';
+
+    const selectedOption = mode === INDICADOR_TO_USERS ? 'relationIds' : 'relationIds';
     const payload = {
       ...options,
       [selectedOption]: dataList.map(e => e.id),
     }
-    return
+
     if (mode === USER_TO_INDICADORES) {
-      setIndicatorsToUser(one.id, payload)
-        .then(_ => alert.success('Indicador (es) asignado (s) exitosamente'))
+      createRelation(one.id, payload, 'indicadores')
+        .then(_ => {
+
+          alert.success('Indicador (es) asignado (s) exitosamente')
+          mutate();
+        })
         .catch(err => alert.error(err))
 
     } else {
-      setUsersToIndicator(one.id, payload)
-        .then(_ => alert.success('Usuario (s) asignado (s) exitosamente'))
+      createRelation(one.id, payload, 'usuarios')
+        .then(_ => {
+          alert.success('Usuario (s) asignado (s) exitosamente')
+          mutate();
+        })
         .catch(err => alert.error(err))
     }
   };
@@ -69,6 +79,11 @@ const FormRelationship = ({ handleCloseModal }) => {
   useEffect(() => {
     setListAlert(false)
   }, [dataList])
+
+
+  const changeExpires = () => {
+    setExpires(!expires)
+  }
 
   return (
     <>
@@ -139,6 +154,7 @@ const FormRelationship = ({ handleCloseModal }) => {
                     error={!!error}
                     helperText={error ? error.message : null}
                     fullWidth
+                    disabled={!expires}
                   />
                 )}
               />
@@ -156,6 +172,26 @@ const FormRelationship = ({ handleCloseModal }) => {
                     error={!!error}
                     helperText={error?.message}
                     fullWidth
+                    disabled={!expires}
+                  />
+                )}
+              />
+              <Controller
+                name='expires'
+                control={control}
+                defaultValue={true}
+                render={({ field: { value, onChange }, fieldState: { error } }) => (
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={value}
+                        onChange={onChange}
+                        name="expires"
+                        color="primary"
+                        onClick={changeExpires}
+                      />
+                    }
+                    label="Expira"
                   />
                 )}
               />
