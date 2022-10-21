@@ -222,7 +222,7 @@ export const HistoricosView = () => {
 
             <FormDialog
               open={openModal}
-              setOpenModal={setOpenModal}
+              handleClose={() => setOpenModal(false)}
             >
               <FormHistoricos type={clickInfo.type} id={clickInfo.id} anio={clickInfo.anio} valor={clickInfo.valor} fuente={clickInfo.fuente} handleCloseModal={handleCloseModal} mutate={mutate} />
             </FormDialog>
