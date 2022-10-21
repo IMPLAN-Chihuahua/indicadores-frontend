@@ -6,7 +6,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import { emailSchema } from '../../utils/validator';
 
 import { publicApi } from '../../services';
-import { BeatLoader, HashLoader } from 'react-spinners';
+import { HashLoader } from 'react-spinners';
 import './FpCases.css'
 
 

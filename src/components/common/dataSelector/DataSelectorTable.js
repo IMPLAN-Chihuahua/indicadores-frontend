@@ -13,9 +13,9 @@ import ClearIcon from '@mui/icons-material/Clear';
 import SearchIcon from '@mui/icons-material/Search';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import { useIndicators, useSelector } from '../../../services/userService';
-import { BeatLoader } from 'react-spinners';
 import { DataContext } from './DataContext';
 import { useAlert } from '../../../contexts/AlertContext';
+import PersonalLoader from '../PersonalLoader/PersonalLoader';
 
 const columns = [
   { id: 'id', label: '#', minWidth: 25 },
@@ -178,11 +178,7 @@ export const DataSelectorTable = ({ topic }) => {
           {
             (isLoading)
               ?
-              <div className='ds-loading'>
-                <br />
-                <BeatLoader />
-                <br />
-              </div>
+              <PersonalLoader />
               :
               (rows.length > 0)
                 ?

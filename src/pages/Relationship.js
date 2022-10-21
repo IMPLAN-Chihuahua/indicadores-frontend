@@ -2,21 +2,23 @@ import React, { useCallback, useEffect } from "react";
 import { useState } from "react";
 import DatagridTable from "../components/dashboard/common/DatagridTable";
 import { DataHeader } from "../components/dashboard/common/DataHeader";
-import { useIndicators } from "../services/userService";
+import { useIndicadorUsuarios } from "../services/usuarioIndicadorService";
 import { Status } from "../components/dashboard/common/Status";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import FormDialog from "../components/dashboard/common/FormDialog";
 import FormRelationship from "../components/dashboard/forms/relationship/FormRelationship";
 import { getGlobalPerPage } from "../utils/objects";
+import { useNavigate } from "react-router-dom";
 
 export const Relationship = () => {
   const [searchIndicator, setSearchIndicator] = useState('');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(getGlobalPerPage);
   const [total, setTotal] = useState(0);
-  const { indicadores, isLoading, hasError } = useIndicators(perPage, page, searchIndicator);
+  const { indicadores, isLoading, hasError, mutate } = useIndicadorUsuarios();
   const [rows, setRows] = useState([]);
+  const navigate = useNavigate();
 
   const [openModal, setOpenModal] = useState(false);
   const handleOpenModal = () => setOpenModal(true);
@@ -54,39 +56,7 @@ export const Relationship = () => {
       hide: true,
     },
     {
-      field: "usuario",
-      headerName: "Usuario",
-      flex: 1,
-      minWidth: 150,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-      renderCell: (params) => {
-        return (
-          <span className="dt-theme--text">{params.row.nombre}</span>
-        );
-      },
-    },
-    {
-      field: "correo",
-      headerName: "Correo",
-      flex: 1,
-      minWidth: 150,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-      renderCell: (params) => {
-        return (
-          <span className="dt-theme--text">{params.row.nombre}</span>
-        );
-      },
-    },
-    {
-      field: "indicador",
+      field: "nombre",
       headerName: "Indicador",
       flex: 1,
       minWidth: 150,
@@ -101,42 +71,49 @@ export const Relationship = () => {
         );
       },
     },
-
     {
-      field: "createdAt",
-      headerName: "Asignación",
-      flex: 0.5,
-      minWidth: 100,
+      field: "count",
+      headerName: "Cantidad de usuarios asignados",
+      flex: 1,
+      minWidth: 150,
       editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-    },
-    {
-      field: "updatedAt",
-      headerName: "Expiración",
-      flex: 0.5,
-      minWidth: 100,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-    },
-    {
-      field: "activo",
-      headerName: "Estado",
-      flex: 0.5,
-      editable: true,
-      minWidth: 100,
       headerClassName,
       sortable,
       headerAlign,
       align,
       renderCell: (params) => {
-        return (<Status status={params.row.activo} />);
+        return (
+          <span className="dt-theme--text">{params.row.count}</span>
+        );
       },
+    },
+    {
+      field: "owner",
+      headerName: "Responsable del indicador",
+      flex: 1,
+      minWidth: 150,
+      editable,
+      headerClassName,
+      sortable,
+      headerAlign,
+      align,
+      renderCell: (params) => {
+        return (
+          <span className="dt-theme--text">{params.row.owner}</span>
+        );
+      },
+    },
+
+    {
+      field: "updatedAt",
+      headerName: "Fecha de modificación",
+      flex: 0.5,
+      minWidth: 100,
+      editable,
+      headerClassName,
+      sortable,
+      headerAlign,
+      align,
     },
     {
       field: "actions",
@@ -151,18 +128,12 @@ export const Relationship = () => {
       filterable,
       renderCell: (params) => {
         return (
-          <div className="dt-btn-container">
-            <span className="dt-action-delete">
-              <DeleteOutlineIcon />
-            </span>
-            <span
-              className="dt-action-edit"
-              onClick={() => {
-                setOpenModal((prev) => !prev);
-                setClickInfo(params.row);
-              }}
-            ><ModeEditIcon /></span>
-          </div>
+          <span
+            className="dt-action-edit"
+            onClick={() => {
+              navigate(`/autorizacion/indicador/${params.id}`, [navigate])
+            }}
+          ><ModeEditIcon /></span>
         );
       },
     },
@@ -200,7 +171,7 @@ export const Relationship = () => {
         handleClose={handleCloseModal}
         maxWidth={'lg'}
       >
-        <FormRelationship data={clickInfo} handleCloseModal={handleCloseModal} />
+        <FormRelationship data={clickInfo} handleCloseModal={handleCloseModal} mutate={mutate} />
       </FormDialog>
     </>
   );

@@ -6,10 +6,11 @@ import { validateHistoricoSchema } from '../../../../../../utils/historicoValida
 import { editHistoricos, createHistoricos } from '../../../../../../services/historicosService';
 import Swal from 'sweetalert2';
 import { useParams } from 'react-router-dom';
+import { useAuth } from '../../../../../../contexts/AuthContext';
 
 const FormHistoricos = ({ type, anio, valor, fuente, id, handleCloseModal, mutate }) => {
   const idIndicador = useParams();
-
+  const { user } = useAuth();
   const methods = useForm({
     defaultValues: {
       id: id ? id : '',
@@ -44,6 +45,7 @@ const FormHistoricos = ({ type, anio, valor, fuente, id, handleCloseModal, mutat
   }
 
   const editHistorico = (id, data) => {
+    data.idUsuario = user.id;
     editHistoricos(id, data)
       .then((res) => {
         Swal.fire({
@@ -70,6 +72,7 @@ const FormHistoricos = ({ type, anio, valor, fuente, id, handleCloseModal, mutat
   };
 
   const createHistorico = (data) => {
+    data.idUsuario = user.id;
     createHistoricos(idIndicador.id, data)
       .then((res) => {
         Swal.fire({

@@ -1,7 +1,6 @@
 import { Button, Container, Grid } from '@mui/material';
 import { Box } from '@mui/system';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { BeatLoader } from 'react-spinners';
 
 import { useHistoricos, deleteHistorico } from '../../../../../../services/historicosService';
 import DatagridTable from '../../../../common/DatagridTable';
@@ -16,6 +15,7 @@ import { useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import FormDialog from '../../../../common/FormDialog';
 import FormHistoricos from './FormHistoricos';
+import PersonalLoader from '../../../../../common/PersonalLoader/PersonalLoader';
 
 export const HistoricosView = () => {
   let perPage = localStorage.getItem('perPage') || 5;
@@ -188,9 +188,7 @@ export const HistoricosView = () => {
       <br />
       {
         isLoading ? (
-          <Box>
-            <BeatLoader size={15} color="#1976D2" />
-          </Box>
+          <PersonalLoader />
         ) : (
           <>
             <Grid container className='bottom-panel'>

@@ -15,6 +15,7 @@ import { Relationship } from "./pages/Relationship";
 import { Profile } from "./pages/Profile";
 import { MathJaxContext } from 'better-react-mathjax';
 import { GeneralView } from "./components/dashboard/components/home/Indicators/GeneralView";
+import Relation from "./components/dashboard/components/home/Responsables/Relation";
 
 function App() {
   return (
@@ -47,6 +48,7 @@ function App() {
                 <Route path='/indicadores/:id/formula' element={<Indicator />} />
                 <Route path='/indicadores/:id/historicos' element={<Indicator />} />
                 <Route path='/autorizacion' element={<Relationship />} />
+                <Route path='/autorizacion/indicador/:id' element={<Relation />} />
               </Route>
               <Route
                 path='/profile'

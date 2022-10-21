@@ -5,9 +5,9 @@ import { Helmet } from "react-helmet";
 import { Avatar, Button, Grid, Typography } from '@mui/material';
 import { Navbar } from '../components/dashboard/components/navbar/Navbar';
 import { getCurrentUser } from '../services/userService';
-import { BeatLoader } from 'react-spinners';
 import { NormalView } from '../components/profile/NormalView';
 import { EditView } from '../components/profile/EditView';
+import PersonalLoader from '../components/common/PersonalLoader/PersonalLoader';
 
 export const Profile = () => {
   const [user, setUser] = useState({});
@@ -40,9 +40,7 @@ export const Profile = () => {
           (
             <>
               <div className='w600'></div>
-              <Box className='dt-loading' sx={{ mt: '15%' }}>
-                <BeatLoader size={10} color="#1976D2" />
-              </Box>
+              <PersonalLoader />
             </>
           )
       }
