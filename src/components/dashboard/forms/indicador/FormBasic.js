@@ -39,8 +39,7 @@ const indicadorBasicSchema = yup.object({
     .integer()
     .typeError('Periodicidad debe ser un número')
     .min(1)
-    .nullable()
-    .transform((value, originalValue) => originalValue.trim() === "" ? null : value),
+    .nullable(),
   tema: yup.object({
     id: yup.number(),
     temaIndicador: yup.string()
