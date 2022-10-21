@@ -12,7 +12,6 @@ import { ForgotPassword } from "./pages/ForgotPassword";
 import { AlertProvider } from "./contexts/AlertContext";
 import { Indicators } from "./pages/Indicators";
 import { Relationship } from "./pages/Relationship";
-import { MyComponents } from "./pages/MyComponents";
 import { Profile } from "./pages/Profile";
 import { MathJaxContext } from 'better-react-mathjax';
 import { GeneralView } from "./components/dashboard/components/home/Indicators/GeneralView";
@@ -48,7 +47,6 @@ function App() {
                 <Route path='/indicadores/:id/formula' element={<Indicator />} />
                 <Route path='/indicadores/:id/historicos' element={<Indicator />} />
                 <Route path='/autorizacion' element={<Relationship />} />
-                <Route path='/myComponents' element={<MyComponents />} />
               </Route>
               <Route
                 path='/profile'
