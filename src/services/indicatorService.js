@@ -1,9 +1,10 @@
 import { protectedApi } from '.';
+import useSWRImmutable from 'swr/immutable';
 import useSWR from 'swr';
 
 const fetcher = (url) => protectedApi.get(url).then(res => res.data);
 
-const getIndicator = async (id) => {
+export const getIndicator = async (id) => {
   try {
     const response = await protectedApi.get(`/me/indicadores/${id}`);
     return response.data.data;
@@ -12,7 +13,7 @@ const getIndicator = async (id) => {
   }
 };
 
-const createIndicador = async (payload) => {
+export const createIndicador = async (payload) => {
   try {
     const { data } = await protectedApi.post('/indicadores', payload)
     return data.data;
@@ -21,7 +22,7 @@ const createIndicador = async (payload) => {
   }
 }
 
-const useIndicadorWithSWR = (id) => {
+export const useIndicadorWithSWR = (id) => {
   const { data, error } = useSWR(`/me/indicadores/${id}`, fetcher);
   return {
     indicator: data,
@@ -30,7 +31,7 @@ const useIndicadorWithSWR = (id) => {
   }
 }
 
-const updateIndicator = async (id, data) => {
+export const updateIndicator = async (id, data) => {
   try {
     const patch = await protectedApi.patch(`/indicadores/${id}`, data);
     return patch;
@@ -39,7 +40,7 @@ const updateIndicator = async (id, data) => {
   }
 }
 
-const setUsersToIndicator = async (id, data) => {
+export const setUsersToIndicator = async (id, data) => {
   return protectedApi.post(`/indicadores/${id}/usuarios`, data);
 };
 
@@ -52,10 +53,21 @@ export const changeStatusIndicator = async (id) => {
   };
 }
 
-export {
-  getIndicator,
-  updateIndicator,
-  useIndicadorWithSWR,
-  setUsersToIndicator,
-  createIndicador
-};
+export const useIndicadorFormula = (id) => {
+  const fetcher = (url) => protectedApi.get(url).then(res => res.data.data);
+  const { data, error, mutate } = useSWRImmutable(`/indicadores/${id}/formula`, fetcher);
+  return {
+    data,
+    error,
+    isLoading: !data && !error,
+    mutate,
+  };
+}
+
+export const updateFormula = (id, values) => {
+  return protectedApi.patch(`/formulas/${id}`, values)
+}
+
+export const addFormula = (id, formula) => {
+  return protectedApi.post(`/indicadores/${id}/formula`, formula)
+}
