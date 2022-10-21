@@ -1,12 +1,12 @@
 import { Avatar, Box, Grid, Skeleton } from '@mui/material'
 import React, { useState, useEffect } from 'react'
+import useIsMounted from '../../../../../hooks/useIsMounted'
 import { getLastedIndicators, getLastedModules, getLastedUsers } from '../../../../../services/userService'
 import './lastedRecords.css'
 
-
-
 export const LastedRecords = () => {
   const skeletonArray = [1, 2, 3, 4, 5];
+  const isMounted = useIsMounted();
   const [users, setUsers] = useState([])
   const [modules, setModules] = useState([])
   const [indicators, setIndicators] = useState([])
@@ -14,28 +14,25 @@ export const LastedRecords = () => {
   useEffect(() => {
     getLastedUsers()
       .then(res => {
-        setUsers(res)
+        if (isMounted()) {
+          setUsers(res)
+        }
       })
-      .catch(err => {
-        setUsers([])
-      });
 
     getLastedModules()
       .then(res => {
-        setModules(res)
+        if (isMounted()) {
+          setModules(res)
+        }
       })
-      .catch(err => {
-        setModules([])
-      });
 
     getLastedIndicators()
       .then(res => {
-        setIndicators(res)
+        if (isMounted()) {
+          setIndicators(res)
+        }
       })
-      .catch(err => {
-        setIndicators([])
-      });
-  }, [])
+  }, [isMounted])
 
   return (
     <>
