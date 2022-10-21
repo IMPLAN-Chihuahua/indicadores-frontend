@@ -1,4 +1,7 @@
-import { Grid, Link as MuiLink, Typography, Box, TextField, CircularProgress, Button } from "@mui/material";
+import {
+  Grid, Link as MuiLink, Typography, Box,
+  TextField, CircularProgress, Button, FormControlLabel, Checkbox
+} from "@mui/material";
 import { Controller, FormProvider, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { MathJax } from "better-react-mathjax";
 import EquationEditor from "equation-editor-react";
@@ -11,6 +14,7 @@ import useIsMounted from "../../../../hooks/useIsMounted";
 import { UNIDAD_MEDIDA_ID } from "../../../../utils/getCatalog";
 import * as Yup from 'yup';
 import { yupResolver } from "@hookform/resolvers/yup";
+import { defaultVariable } from "../../components/home/Indicators/Formula/FormVariable";
 
 const formulaSchema = Yup.object().shape({
   ecuacion: Yup.string().trim(),
@@ -38,7 +42,7 @@ const formulaSchema = Yup.object().shape({
 
 const EquationInput = ({ value, onChange }) => {
   return (
-    <div>
+    <div style={{ width: '100%' }}>
       <EquationEditor
         value={value}
         onChange={onChange}
@@ -58,7 +62,7 @@ const EquationInput = ({ value, onChange }) => {
 const EquationViewer = ({ equation }) => {
   return (
     <>
-      <div style={{ fontSize: '1.5rem' }}>
+      <div style={{ fontSize: '1.5rem', width: '100%' }}>
         <MathJax>{`\\(${equation}\\)`}</MathJax>
       </div>
       <Typography
@@ -68,7 +72,7 @@ const EquationViewer = ({ equation }) => {
   )
 }
 
-export const FormFormula = () => {
+export const FormFormula = (props) => {
   const { indicador, onSubmit } = useIndicadorContext();
   const isMounted = useIsMounted();
   const methods = useForm({
@@ -76,15 +80,8 @@ export const FormFormula = () => {
     defaultValues: {
       ecuacion: '',
       descripcion: '',
-      variables: [
-        {
-          nombre: '',
-          dato: '',
-          anio: '',
-          medida: null,
-          descripcion: ''
-        }
-      ]
+      hasEcuacion: true,
+      variables: [defaultVariable]
     }
   });
   const { handleSubmit, control, reset, setValue } = methods;
@@ -92,6 +89,7 @@ export const FormFormula = () => {
     control,
     name: 'variables'
   });
+  const hasEcuacion = useWatch({ control, name: 'hasEcuacion', defaultValue: true })
 
   const addVariable = variable => append({ ...variable });
   const deleteVariable = idx => remove(idx);
@@ -109,9 +107,6 @@ export const FormFormula = () => {
 
   useEffect(() => {
     fetchUnidadMedida();
-    if (indicador.formula.ecuacion === '') {
-      return;
-    }
     reset(indicador.formula);
   }, []);
 
@@ -124,11 +119,16 @@ export const FormFormula = () => {
         component='form'
         onSubmit={handleSubmit(onSubmit)}
         noValidate
+        mt={1}
       >
         <Grid container gap={2}>
-          <Grid item xs={12}>
-            <Typography variant='h5' component='h3'>Formula</Typography>
-          </Grid>
+          {
+            props.defaultTitle && (
+              <Grid item xs={12}>
+                <Typography variant='h5' component='h3'>Formula</Typography>
+              </Grid>
+            )
+          }
           <Grid item xs={12}>
             <Controller
               name='descripcion'
@@ -149,35 +149,66 @@ export const FormFormula = () => {
           </Grid>
           <Grid item xs={12}>
             <Controller
+              name='hasEcuacion'
+              control={control}
+              render={() => (
+                <Controller
+                  name='hasEcuacion'
+                  control={control}
+                  render={({ field }) => (
+                    <FormControlLabel
+                      sx={{ alignSelf: 'flex-start' }}
+                      control={
+                        <Checkbox
+                          checked={!field.value}
+                          onChange={(e) => {
+                            setValue('ecuacion', '')
+                            field.onChange(!e.target.checked)
+                          }}
+                        />
+                      }
+                      label='No tiene ecuación'
+                    />
+                  )}
+                />
+              )}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Controller
               name='ecuacion'
               control={control}
               render={({
                 field: { onChange, value }
-              }) => editingEquation ?
-                  (
-                    <EquationInput
-                      value={value}
-                      onChange={onChange}
-                    />
-                  ) :
-                  (
-                    <Box onDoubleClick={() => setEditingEquation(true)}>
+              }) => hasEcuacion
+                  ? editingEquation
+                    ? (<EquationInput value={value} onChange={onChange} />)
+                    : (<Box onDoubleClick={() => setEditingEquation(true)}>
                       {
                         value ? <EquationViewer equation={value} /> : (
                           <Typography
                             variant='body2'
                             sx={{
-                              backgroundColor: 'aliceBlue',
+                              backgroundColor: 'var(--blue-50)',
                               border: '1px solid rgba(0,0,0,0.6)',
                               padding: 2,
                               borderRadius: '4px'
                             }}
                           >
-                            Haz doble clic para ingresar la ecuación
+                            Da doble clic para ingresar la ecuación
                           </Typography>)
                       }
-                    </Box>
-                  )
+                    </Box>)
+                  : (
+                    <TextField
+                      value={value}
+                      onChange={onChange}
+                      fullWidth
+                      multiline
+                      label='Otros medios'
+                      placeholder='Describe el lugar de donde proviene la información'
+                      rows={2}
+                    />)
               }
             />
           </Grid>
@@ -202,3 +233,5 @@ export const FormFormula = () => {
     </FormProvider>
   );
 };
+
+export { EquationInput, EquationViewer };
