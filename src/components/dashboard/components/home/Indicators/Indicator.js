@@ -1,5 +1,6 @@
 import { Box, Tab, Tabs } from '@mui/material';
 import React from 'react'
+import FormulaView from './Formula/FormulaView';
 import { GeneralView } from './GeneralView';
 import { HistoricosView } from './Historicos/HistoricosView';
 import './indicator.css'
@@ -26,7 +27,7 @@ export const Indicator = () => {
   };
 
   return (
-    <>
+    <Box sx={{height: '100%', display: 'flex', flexDirection: 'column'}}>
       <Tabs value={value} onChange={handleChange} aria-label="basic tabs example" className='indicador-tab'>
         <LinkTab label="Indicador" />
         <LinkTab label="Fórmula" />
@@ -35,12 +36,12 @@ export const Indicator = () => {
       </Tabs>
       {
         value === 0 ? <GeneralView />
-          : value === 1 ? <h1>TBD</h1>
+          : value === 1 ? <FormulaView />
             : value === 2 ? <HistoricosView />
               : value === 3 ? <MapView />
                 : null
       }
-    </>
+    </Box>
   )
 }
 

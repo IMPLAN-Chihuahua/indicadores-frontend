@@ -241,14 +241,14 @@ export const Users = () => {
       </div>
       <FormDialog
         open={openModal}
-        setOpenModal={setOpenModal}
+        handleClose={handleCloseModal}
         title={`Editar Usuario`}
       >
         <FormUser handleCloseModal={handleCloseModal} />
       </FormDialog>
       <FormDialog
         open={removeOpenModal}
-        setOpenModal={setRemoveOpenModal}
+        handleClose={() => setRemoveOpenModal(false)}
       >
         <FormDelete topic={changeData?.topic} element={changeData?.element} type={changeData?.type} handleCloseModal={handleRemoveCloseModal}
           handleDelete={

@@ -21,7 +21,7 @@ export const Summary = () => {
   }
 
   if (!formState.uploading && formState.error) {
-    return <ErrorContent error={formState.error} />
+    return <ErrorContent error={formState.error} justifyContent='center' />
   }
 
   return (
@@ -78,7 +78,7 @@ export const Summary = () => {
                   <TableCell><MathJax inline>{`\\(${v.nombre}\\)`}</MathJax></TableCell>
                   <TableCell>{v.dato}</TableCell>
                   <TableCell>{v.anio}</TableCell>
-                  <TableCell>{v.descripcion}</TableCell>
+                  <TableCell>{v.variableDesc}</TableCell>
                   <TableCell>{v.medida.nombre}</TableCell>
                 </TableRow>
               ))

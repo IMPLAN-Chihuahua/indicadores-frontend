@@ -277,14 +277,14 @@ export const Modules = () => {
       </div>
       <FormDialog
         open={openModal}
-        setOpenModal={setOpenModal}
+        handleClose={() => setOpenModal(false)}
         title={`Editar módulo ${clickInfo.temaIndicador}`}
       >
         <FormModel data={clickInfo} handleCloseModal={handleCloseModal} />
       </FormDialog>
       <FormDialog
         open={removeOpenModal}
-        setOpenModal={setRemoveOpenModal}
+        handleClose={() => setRemoveOpenModal(false)}
       >
         <FormDelete topic={changeData?.topic} element={changeData?.element} type={changeData?.type} handleCloseModal={handleRemoveCloseModal}
           handleDelete={
