@@ -5,13 +5,14 @@ import { Status } from "../components/dashboard/common/Status";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import FormDialog from "../components/dashboard/common/FormDialog";
 import { changeStatusUser, useUsers } from "../services/userService";
-import FormUser from "../components/dashboard/forms/user/FormUser";
+import FormUser, { FORM_USER_ACTIONS } from "../components/dashboard/forms/user/FormUser";
 import ToggleOnIcon from '@mui/icons-material/ToggleOn';
 import ToggleOffIcon from '@mui/icons-material/ToggleOff';
 import { useAlert } from "../contexts/AlertContext";
 import FormDelete from "../components/common/FormDelete";
 import { getGlobalPerPage } from "../utils/objects";
 import { Avatar, Typography } from "@mui/material";
+import { dateOptions } from "../utils/dateParser";
 
 
 export const Users = () => {
@@ -19,16 +20,12 @@ export const Users = () => {
   const [page, setPage] = useState(1);
   const [searchUser, setSearchUser] = useState('');
   const [total, setTotal] = useState(0);
-  const { users, isLoading, hasError } = useUsers(perPage, page, searchUser);
+  const { users, isLoading, hasError, mutate } = useUsers(perPage, page, searchUser);
 
   const alert = useAlert();
   const [openModal, setOpenModal] = useState(false);
-  const handleOpenModal = () => setOpenModal(true);
-  const handleCloseModal = () => setOpenModal(false);
-
-  const [clickInfo, setClickInfo] = React.useState({
-    row: { temaIndicador: "" },
-  });
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [formUserAction, setFormUserAction] = useState('');
 
   const [removeOpenModal, setRemoveOpenModal] = useState(false);
   const handleRemoveOpenModal = () => setRemoveOpenModal(true);
@@ -42,25 +39,37 @@ export const Users = () => {
     handleRemoveOpenModal();
   }
 
-  useEffect(() => {
-    if (!users) {
-      return;
-    }
-    let rowsUsersEdited = [];
-    users.data.map((data) => {
-      rowsUsersEdited = [
-        ...rowsUsersEdited,
-        {
-          ...data,
-          idRol: data.idRol === 1 ? "Administrador" : data.idRol === 2 ? "Usuario" : "N/A",
-          activo: data.activo === "SI" ? "Activo" : "Inactivo",
-          actions: "Acciones",
-        },
-      ];
-    })
-    setRows(rowsUsersEdited)
-    setTotal(users.total)
-  }, [users]);
+  const toggleStatus = (user) => {
+    changeStatusUser(changeData?.id)
+      .then(res => res.data)
+      .then(res => {
+        if (rows.find(x => x.id === changeData?.id).activo === 'Activo') {
+          rows.find(x => x.id === changeData?.id).activo = 'Inactivo';
+        } else {
+          rows.find(x => x.id === changeData?.id).activo = 'Activo';
+        }
+        alert.success('Estado del usuario cambiado exitosamente');
+        handleRemoveCloseModal();
+      })
+      .catch(err => alert.error(err))
+  }
+
+  const handleEditUser = (user) => {
+    setOpenModal(true);
+    setSelectedUser(user);
+    setFormUserAction(FORM_USER_ACTIONS.EDIT);
+  }
+
+  const handleNewUser = () => {
+    setOpenModal(true);
+    setFormUserAction(FORM_USER_ACTIONS.NEW);
+  }
+
+  const handleUserFormClose = () => {
+    setSelectedUser(null);
+    setOpenModal(false);
+    setFormUserAction('');
+  };
 
   const editable = true;
   const headerClassName = "dt-theme--header";
@@ -68,7 +77,6 @@ export const Users = () => {
   const headerAlign = "center";
   const align = "center";
   const filterable = false;
-  const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
   const columns = [
     {
       field: "id",
@@ -152,7 +160,7 @@ export const Users = () => {
       headerAlign,
       align,
       renderCell: (params) => {
-        return (<Status status={params.row.idRol} />);
+        return (<Status status={params.row.rol.rol} />);
       },
     },
     {
@@ -182,27 +190,10 @@ export const Users = () => {
       renderCell: (params) => {
         return (
           <div className="dt-btn-container">
-            {
-              (params.row.activo == 'Activo')
-                ?
-                <span className="dt-action-delete"
-                  onClick={() => handleStatus(params.row.id, "usuario", params.row.nombres + " " + params.row.apellidoPaterno + " " + params.row.apellidoMaterno, "off")}
-                >
-                  <ToggleOnIcon />
-                </span>
-                :
-                <span className="dt-action-delete"
-                  onClick={() => handleStatus(params.row.id, "usuario", params.row.nombres + " " + params.row.apellidoPaterno + " " + params.row.apellidoMaterno, "on")}
-                >
-                  <ToggleOffIcon />
-                </span>
-            }
+
             <span
               className="dt-action-edit"
-              onClick={() => {
-                setOpenModal((prev) => !prev);
-                setClickInfo(params.row);
-              }}
+              onClick={() => handleEditUser(params.row)}
             >
               <ModeEditIcon />
             </span>
@@ -224,50 +215,29 @@ export const Users = () => {
       <DataHeader
         isLoading={isLoading}
         data={dataUser}
-        handleOpenModal={handleOpenModal}
+        handleOpenModal={handleNewUser}
       />
       <div className='datagrid-container'>
         <DatagridTable
           page={page}
           columns={columns}
-          rows={rows}
+          rows={users?.data}
           perPage={perPage}
           total={total}
           isLoading={isLoading}
           handlePageSizeChange={size => setPerPage(size)}
           handlePageChange={page => setPage(page + 1)}
         />
-
       </div>
       <FormDialog
         open={openModal}
-        handleClose={handleCloseModal}
-        title={`Editar Usuario`}
+        handleClose={handleUserFormClose}
       >
-        <FormUser handleCloseModal={handleCloseModal} />
-      </FormDialog>
-      <FormDialog
-        open={removeOpenModal}
-        handleClose={() => setRemoveOpenModal(false)}
-      >
-        <FormDelete topic={changeData?.topic} element={changeData?.element} type={changeData?.type} handleCloseModal={handleRemoveCloseModal}
-          handleDelete={
-            () => {
-
-              changeStatusUser(changeData?.id)
-                .then(res => res.data)
-                .then(res => {
-                  if (rows.find(x => x.id === changeData?.id).activo === 'Activo') {
-                    rows.find(x => x.id === changeData?.id).activo = 'Inactivo';
-                  } else {
-                    rows.find(x => x.id === changeData?.id).activo = 'Activo';
-                  }
-                  alert.success('Estado del usuario cambiado exitosamente');
-                  handleRemoveCloseModal();
-                })
-                .catch(err => alert.error(err))
-
-            }} />
+        <FormUser
+          handleCloseModal={handleUserFormClose}
+          action={formUserAction}
+          selectedUser={selectedUser}
+        />
       </FormDialog>
     </>
   );

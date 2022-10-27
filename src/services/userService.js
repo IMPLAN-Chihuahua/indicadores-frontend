@@ -65,11 +65,12 @@ export const useUsers = (perPage, page, search) => {
     page,
     searchQuery: search
   })
-  const { data, error } = useSWR(`usuarios?${endpoint.toString()}`, fetcher)
+  const { data, error, mutate } = useSWR(`usuarios?${endpoint.toString()}`, fetcher)
   return {
     users: data,
     isLoading: !error && !data,
     hasError: error,
+    mutate
   }
 };
 

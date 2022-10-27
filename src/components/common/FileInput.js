@@ -223,15 +223,13 @@ export const ImageInput = ({ name, label, ...props }) => {
 
   return (
     <Box position='relative'>
-      <label htmlFor={name}>
-        {label}
-      </label>
+      <Typography component='label' color='#6c6c6c' htmlFor={name}>{label}</Typography>
       <div
         {...getRootProps()}
         type='file'
         role='button'
         aria-label='Subir archivo'
-        style={{ marginTop: '10px', position: 'relative' }}
+        style={{ marginTop: '5px', position: 'relative' }}
         id={name}
       >
         <input {...props} {...getInputProps()} />
@@ -241,7 +239,7 @@ export const ImageInput = ({ name, label, ...props }) => {
             border: 'dashed 2px lightgrey',
             display: 'flex',
             justifyContent: 'center',
-            borderRadius: 5,
+            borderRadius: '5px',
             alignItems: 'center',
             flexDirection: 'column',
             backgroundColor: isDragActive ? '#f8f8f8' : 'white',
@@ -255,12 +253,12 @@ export const ImageInput = ({ name, label, ...props }) => {
                     key={index}
                     src={URL.createObjectURL(file)}
                     alt={file.name}
-                    style={{ height: props.height || '150px' }}
+                    style={{ height: '200px', maxHeight: '200px' }}
                   />
                 ))
               }</div>
             ) : (
-              <Typography textAlign='center' pt={3} pb={3} color='#212529'>
+              <Typography textAlign='center' p={3} color='#6c6c6c'>
                 Arrastra la imagen para subirla o haz clic para seleccionarla
               </Typography>
             )
@@ -271,9 +269,19 @@ export const ImageInput = ({ name, label, ...props }) => {
         Array.isArray(files) && (
           <IconButton
             onClick={handleClear}
-            sx={{ position: 'absolute', right: 0, top: 30, margin: 1 }}
+            sx={{
+              position: 'absolute',
+              right: 0,
+              top: 30,
+              margin: 1,
+              backgroundColor: 'rgba(0,0,0,0.5)',
+              color: 'lightgray',
+              '&:hover': {
+                backgroundColor: 'rgba(0,0,0,0.7)',
+              }
+            }}
           >
-            <Clear fontSize='large' />
+            <Clear fontSize='medium' />
           </IconButton>
         )
       }

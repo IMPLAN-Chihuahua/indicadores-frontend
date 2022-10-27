@@ -6,7 +6,7 @@ import GppGoodIcon from '@mui/icons-material/GppGood';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 
 export const Status = ({ status, type }) => {
-  const formattedStatus = status.toLowerCase();
+  const formattedStatus = status?.toLowerCase();
   if (type === 'expires') {
     switch (formattedStatus) {
       case 'si':
@@ -24,8 +24,10 @@ export const Status = ({ status, type }) => {
       case 'no':
         return <Chip label='Inactivo' variant='outlined' color='error' icon={<CancelIcon />} />
       case 'administrador':
+      case 'admin':
         return <Chip label='Administrador' variant='outlined' color='primary' icon={<GppGoodIcon />} />
       case 'usuario':
+      case 'user':
         return <Chip label='Usuario' variant='outlined' color='default' icon={<PersonIcon />} />
       case 'descendente':
         return <div><ArrowDownwardIcon /></div>;

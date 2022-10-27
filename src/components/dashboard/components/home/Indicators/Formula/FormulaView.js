@@ -116,7 +116,7 @@ const FormulaView = () => {
       })
       .catch(err => {
         showAlert({
-          title: `Ha ocurrido un error, contacta al administrador`,
+          title: 'Ha ocurrido un error, contacta al administrador',
           customConfirmButtonText: 'Ok',
           text: err,
           icon: 'error'

@@ -1,3 +1,4 @@
+export const dateOptions = { year: 'numeric', month: 'numeric', day: 'numeric' };
 
 const parseDate = (date) => {
   const event = new Date(date);
