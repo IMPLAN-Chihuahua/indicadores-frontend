@@ -6,7 +6,7 @@ const fetcher = (url) => protectedApi.get(url).then(res => res.data);
 export const useHistoricos = (perPage, page, idIndicador, sortBy, order) => {
   const { data, error, mutate } =
     useSWR(
-      `/historicos/${idIndicador}?perPage=${perPage}&page=${page}&order=${order}&sortBy=${sortBy}`,
+      `/historicos/indicador/${idIndicador}?perPage=${perPage}&page=${page}&order=${order}&sortBy=${sortBy}`,
       fetcher,
     );
 
