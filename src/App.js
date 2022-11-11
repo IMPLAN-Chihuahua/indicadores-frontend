@@ -12,7 +12,6 @@ import { ForgotPassword } from "./pages/ForgotPassword";
 import { AlertProvider } from "./contexts/AlertContext";
 import { Indicators } from "./pages/Indicators";
 import { Relationship } from "./pages/Relationship";
-import { MyComponents } from "./pages/MyComponents";
 import { Profile } from "./pages/Profile";
 import { MathJaxContext } from 'better-react-mathjax';
 import { GeneralView } from "./components/dashboard/components/home/Indicators/GeneralView";

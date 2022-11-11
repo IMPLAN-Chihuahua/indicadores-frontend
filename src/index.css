@@ -8,6 +8,7 @@ html {
 
 :root {
   --blue: #2043db;
+  --blue-500: #2043db;
   --blue-50: #e8e9fb;
   --blue-100: #c4c7f5;
   --blue-200: #9ca2ee;
@@ -18,7 +19,27 @@ html {
   --blue-800: #0023b9;
   --blue-900: #0003a7;
   --purple: #7b1ee3;
+  --purple-500: #7b1ee3;
+  --purple-50: #f1e6fc;
+  --purple-100: #d9c3f6;
+  --purple-200: #bf9af2;
+  --purple-300: #a56eed;
+  --purple-400: #904ae9;
+  --purple-600: #6f18dd;
+  --purple-700: #5f09d4;
+  --purple-800: #4f00cf;
+  --purple-900: #3100c7;
   --pink: #ee59e9;
+  --pink-300: #ee59e9;
+  --pink-50: #fde5fb;
+  --pink-100: #f8bef5;
+  --pink-200: #f490ef;
+  --pink-400: #e80ce3;
+  --pink-500: #dc00d8;
+  --pink-600: #cb00d3;
+  --pink-700: #cb00d3;
+  --pink-800: #a100c8;
+  --pink-900: #a100c8;
   --primary-main: #263044;
   --primary-on-main: #e3f6fa;
   --secondary: #d1a961;

@@ -194,7 +194,7 @@ export const Relationship = () => {
 
       <FormDialog
         open={openModal}
-        setOpenModal={setOpenModal}
+        handleClose={handleCloseModal}
         maxWidth={'lg'}
       >
         <FormRelationship data={clickInfo} handleCloseModal={handleCloseModal} mutate={mutate} isEdit={isEdit} indicador={indicador} />

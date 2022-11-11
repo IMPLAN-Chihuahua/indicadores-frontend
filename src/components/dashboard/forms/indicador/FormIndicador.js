@@ -41,7 +41,7 @@ const getStepContent = (step) => {
     case 0:
       return <FormBasic />
     case 1:
-      return <FormFormula />
+      return <FormFormula defaultTitle={true} />
     case 2:
       return <FormMapa />
     case 3:
@@ -67,7 +67,8 @@ const initialState = {
   formula: {
     ecuacion: '',
     descripcion: '',
-    variables: [{ nombre: '', dato: '', anio: '', medida: null, variableDesc: '' }]
+    hasEcuacion: true,
+    variables: [{ nombre: '', dato: '', anio: '', medida: null, variableDesc: ''  }]
   },
   mapa: {
     url: '',
@@ -115,6 +116,7 @@ const createIndicadorFormData = (indicador) => {
       }
       formData.append('formula[ecuacion]', encodeURIComponent(indicador[field].ecuacion));
       formData.append('formula[descripcion]', indicador[field].descripcion);
+      formData.append('formula[isFormula]', indicador[field].hasEcuacion ? 'SI' : 'NO');
       for (const variable of indicador[field].variables) {
         const { nombre, dato, anio, medida, variableDesc } = variable;
         formData.append('formula[variables][]',

@@ -37,8 +37,8 @@ export const UserInformation = () => {
               <SettingsIcon />
               <FormDialog
                 open={openModal}
-                setOpenModal={setOpenModal}
-                title={`Editar Usuario`}
+                handleClose={handleCloseModal}
+                title='Editar Usuario'
               >
                 <FormIndividualUser handleCloseModal={handleCloseModal} />
               </FormDialog>

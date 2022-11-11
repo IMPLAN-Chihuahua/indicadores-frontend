@@ -233,7 +233,7 @@ export const Indicators = () => {
         isFormVisible && (
           <FormDialog
             open={isFormVisible}
-            setOpenModal={setFormVisible}
+            handleClose={() => setFormVisible(false)}
             fullWidth
             keepMounted
             maxWidth='xl'
@@ -244,7 +244,7 @@ export const Indicators = () => {
       }
       <FormDialog
         open={removeOpenModal}
-        setOpenModal={setRemoveOpenModal}
+        handleClose={() => setRemoveOpenModal(false)}
       >
         <FormDelete topic={changeData?.topic} element={changeData?.element} type={changeData?.type} handleCloseModal={handleRemoveCloseModal}
           handleDelete={

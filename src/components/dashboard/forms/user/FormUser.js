@@ -42,7 +42,7 @@ const FormUser = ({ handleCloseModal }) => {
 
     for (const key in user) {
       if (key === 'profileImage' && user[key]) {
-        formData.append(key, user[key][0])
+        formData.append('urlImagen', user[key][0])
         continue;
       }
 
@@ -96,7 +96,7 @@ const FormUser = ({ handleCloseModal }) => {
                   }}
                 >
                   <FileInput
-                    accept='image/png, image/jpg, image/jpeg, image/gif'
+                    accept='image/png, image/jpg, image/jpeg, image/gif, image/webp'
                     name='profileImage'
                   />
                 </Box>
