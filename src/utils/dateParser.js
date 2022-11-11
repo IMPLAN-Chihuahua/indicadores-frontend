@@ -2,10 +2,7 @@ export const dateOptions = { year: 'numeric', month: 'numeric', day: 'numeric' }
 
 const parseDate = (date) => {
   const event = new Date(date);
-  const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
-
-  const parsedDate = event.toLocaleDateString('es-ES', options);
-
+  const parsedDate = event.toLocaleDateString('es-ES', dateOptions);
   return parsedDate;
 }
 
