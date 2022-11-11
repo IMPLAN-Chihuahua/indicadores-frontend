@@ -41,4 +41,8 @@ const editUserSchema = yup.object(
   }
 )
 
-export { createUserSchema, editUserSchema }
+const isAdmin = ({ idRol }) => {
+  return idRol === 1;
+}
+
+export { createUserSchema, editUserSchema, isAdmin }

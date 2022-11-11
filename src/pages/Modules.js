@@ -14,12 +14,15 @@ import ToggleOffIcon from '@mui/icons-material/ToggleOff';
 import { useAlert } from "../contexts/AlertContext";
 import { getGlobalPerPage } from "../utils/objects";
 import { Avatar, Box, Typography } from "@mui/material";
+import { useAuth } from "../contexts/AuthContext";
+import { isAdmin } from "../utils/userValidator";
 
 export const Modules = () => {
   const [searchModule, setSearchModule] = useState("");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState();
   const [perPage, setPerPage] = useState(getGlobalPerPage);
+  const { user } = useAuth();
 
   const [activeCounter, setActiveCounter] = useState(0);
   const [inactiveCounter, setInactiveCounter] = useState(0);
@@ -106,12 +109,12 @@ export const Modules = () => {
       renderCell: (params) => {
         return (
           <Box className='lasted-picture'>
-              <Avatar
-                className='lasted-picture-hoverable'
-                variant='rounded'
-                src={params.row.urlImagen}
-                alt={params.row.temaIndicador}
-              />
+            <Avatar
+              className='lasted-picture-hoverable'
+              variant='rounded'
+              src={params.row.urlImagen}
+              alt={params.row.temaIndicador}
+            />
           </Box>
         );
       },
@@ -206,6 +209,7 @@ export const Modules = () => {
         return (<Status status={params.row.activo} />);
       },
     },
+    isAdmin(user) &&
     {
       field: "actions",
       headerName: "Acciones",
