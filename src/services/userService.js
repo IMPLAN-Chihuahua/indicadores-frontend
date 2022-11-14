@@ -152,8 +152,8 @@ export const updateMe = async (user) => {
   }
 }
 
-export const changeStatusUser = async (id) => {
-  return protectedApi.patch(`/usuarios/${id}/toggle-status`);
+export const toggleUserStatus = async (id) => {
+  return protectedApi.post(`/usuarios/${id}/toggle-status`);
 }
 
 export const setIndicatorsToUser = (id, data) => {

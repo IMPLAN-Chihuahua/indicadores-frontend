@@ -3,12 +3,13 @@ import DatagridTable from "../components/dashboard/common/DatagridTable";
 import { DataHeader } from "../components/dashboard/common/DataHeader";
 import { Status } from "../components/dashboard/common/Status";
 import FormDialog from "../components/dashboard/common/FormDialog";
-import { useUsers } from "../services/userService";
+import { toggleUserStatus, useUsers } from "../services/userService";
 import FormUser, { FORM_USER_ACTIONS } from "../components/dashboard/forms/user/FormUser";
 import { getGlobalPerPage } from "../utils/objects";
 import { Avatar, Box, IconButton, Stack, Typography } from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit';
 import { parseDate } from "../utils/dateParser";
+import { showAlert } from "../utils/alert";
 
 
 export const Users = () => {
@@ -52,11 +53,43 @@ export const Users = () => {
     await mutate();
   };
 
+  const toggleStatus = user => {
+    showAlert({
+      title: `¿Deseas cambiar el estado de ${user.nombres} ${user.apellidoPaterno}?`,
+      text: `Al actualizar este registro, el estado del usuario se alternará, 
+      es decir, si se encuentra ACTIVO pasará a estar INACTIVO y viceversa.`,
+      icon: 'warning',
+      showCancelButton: true
+    }).then(option => {
+      if (option.isConfirmed) {
+        return toggleUserStatus(user.id);
+      }
+    })
+      .then(res => {
+        if (res) {
+          showAlert({
+            title: 'Estado cambiado exitosamente',
+            text: `El estado de ${user.nombres} ha sido actualizado.`,
+            icon: 'success'
+          })
+        }
+      })
+      .catch(err => {
+        showAlert({
+          title: 'Hubo un error',
+          text: err,
+          icon: 'error'
+        })
+      })
+      .finally(_ => {
+        mutate();
+      })
+  }
+
   const editable = true;
   const sortable = true;
   const headerAlign = "center";
   const align = "center";
-  const filterable = false;
   const columns = [
     {
       field: "id",
@@ -77,10 +110,10 @@ export const Users = () => {
       sortable: false,
       filterable: false,
       renderCell: params => (
-          <Avatar
-            className='lasted-picture'
-            alt={params.row.nombres}
-            src={params.row.urlImagen} />
+        <Avatar
+          className='lasted-picture'
+          alt={params.row.nombres}
+          src={params.row.urlImagen} />
       ),
     },
     {
@@ -112,7 +145,7 @@ export const Users = () => {
       flex: 0.2,
       minWidth: 100,
       sortable,
-      renderCell: params => <Status status={params.row.activo} />
+      renderCell: params => <Status handleClick={() => toggleStatus(params.row)} status={params.row.activo} />
     },
     {
       field: "createdAt",
