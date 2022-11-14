@@ -62,7 +62,7 @@ export const DataHeader = ({ data, handleOpenModal }) => {
           onChange={debounceInputChange}
           onFocus={() => { setShowClear(true) }}
           onBlur={() => { setShowClear(false) }}
-          placeholder={`Buscar ${topic}`}
+          placeholder='Buscar'
           variant='standard'
           autoComplete='off'
           InputProps={{

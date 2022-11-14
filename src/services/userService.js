@@ -65,11 +65,12 @@ export const useUsers = (perPage, page, search) => {
     page,
     searchQuery: search
   })
-  const { data, error } = useSWR(`usuarios?${endpoint.toString()}`, fetcher)
+  const { data, error, mutate } = useSWR(`usuarios?${endpoint.toString()}`, fetcher)
   return {
     users: data,
     isLoading: !error && !data,
     hasError: error,
+    mutate
   }
 };
 
@@ -133,26 +134,16 @@ export const createUser = async (user) => {
   }
 }
 
-export const updateUser = async (user) => {
-  try {
-    const response = await protectedApi.patch('/usuarios', user);
-    return 1;
-  } catch (err) {
-    throw err;
-  }
+export const updateUser = (id, values) => {
+  return protectedApi.patch(`/usuarios/${id}`, values);
 }
 
-export const updateMe = async (user) => {
-  try {
-    const response = await protectedApi.patch('/me', user);
-    return 1;
-  } catch (err) {
-    throw err;
-  }
+export const updateProfile = async (user) => {
+  return protectedApi.patch('/me', user);
 }
 
-export const changeStatusUser = async (id) => {
-  return protectedApi.patch(`/usuarios/${id}/toggle-status`);
+export const toggleUserStatus = async (id) => {
+  return protectedApi.post(`/usuarios/${id}/toggle-status`);
 }
 
 export const setIndicatorsToUser = (id, data) => {

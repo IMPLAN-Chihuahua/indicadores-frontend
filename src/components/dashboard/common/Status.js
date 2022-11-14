@@ -5,8 +5,8 @@ import PersonIcon from '@mui/icons-material/Person';
 import GppGoodIcon from '@mui/icons-material/GppGood';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 
-export const Status = ({ status, type }) => {
-  const formattedStatus = status.toLowerCase();
+export const Status = ({ status, type, handleClick }) => {
+  const formattedStatus = status?.toLowerCase();
   if (type === 'expires') {
     switch (formattedStatus) {
       case 'si':
@@ -19,14 +19,38 @@ export const Status = ({ status, type }) => {
     switch (formattedStatus) {
       case 'activo':
       case 'si':
-        return <Chip label='Activo' variant='outlined' color='success' icon={<CheckCircleIcon />} />
+        return (
+          <Chip
+            label='Activo'
+            variant='outlined'
+            color='success'
+            onClick={handleClick}
+            icon={<CheckCircleIcon />}
+            sx={{ width: '95px', justifyContent: 'flex-start' }} />)
       case 'inactivo':
       case 'no':
-        return <Chip label='Inactivo' variant='outlined' color='error' icon={<CancelIcon />} />
+        return (
+          <Chip
+            label='Inactivo'
+            variant='outlined'
+            color='error'
+            onClick={handleClick}
+            icon={<CancelIcon />}
+            sx={{ width: '95px', justifyContent: 'flex-start' }} />)
       case 'administrador':
-        return <Chip label='Administrador' variant='outlined' color='primary' icon={<GppGoodIcon />} />
+      case 'admin':
+        return (
+          <Chip
+            label='Admin'
+            variant='outlined'
+            icon={<GppGoodIcon />} />)
       case 'usuario':
-        return <Chip label='Usuario' variant='outlined' color='default' icon={<PersonIcon />} />
+      case 'user':
+        return (
+          <Chip
+            label='Usuario'
+            variant='outlined'
+            icon={<PersonIcon />} />)
       case 'descendente':
         return <div><ArrowDownwardIcon /></div>;
       case 'ascendente':

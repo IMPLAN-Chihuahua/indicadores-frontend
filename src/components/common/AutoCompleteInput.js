@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import useIsMounted from "../../hooks/useIsMounted";
 
 export default function AutoCompleteInput(props) {
-  const { value, onChange, label, error, required,
+  const { value, onChange, label, error, required = false,
     opts = [], fetcher, getOptionLabel, helperText = '' } = props;
   const [options, setOptions] = useState([]);
   const isMounted = useIsMounted();

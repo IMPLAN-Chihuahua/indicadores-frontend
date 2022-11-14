@@ -2,16 +2,14 @@ import React, { useState, useEffect } from "react";
 import DatagridTable from "../components/dashboard/common/DatagridTable";
 import { DataHeader } from "../components/dashboard/common/DataHeader";
 import { Status } from "../components/dashboard/common/Status";
-import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import FormDialog from "../components/dashboard/common/FormDialog";
-import { changeStatusUser, useUsers } from "../services/userService";
-import FormUser from "../components/dashboard/forms/user/FormUser";
-import ToggleOnIcon from '@mui/icons-material/ToggleOn';
-import ToggleOffIcon from '@mui/icons-material/ToggleOff';
-import { useAlert } from "../contexts/AlertContext";
-import FormDelete from "../components/common/FormDelete";
+import { toggleUserStatus, useUsers } from "../services/userService";
+import FormUser, { FORM_USER_ACTIONS } from "../components/dashboard/forms/user/FormUser";
 import { getGlobalPerPage } from "../utils/objects";
-import { Avatar, Typography } from "@mui/material";
+import { Avatar, DialogTitle, IconButton, Stack, Typography } from "@mui/material";
+import EditIcon from '@mui/icons-material/Edit';
+import { parseDate } from "../utils/dateParser";
+import { showAlert } from "../utils/alert";
 
 
 export const Users = () => {
@@ -19,88 +17,98 @@ export const Users = () => {
   const [page, setPage] = useState(1);
   const [searchUser, setSearchUser] = useState('');
   const [total, setTotal] = useState(0);
-  const { users, isLoading, hasError } = useUsers(perPage, page, searchUser);
+  const { users, isLoading, mutate } = useUsers(perPage, page, searchUser);
 
-  const alert = useAlert();
   const [openModal, setOpenModal] = useState(false);
-  const handleOpenModal = () => setOpenModal(true);
-  const handleCloseModal = () => setOpenModal(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [formUserAction, setFormUserAction] = useState('');
 
-  const [clickInfo, setClickInfo] = React.useState({
-    row: { temaIndicador: "" },
-  });
-
-  const [removeOpenModal, setRemoveOpenModal] = useState(false);
-  const handleRemoveOpenModal = () => setRemoveOpenModal(true);
-  const handleRemoveCloseModal = () => setRemoveOpenModal(false);
-
-  const [changeData, setChangeData] = useState({});
   const [rows, setRows] = useState([]);
 
-  const handleStatus = (id, topic, element, type) => {
-    setChangeData({ id, topic, element, type });
-    handleRemoveOpenModal();
+  const handleEditUser = (user) => {
+    setOpenModal(true);
+    setSelectedUser(user);
+    setFormUserAction(FORM_USER_ACTIONS.EDIT);
   }
 
-  useEffect(() => {
-    if (!users) {
-      return;
-    }
-    let rowsUsersEdited = [];
-    users.data.map((data) => {
-      rowsUsersEdited = [
-        ...rowsUsersEdited,
-        {
-          ...data,
-          idRol: data.idRol === 1 ? "Administrador" : data.idRol === 2 ? "Usuario" : "N/A",
-          activo: data.activo === "SI" ? "Activo" : "Inactivo",
-          actions: "Acciones",
-        },
-      ];
+  const handleNewUser = () => {
+    setOpenModal(true);
+    setFormUserAction(FORM_USER_ACTIONS.NEW);
+  }
+
+  const handleUserFormClose = async () => {
+    setSelectedUser(null);
+    setOpenModal(false);
+    setFormUserAction('');
+    await mutate();
+  };
+
+  const toggleStatus = user => {
+    showAlert({
+      title: `¿Deseas cambiar el estado de ${user.nombres} ${user.apellidoPaterno}?`,
+      text: `Al actualizar este registro, el estado del usuario se alternará, 
+      es decir, si se encuentra ACTIVO pasará a estar INACTIVO y viceversa.`,
+      icon: 'warning',
+      showCancelButton: true
+    }).then(option => {
+      if (option.isConfirmed) {
+        return toggleUserStatus(user.id);
+      }
     })
-    setRows(rowsUsersEdited)
-    setTotal(users.total)
-  }, [users]);
+      .then(res => {
+        if (res) {
+          showAlert({
+            title: 'Estado actualizado exitosamente',
+            text: `El estado de ${user.nombres} ha sido actualizado.`,
+            icon: 'success'
+          })
+        }
+      })
+      .catch(err => {
+        showAlert({
+          title: 'Hubo un error',
+          text: err,
+          icon: 'error'
+        })
+      })
+      .finally(mutate)
+  }
 
   const editable = true;
-  const headerClassName = "dt-theme--header";
   const sortable = true;
   const headerAlign = "center";
   const align = "center";
-  const filterable = false;
-  const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
   const columns = [
     {
       field: "id",
-      headerName: "ID ",
-      flex: .5,
-      editable,
-      headerClassName,
+      headerName: "ID",
+      flex: 0.3,
+      editable: false,
       sortable,
-      headerAlign,
-      align
+      headerAlign: 'right',
+      align: 'right',
+      hide: true
     },
     {
       field: "urlImagen",
       headerName: "Imagen",
-      flex: 0.5,
+      flex: 0.1,
       minWidth: 80,
-      headerClassName,
       editable: false,
       sortable: false,
       filterable: false,
-      headerAlign,
-      align,
-      renderCell: (params) => <Avatar alt={params.row.nombres} src={params.row.urlImagen} />,
+      renderCell: params => (
+        <Avatar
+          className='lasted-picture'
+          alt={params.row.nombres}
+          src={params.row.urlImagen} />
+      ),
     },
     {
       field: 'nombre',
       headerName: 'Nombre',
-      headerClassName,
-      headerAlign,
-      valueGetter: ({ row }) => `${row.nombres} ${row.apellidoPaterno} ${row.apellidoMaterno}`,
+      valueGetter: ({ row }) => `${row.nombres} ${row.apellidoPaterno} ${row.apellidoMaterno || ''}`,
       flex: 1,
-      align,
       minWidth: 200
     },
     {
@@ -109,165 +117,109 @@ export const Users = () => {
       flex: 1,
       minWidth: 200,
       editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-    },
-    {
-      field: "createdAt",
-      headerName: "Creación",
-      flex: 1,
-      minWidth: 100,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align: 'left',
-      renderCell: (params) => (<Typography>
-        {new Date(params.row.createdAt).toLocaleDateString('es-ES', dateOptions)}
-      </Typography>)
-    },
-    {
-      field: "updatedAt",
-      headerName: "Edición",
-      flex: 1,
-      minWidth: 100,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align: 'left',
-      renderCell: (params) => (<Typography>
-        {new Date(params.row.updatedAt).toLocaleDateString('es-ES', dateOptions)}
-      </Typography>)
+      sortable
     },
     {
       field: "idRol",
       headerName: "Rol",
-      flex: 0.5,
-      minWidth: 150,
-      headerClassName,
+      flex: 0.2,
+      minWidth: 100,
       sortable,
-      headerAlign,
-      align,
-      renderCell: (params) => {
-        return (<Status status={params.row.idRol} />);
-      },
+      renderCell: params => <Status status={params.row.rol.rol} />,
     },
     {
       field: "activo",
       headerName: "Estado",
-      flex: 0.5,
+      flex: 0.2,
       minWidth: 100,
-      headerClassName,
       sortable,
-      headerAlign,
-      align,
-      renderCell: (params) => {
-        return (<Status status={params.row.activo} />)
-      },
+      renderCell: params => <Status handleClick={() => toggleStatus(params.row)} status={params.row.activo} />
     },
     {
-      field: "actions",
-      headerName: "Acciones",
+      field: "createdAt",
+      headerName: "Creación",
       flex: 0.5,
+      minWidth: 100,
+      editable,
+      sortable,
+      hide: true,
+      renderCell: params => <Typography noWrap>{parseDate(params.row.createdAt)}</Typography>
+    },
+    {
+      field: "updatedAt",
+      headerName: "Edición",
+      flex: 0.5,
+      minWidth: 100,
+      editable,
+      sortable,
+      hide: true,
+      renderCell: params => <Typography noWrap>{parseDate(params.row.createdAt)}</Typography>
+    },
+    {
+      field: "editar",
+      headerName: "Editar",
+      flex: 0.2,
       editable: false,
       minWidth: 100,
-      headerClassName,
-      sortable,
+      sortable: false,
       headerAlign,
       align,
-      filterable,
-      renderCell: (params) => {
-        return (
-          <div className="dt-btn-container">
-            {
-              (params.row.activo == 'Activo')
-                ?
-                <span className="dt-action-delete"
-                  onClick={() => handleStatus(params.row.id, "usuario", params.row.nombres + " " + params.row.apellidoPaterno + " " + params.row.apellidoMaterno, "off")}
-                >
-                  <ToggleOnIcon />
-                </span>
-                :
-                <span className="dt-action-delete"
-                  onClick={() => handleStatus(params.row.id, "usuario", params.row.nombres + " " + params.row.apellidoPaterno + " " + params.row.apellidoMaterno, "on")}
-                >
-                  <ToggleOffIcon />
-                </span>
-            }
-            <span
-              className="dt-action-edit"
-              onClick={() => {
-                setOpenModal((prev) => !prev);
-                setClickInfo(params.row);
-              }}
-            >
-              <ModeEditIcon />
-            </span>
-          </div>
-        );
-      },
+      filterable: false,
+      renderCell: params => (
+        <Stack direction='row'>
+          <IconButton aria-label='editar' onClick={() => handleEditUser(params.row)}>
+            <EditIcon />
+          </IconButton>
+        </Stack>
+      )
     },
   ];
 
+  useEffect(() => {
+    if (!users) {
+      return;
+    }
+    setRows(users.data);
+    setTotal(users.total);
+  }, [users]);
+
   const dataUser = {
     topic: "usuario",
-    countEnable: users?.total - users?.totalInactivos,
-    countDisable: users?.totalInactivos,
+    countEnable: (users?.total - users?.totalInactivos) || 0,
+    countDisable: users?.totalInactivos || 0,
     setSearch: setSearchUser,
     searchValue: searchUser
   };
+
   return (
     <>
       <DataHeader
         isLoading={isLoading}
         data={dataUser}
-        handleOpenModal={handleOpenModal}
+        handleOpenModal={handleNewUser}
       />
       <div className='datagrid-container'>
         <DatagridTable
-          page={page}
-          columns={columns}
           rows={rows}
+          columns={columns}
+          page={page}
           perPage={perPage}
           total={total}
           isLoading={isLoading}
           handlePageSizeChange={size => setPerPage(size)}
           handlePageChange={page => setPage(page + 1)}
         />
-
       </div>
       <FormDialog
         open={openModal}
-        handleClose={handleCloseModal}
-        title={`Editar Usuario`}
+        handleClose={handleUserFormClose}
       >
-        <FormUser handleCloseModal={handleCloseModal} />
-      </FormDialog>
-      <FormDialog
-        open={removeOpenModal}
-        handleClose={() => setRemoveOpenModal(false)}
-      >
-        <FormDelete topic={changeData?.topic} element={changeData?.element} type={changeData?.type} handleCloseModal={handleRemoveCloseModal}
-          handleDelete={
-            () => {
-
-              changeStatusUser(changeData?.id)
-                .then(res => res.data)
-                .then(res => {
-                  if (rows.find(x => x.id === changeData?.id).activo === 'Activo') {
-                    rows.find(x => x.id === changeData?.id).activo = 'Inactivo';
-                  } else {
-                    rows.find(x => x.id === changeData?.id).activo = 'Activo';
-                  }
-                  alert.success('Estado del usuario cambiado exitosamente');
-                  handleRemoveCloseModal();
-                })
-                .catch(err => alert.error(err))
-
-            }} />
+        <DialogTitle>{formUserAction} Usuario</DialogTitle>
+        <FormUser
+          handleCloseModal={handleUserFormClose}
+          action={formUserAction}
+          selectedUser={selectedUser}
+        />
       </FormDialog>
     </>
   );
