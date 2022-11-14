@@ -254,7 +254,7 @@ const FormUser = (props) => {
               )
             }
             {
-              (FORM_USER_ACTIONS.NEW || FORM_USER_ACTIONS.EDIT) && (
+              (action === FORM_USER_ACTIONS.NEW || action === FORM_USER_ACTIONS.EDIT) && (
                 <>
                   <Grid item xs={12} sm={6}>
                     <SelectRoleInput />
