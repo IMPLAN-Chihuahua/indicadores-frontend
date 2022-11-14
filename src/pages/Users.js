@@ -6,7 +6,7 @@ import FormDialog from "../components/dashboard/common/FormDialog";
 import { toggleUserStatus, useUsers } from "../services/userService";
 import FormUser, { FORM_USER_ACTIONS } from "../components/dashboard/forms/user/FormUser";
 import { getGlobalPerPage } from "../utils/objects";
-import { Avatar, Box, IconButton, Stack, Typography } from "@mui/material";
+import { Avatar, DialogTitle, IconButton, Stack, Typography } from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit';
 import { parseDate } from "../utils/dateParser";
 import { showAlert } from "../utils/alert";
@@ -17,23 +17,13 @@ export const Users = () => {
   const [page, setPage] = useState(1);
   const [searchUser, setSearchUser] = useState('');
   const [total, setTotal] = useState(0);
-  const { users, isLoading, hasError, mutate } = useUsers(perPage, page, searchUser);
+  const { users, isLoading, mutate } = useUsers(perPage, page, searchUser);
 
   const [openModal, setOpenModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [formUserAction, setFormUserAction] = useState('');
 
-  const [removeOpenModal, setRemoveOpenModal] = useState(false);
-  const handleRemoveOpenModal = () => setRemoveOpenModal(true);
-  const handleRemoveCloseModal = () => setRemoveOpenModal(false);
-
-  const [changeData, setChangeData] = useState({});
   const [rows, setRows] = useState([]);
-
-  const handleStatus = (id, topic, element, type) => {
-    setChangeData({ id, topic, element, type });
-    handleRemoveOpenModal();
-  }
 
   const handleEditUser = (user) => {
     setOpenModal(true);
@@ -68,7 +58,7 @@ export const Users = () => {
       .then(res => {
         if (res) {
           showAlert({
-            title: 'Estado cambiado exitosamente',
+            title: 'Estado actualizado exitosamente',
             text: `El estado de ${user.nombres} ha sido actualizado.`,
             icon: 'success'
           })
@@ -81,9 +71,7 @@ export const Users = () => {
           icon: 'error'
         })
       })
-      .finally(_ => {
-        mutate();
-      })
+      .finally(mutate)
   }
 
   const editable = true;
@@ -95,7 +83,7 @@ export const Users = () => {
       field: "id",
       headerName: "ID",
       flex: 0.3,
-      editable,
+      editable: false,
       sortable,
       headerAlign: 'right',
       align: 'right',
@@ -226,6 +214,7 @@ export const Users = () => {
         open={openModal}
         handleClose={handleUserFormClose}
       >
+        <DialogTitle>{formUserAction} Usuario</DialogTitle>
         <FormUser
           handleCloseModal={handleUserFormClose}
           action={formUserAction}

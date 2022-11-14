@@ -134,22 +134,12 @@ export const createUser = async (user) => {
   }
 }
 
-export const updateUser = async (user) => {
-  try {
-    const response = await protectedApi.patch('/usuarios', user);
-    return 1;
-  } catch (err) {
-    throw err;
-  }
+export const updateUser = (id, values) => {
+  return protectedApi.patch(`/usuarios/${id}`, values);
 }
 
-export const updateMe = async (user) => {
-  try {
-    const response = await protectedApi.patch('/me', user);
-    return 1;
-  } catch (err) {
-    throw err;
-  }
+export const updateProfile = async (user) => {
+  return protectedApi.patch('/me', user);
 }
 
 export const toggleUserStatus = async (id) => {

@@ -8,17 +8,18 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { ImageInput } from '../../../common/FileInput';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { createUserSchema } from '../../../../utils/userValidator';
-import { createUser } from '../../../../services/userService';
-import { useAlert } from '../../../../contexts/AlertContext';
+import { createUserSchema, editUserSchema } from '../../../../utils/userValidator';
+import { createUser, updateProfile, updateUser } from '../../../../services/userService';
 import { getRoles } from '../../../../services/roleService';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { showAlert } from '../../../../utils/alert';
 import useIsMounted from '../../../../hooks/useIsMounted';
+import { useAuth } from '../../../../contexts/AuthContext';
 
 export const FORM_USER_ACTIONS = {
   NEW: 'Nuevo',
-  EDIT: 'Editar'
+  EDIT: 'Editar',
+  EDIT_PROFILE: 'Actualizar Perfil'
 }
 
 const parseUserToFormData = (user) => {
@@ -41,6 +42,7 @@ const parseUserToFormData = (user) => {
 
 const SelectRoleInput = () => {
   const methods = useFormContext();
+  const { control } = methods;
   const [roles, setRoles] = useState([]);
   const isMounted = useIsMounted();
   const defineRoles = useCallback(async () => {
@@ -57,12 +59,11 @@ const SelectRoleInput = () => {
   useEffect(() => {
     defineRoles();
   }, [defineRoles]);
-  
+
   return (
     <Controller
-      name="idRol"
-      control={methods.control}
-      defaultValue=""
+      name='idRol'
+      control={control}
       render={({ field, fieldState: { error } }) => (
         <FormControl fullWidth required>
           <InputLabel
@@ -81,7 +82,7 @@ const SelectRoleInput = () => {
           >
             {roles.map(rol => <MenuItem key={rol.id} value={rol.id}>{rol.rol}</MenuItem>)}
           </Select>
-          <FormHelperText error={!!error} id="rol-error">
+          <FormHelperText error={!!error} id='rol-error'>
             {error ? error.message : null}
           </FormHelperText>
         </FormControl>
@@ -91,7 +92,8 @@ const SelectRoleInput = () => {
 }
 
 const FormUser = (props) => {
-  const alert = useAlert();
+  const { handleCloseModal, action } = props;
+  const {reloadCurrentUser} = useAuth();
   const methods = useForm({
     defaultValues: {
       correo: '',
@@ -101,225 +103,267 @@ const FormUser = (props) => {
       idRol: '',
       nombres: '',
       apellidoPaterno: '',
-      apellidoMaterno: ''
+      apellidoMaterno: '',
+      descripcion: ''
     },
-
-    mode: 'onBlur'
+    resolver: yupResolver(action === FORM_USER_ACTIONS.NEW ? createUserSchema : editUserSchema)
   });
-  const { handleCloseModal, action } = props
+  const { handleSubmit, reset, control } = methods;
 
-  const onSubmit = async (data) => {
-    console.log('SUBMIT', data)
-    const { confirmClave, ...user } = data;
+  const handleAction = (action, user) => {
+    const { NEW, EDIT, EDIT_PROFILE } = FORM_USER_ACTIONS;
     const formData = parseUserToFormData(user);
+    switch (action) {
+      case NEW:
+        return createUser(formData);
+      case EDIT:
+        return updateUser(user.id, formData);
+      case EDIT_PROFILE:
+        return updateProfile(formData);
+      default:
+        return Promise.reject(new Error('invalid action'));
+    }
+  }
 
-    createUser(formData)
+  const onSubmit = (user) => {
+    handleAction(action, user)
       .then(res => {
-        showAlert({
-          title: 'Usuario creado exitosamente'
-        });
+        if (res) {
+          showAlert({
+            title: 'Operación realizada con éxito',
+            icon: 'success',
+          }).then(handleCloseModal)
+        }
       })
       .catch(err => {
         showAlert({
-          title: 'Ha ocurrido un error',
-          customConfirmButtonText: 'Ok',
-          text: err,
-          icon: 'error'
-        });
+          title: 'Hubo un error',
+          icon: 'error',
+          text: err
+        })
+      })
+      .finally(_ => {
+        if (action === FORM_USER_ACTIONS.EDIT_PROFILE) {
+          reloadCurrentUser();
+        }
       })
   };
 
   useEffect(() => {
-    if (props.selectedUser) {
-      methods.reset({
-        ...props.selectedUser,
-        activo: props.selectedUser === 'SI',
-      });
+    if (!props.selectedUser) {
+      return;
     }
+    reset({
+      ...props.selectedUser,
+      apellidoMaterno: props.selectedUser.apellidoMaterno || '',
+      activo: props.selectedUser.activo === 'SI',
+    });
+
   }, [])
 
   return (
-    <>
-      <DialogTitle>{action} Usuario</DialogTitle>
-      <FormProvider {...methods}>
-        <Box
-          component='form'
-          form='form-user'
-          onSubmit={methods.handleSubmit(onSubmit)}
-          noValidate
-          onReset={methods.reset}
-        >
-          <DialogContent>
-            <Grid container columnSpacing={2} rowSpacing={2}>
-              <Grid item xs={12}>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <ImageInput
-                    name='profileImage'
-                    label='Imagen de perfil'
-                    height='400px'
-                  />
-                </Box>
-              </Grid>
-              <Grid item sm={12}>
-                <Controller
-                  name="correo"
-                  control={methods.control}
-                  render={({
-                    field: { onChange, value },
-                    fieldState: { error }
-                  }) => (
-                    <TextField
-                      label='Correo'
-                      type='email'
-                      placeholder='johndoe@email.com'
-                      error={!!error}
-                      helperText={error ? error.message : null}
-                      autoComplete={false}
-                      onChange={onChange}
-                      value={value}
-                      fullWidth
-                      required
-                    />
-                  )} />
-              </Grid>
-              {
-                action === FORM_USER_ACTIONS.NEW && (
-                  <>
-                    <Grid item xs={12} sm={6}>
-                      <Controller
-                        name="clave"
-                        control={methods.control}
-                        render={({
-                          field: { onChange, value },
-                          fieldState: { error }
-                        }) => (
-                          <TextField
-                            label='Contraseña'
-                            type='password'
-                            required
-                            error={!!error}
-                            helperText={error ? error.message : null}
-                            onChange={onChange}
-                            value={value}
-                            fullWidth
-                          />
-                        )} />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <Controller
-                        name="confirmClave"
-                        control={methods.control}
-                        render={({
-                          field: { onChange, value },
-                          fieldState: { error }
-                        }) => (
-                          <TextField
-                            label='Confirmar Contraseña'
-                            type='password'
-                            required
-                            error={!!error}
-                            helperText={error ? error.message : null}
-                            onChange={onChange}
-                            value={value}
-                            fullWidth
-                          />
-                        )} />
-                    </Grid>
-                  </>
-                )
-              }
-              <Grid item xs={12} sm={6}>
-                <SelectRoleInput />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Controller
-                  name="activo"
-                  control={methods.control}
-                  render={({ field }) => (
-                    <FormGroup>
-                      <FormControlLabel
-                        control={<Checkbox {...field} defaultChecked={true} />}
-                        label="Activo" />
-                    </FormGroup>
-                  )} />
-              </Grid>
-              <Grid item xs={12} sx={{ mt: 2 }}>
-                <Typography variant="subtitle1" component="h4">
-                  Información Básica
-                </Typography>
-              </Grid>
-              <Grid item sm={12}>
-                <Controller
-                  name="nombres"
-                  control={methods.control}
-                  render={({
-                    field: { onChange, value },
-                    fieldState: { error }
-                  }) => (
-                    <TextField
-                      label='Nombres'
-                      type='text'
-                      required
-                      placeholder='John'
-                      error={!!error}
-                      helperText={error ? error.message : null}
-                      onChange={onChange}
-                      value={value}
-                      fullWidth
-                    />
-                  )} />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Controller
-                  name="apellidoPaterno"
-                  control={methods.control}
-                  render={({
-                    field: { onChange, value },
-                    fieldState: { error }
-                  }) => (
-                    <TextField
-                      label='Apellido Paterno'
-                      type='text'
-                      placeholder='Doe'
-                      required
-                      error={!!error}
-                      helperText={error ? error.message : null}
-                      onChange={onChange}
-                      value={value}
-                      fullWidth
-                    />
-                  )} />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Controller
-                  name="apellidoMaterno"
-                  control={methods.control}
-                  render={({
-                    field: { onChange, value }
-                  }) => (
-                    <TextField
-                      label='Apellido Materno'
-                      type='text'
-                      onChange={onChange}
-                      value={value}
-                      fullWidth
-                    />
-                  )} />
-              </Grid>
+    <FormProvider {...methods}>
+      <Box
+        component='form'
+        id='form-user'
+        onSubmit={handleSubmit(onSubmit)}
+        noValidate
+        onReset={reset}
+      >
+        <DialogContent>
+          <Grid container columnSpacing={2} rowSpacing={2}>
+            <Grid item xs={12}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                }}
+              >
+                <ImageInput
+                  name='profileImage'
+                  label='Imagen de perfil'
+                  height='400px'
+                />
+              </Box>
             </Grid>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseModal}>Cancelar</Button>
-            <Button variant='contained' type='submit' form='form-user'>Aceptar</Button>
-          </DialogActions>
-        </Box>
-      </FormProvider>
-    </>
+            <Grid item sm={12}>
+              <Controller
+                name='correo'
+                control={control}
+                render={({
+                  field: { onChange, value },
+                  fieldState: { error }
+                }) => (
+                  <TextField
+                    label='Correo'
+                    type='email'
+                    placeholder='johndoe@email.com'
+                    error={!!error}
+                    helperText={error ? error.message : null}
+                    onChange={onChange}
+                    value={value}
+                    fullWidth
+                    required
+                  />
+                )} />
+            </Grid>
+            {
+              action === FORM_USER_ACTIONS.NEW && (
+                <>
+                  <Grid item xs={12} sm={6}>
+                    <Controller
+                      name='clave'
+                      control={control}
+                      render={({
+                        field: { onChange, value },
+                        fieldState: { error }
+                      }) => (
+                        <TextField
+                          label='Contraseña'
+                          type='password'
+                          required
+                          error={!!error}
+                          helperText={error ? error.message : null}
+                          onChange={onChange}
+                          value={value}
+                          fullWidth
+                        />
+                      )} />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Controller
+                      name='confirmClave'
+                      control={control}
+                      render={({
+                        field: { onChange, value },
+                        fieldState: { error }
+                      }) => (
+                        <TextField
+                          label='Confirmar Contraseña'
+                          type='password'
+                          required
+                          error={!!error}
+                          helperText={error ? error.message : null}
+                          onChange={onChange}
+                          value={value}
+                          fullWidth
+                        />
+                      )} />
+                  </Grid>
+                </>
+              )
+            }
+            {
+              !FORM_USER_ACTIONS.EDIT_PROFILE && (
+                <>
+                  <Grid item xs={12} sm={6}>
+                    <SelectRoleInput />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Controller
+                      name='activo'
+                      control={control}
+                      render={({ field: { value, onChange } }) => (
+                        <FormGroup>
+                          <FormControlLabel
+                            control={<Checkbox checked={value} onChange={(e) => onChange(e.target.checked)} />}
+                            label='Activo'
+                          />
+                        </FormGroup>
+                      )} />
+                  </Grid>
+                </>
+              )
+            }
+            <Grid item xs={12} sx={{ mt: 2 }}>
+              <Typography variant='subtitle1' component='h4'>
+                Información Básica
+              </Typography>
+            </Grid>
+            <Grid item sm={12}>
+              <Controller
+                name='nombres'
+                control={control}
+                render={({
+                  field: { onChange, value },
+                  fieldState: { error }
+                }) => (
+                  <TextField
+                    label='Nombres'
+                    type='text'
+                    required
+                    placeholder='John'
+                    error={!!error}
+                    helperText={error ? error.message : null}
+                    onChange={onChange}
+                    value={value}
+                    fullWidth
+                  />
+                )} />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Controller
+                name='apellidoPaterno'
+                control={control}
+                render={({
+                  field: { onChange, value },
+                  fieldState: { error }
+                }) => (
+                  <TextField
+                    label='Apellido Paterno'
+                    type='text'
+                    placeholder='Doe'
+                    required
+                    error={!!error}
+                    helperText={error ? error.message : null}
+                    onChange={onChange}
+                    value={value}
+                    fullWidth
+                  />
+                )} />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Controller
+                name='apellidoMaterno'
+                control={control}
+                render={({
+                  field: { onChange, value }
+                }) => (
+                  <TextField
+                    label='Apellido Materno'
+                    type='text'
+                    onChange={onChange}
+                    value={value}
+                    fullWidth
+                  />
+                )} />
+            </Grid>
+            <Grid item xs={12}>
+              <Controller
+                name='descripcion'
+                control={control}
+                render={({
+                  field: { onChange, value }
+                }) => (
+                  <TextField
+                    label='Descripcion'
+                    type='text'
+                    onChange={onChange}
+                    value={value}
+                    rows={2}
+                    fullWidth
+                    multiline
+                  />
+                )} />
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseModal}>Cancelar</Button>
+          <Button variant='contained' type='submit' form='form-user'>Aceptar</Button>
+        </DialogActions>
+      </Box>
+    </FormProvider>
   );
 }
 
