@@ -25,7 +25,7 @@ export const FORM_USER_ACTIONS = {
 const parseUserToFormData = (user) => {
   const formData = new FormData();
   for (const key in user) {
-    if (key === 'profileImage' && user[key]) {
+    if (key === 'profileImage' && user[key].length > 0) {
       formData.append('urlImagen', user[key][0])
       continue;
     }
@@ -93,7 +93,7 @@ const SelectRoleInput = () => {
 
 const FormUser = (props) => {
   const { handleCloseModal, action } = props;
-  const {reloadCurrentUser} = useAuth();
+  const { reloadCurrentUser } = useAuth();
   const methods = useForm({
     defaultValues: {
       correo: '',
@@ -254,7 +254,7 @@ const FormUser = (props) => {
               )
             }
             {
-              !FORM_USER_ACTIONS.EDIT_PROFILE && (
+              (FORM_USER_ACTIONS.NEW || FORM_USER_ACTIONS.EDIT) && (
                 <>
                   <Grid item xs={12} sm={6}>
                     <SelectRoleInput />
