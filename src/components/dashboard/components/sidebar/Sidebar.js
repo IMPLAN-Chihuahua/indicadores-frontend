@@ -8,10 +8,16 @@ import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import BubbleChartIcon from '@mui/icons-material/BubbleChart';
 import MenuIcon from '@mui/icons-material/Menu';
 import './sidebar.css'
+import { getCurrentUser } from '../../../../services/userService';
+import { getAuthHeaders } from '../../../../services/authService';
+import { useEffect } from 'react';
+import { useAuth } from '../../../../contexts/AuthContext';
+import { isAdmin } from '../../../../utils/userValidator';
 
 export const SIDEBAR_KEY = 'indicadores-sidebar-mode';
 
 export const Sidebar = () => {
+
   const [isSidebarOpen, setSidebarOpen] = useState(() => JSON.parse(localStorage.getItem(SIDEBAR_KEY) || 'true'));
   const toggleSidebar = () => {
     setSidebarOpen(prevOpen => {
@@ -20,6 +26,7 @@ export const Sidebar = () => {
       return isOpen;
     })
   };
+
 
   const routes = [{
     to: '/',
@@ -38,7 +45,8 @@ export const Sidebar = () => {
     to: '/indicadores',
     label: 'Indicadores',
     icon: <BubbleChartIcon className='sidebar-icon' />
-  }, {
+  },
+  {
     to: '/autorizacion',
     label: 'Autorización',
     icon: <Lock className='sidebar-icon' />
@@ -66,13 +74,20 @@ export const Sidebar = () => {
 
 const SidebarItem = (props) => {
   const match = useMatch(props.to);
-
+  const { user } = useAuth();
   return (
-    <li className='sidebar-list-item'>
-      <Link to={props.to} className={`sidebar-link ${match && 'sidebar-link-active'}`}>
-        {props.icon}
-        {!props.isSidebarOpen && <span>{props.label}</span>}
-      </Link>
-    </li>
+    <>
+      {
+        ((props.label === 'Autorización' || props.label === 'Usuarios') && !isAdmin(user)) ?
+          <></>
+          :
+          <li className='sidebar-list-item'>
+            <Link to={props.to} className={`sidebar-link ${match && 'sidebar-link-active'}`}>
+              {props.icon}
+              {!props.isSidebarOpen && <span>{props.label}</span>}
+            </Link>
+          </li>
+      }
+    </>
   );
 }

@@ -9,7 +9,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 
 
 import { editUserSchema } from '../../utils/userValidator';
-import { updateMe } from '../../services/userService';
+import { updateProfile } from '../../services/userService';
 import { useAlert } from '../../contexts/AlertContext';
 import FileInput from '../common/FileInput';
 
@@ -51,7 +51,7 @@ export const EditView = ({ user }) => {
       }
     };
     try {
-      await updateMe(formData);
+      await updateProfile(formData);
       alert.success('Usuario actualizado correctamente');
     } catch (error) {
       alert.error(error);

@@ -1,5 +1,6 @@
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { isAdmin } from "../utils/userValidator";
 
 const PrivateRoute = ({ children }) => {
   const auth = useAuth();
@@ -20,4 +21,15 @@ const PublicRoute = ({ children }) => {
   return children;
 }
 
-export { PrivateRoute, PublicRoute };
+const AdminRoute = () => {
+  const { user } = useAuth();
+  const location = useLocation();
+  return (
+    isAdmin(user) ?
+      <Outlet />
+      :
+      <Navigate to="/unauthorized" state={{ from: location }} replace />
+  );
+}
+
+export { PrivateRoute, PublicRoute, AdminRoute };

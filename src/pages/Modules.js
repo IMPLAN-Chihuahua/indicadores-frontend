@@ -11,12 +11,15 @@ import { Avatar, Box, DialogTitle, IconButton, Stack, Typography } from "@mui/ma
 import { parseDate } from "../utils/dateParser";
 import EditIcon from '@mui/icons-material/Edit';
 import { showAlert } from "../utils/alert";
+import { useAuth } from "../contexts/AuthContext";
+import { isAdmin } from "../utils/userValidator";
 
 export const Modules = () => {
   const [searchModule, setSearchModule] = useState("");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState();
   const [perPage, setPerPage] = useState(getGlobalPerPage);
+  const { user } = useAuth();
 
   const { temas, isLoading, hasError, mutate } = useModules(perPage, page, searchModule);
 
@@ -206,6 +209,7 @@ export const Modules = () => {
         {parseDate(params.row.createdAt)}
       </Typography>)
     },
+    isAdmin(user) &&
     {
       field: "updatedAt",
       headerName: "Edición",

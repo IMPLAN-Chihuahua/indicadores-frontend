@@ -1,7 +1,9 @@
 import { Avatar, Box, Grid, Skeleton } from '@mui/material'
 import React, { useState, useEffect } from 'react'
+import { useAuth } from '../../../../../contexts/AuthContext'
 import useIsMounted from '../../../../../hooks/useIsMounted'
 import { getLastedIndicators, getLastedModules, getLastedUsers } from '../../../../../services/userService'
+import { isAdmin } from '../../../../../utils/userValidator'
 import './lastedRecords.css'
 
 export const LastedRecords = () => {
@@ -10,6 +12,7 @@ export const LastedRecords = () => {
   const [users, setUsers] = useState([])
   const [modules, setModules] = useState([])
   const [indicators, setIndicators] = useState([])
+  const { user } = useAuth();
 
   useEffect(() => {
     getLastedUsers()
@@ -44,7 +47,6 @@ export const LastedRecords = () => {
 
         <Grid container spacing={4} className='lasted-grid'>
           <Grid item xs={12} md={6} lg={5} className='lasted-box'>
-
             <Box className='lasted-box-users'>
               <Box className='lasted-box-users-container'>
 
@@ -59,7 +61,7 @@ export const LastedRecords = () => {
                             <Box className='lasted-all-left'>
                               <Box className='lasted-picture'>
                                 <Box className='lasted-picture-item'>
-                                  <Avatar alt={user.nombres} src={user.urlImagen} sx={{ height: 45, width: 45 }} className="lasted-picture-hoverable" />
+                                  <Avatar alt={user.nombres} src={user.urlImagen} sx={{ height: 45, width: 45 }} className="lasted-picture-hoverable main-avatar" />
                                 </Box>
                               </Box>
                               <Box className='lasted-all-info'>
@@ -86,12 +88,10 @@ export const LastedRecords = () => {
                               </Box>
                               <Box className='lasted-all-info'>
                                 <Skeleton variant="text" width={100} height={20} className='lasted-all-name' />
-                                {/* <span className='lasted-all-name'>{user.nombres}</span> */}
                               </Box>
                             </Box>
                             <Box className='lasted-status'>
                               <Skeleton variant="text" width={'100%'} height={20} className='lasted-status-text' />
-                              {/* <span className={`lasted-status-text ${(user.activo == 'SI' ? 'active' : '')}`}>{`${(user.activo == 'SI' ? 'Activo' : 'Inactivo')}`}</span> */}
                             </Box>
                           </Box>
                         </Box>
@@ -99,7 +99,6 @@ export const LastedRecords = () => {
                     })
                 }
               </Box>
-
             </Box>
           </Grid>
 
@@ -133,7 +132,6 @@ export const LastedRecords = () => {
               }
             </Box>
 
-
             <Box className='lasted-box-indicators'>
               <span className='lasted-item-title'>Indicadores</span>
               <hr />
@@ -164,8 +162,6 @@ export const LastedRecords = () => {
             </Box>
 
           </Grid>
-
-
 
         </Grid>
 

@@ -3,16 +3,18 @@ import { useState } from "react";
 import DatagridTable from "../components/dashboard/common/DatagridTable";
 import { DataHeader } from "../components/dashboard/common/DataHeader";
 import { useIndicadorUsuarios } from "../services/usuarioIndicadorService";
-import { Status } from "../components/dashboard/common/Status";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import FormDialog from "../components/dashboard/common/FormDialog";
 import FormRelationship from "../components/dashboard/forms/relationship/FormRelationship";
 import { getGlobalPerPage } from "../utils/objects";
 import { useNavigate } from "react-router-dom";
+import PersonIcon from '@mui/icons-material/Person';
+import AddIcon from '@mui/icons-material/Add';
 
 export const Relationship = () => {
   const [searchIndicator, setSearchIndicator] = useState('');
+  const [isEdit, setIsEdit] = useState(false);
+  const [indicador, setIndicador] = useState({});
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(getGlobalPerPage);
   const [total, setTotal] = useState(0);
@@ -21,7 +23,16 @@ export const Relationship = () => {
   const navigate = useNavigate();
 
   const [openModal, setOpenModal] = useState(false);
-  const handleOpenModal = () => setOpenModal(true);
+  const handleOpenModal = (e) => {
+    setOpenModal(true);
+    if (e) {
+      setIsEdit(true);
+      setIndicador(e);
+    } else {
+      setIsEdit(false);
+      setIndicador({});
+    }
+  };
   const handleCloseModal = () => setOpenModal(false);
 
   const [clickInfo, setClickInfo] = useState({
@@ -128,12 +139,27 @@ export const Relationship = () => {
       filterable,
       renderCell: (params) => {
         return (
-          <span
-            className="dt-action-edit"
-            onClick={() => {
-              navigate(`/autorizacion/indicador/${params.id}`, [navigate])
-            }}
-          ><ModeEditIcon /></span>
+          <div className="dt-btn-container-tri">
+            <span
+              className="dt-action-edit"
+              title="Ver usuarios del indicador"
+              onClick={() => {
+                navigate(`/autorizacion/indicador/${params.id}`, [navigate])
+              }}
+            >
+              <PersonIcon />
+            </span>
+            <span
+              className="dt-action-edit"
+              title="Agregar usuarios responsables"
+              onClick={() => {
+                handleOpenModal(params.row);
+              }}
+            >
+              <AddIcon />
+            </span>
+          </div>
+
         );
       },
     },
@@ -151,7 +177,7 @@ export const Relationship = () => {
     <>
       <DataHeader
         data={dataIndicator}
-        handleOpenModal={handleOpenModal}
+        handleOpenModal={() => handleOpenModal()}
       />
       <div className='datagrid-container'>
         <DatagridTable
@@ -171,7 +197,7 @@ export const Relationship = () => {
         handleClose={handleCloseModal}
         maxWidth={'lg'}
       >
-        <FormRelationship data={clickInfo} handleCloseModal={handleCloseModal} mutate={mutate} />
+        <FormRelationship data={clickInfo} handleCloseModal={handleCloseModal} mutate={mutate} isEdit={isEdit} indicador={indicador} />
       </FormDialog>
     </>
   );

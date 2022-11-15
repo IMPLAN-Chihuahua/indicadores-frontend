@@ -4,7 +4,7 @@ import '../../pages/styles/profile.css'
 import { Avatar, Button, DialogActions, Grid, TextField, Typography } from '@mui/material';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import FileInput from '../common/FileInput';
-import { updateMe } from '../../services/userService';
+import { updateProfile } from '../../services/userService';
 
 export const NormalView = ({ user }) => {
 
@@ -31,7 +31,7 @@ export const NormalView = ({ user }) => {
     }
 
     try {
-      await updateMe(formData);
+      await updateProfile(formData);
     }
     catch (error) {
       console.log(error);

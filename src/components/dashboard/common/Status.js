@@ -10,10 +10,10 @@ export const Status = ({ status, type, handleClick }) => {
   if (type === 'expires') {
     switch (formattedStatus) {
       case 'si':
-        return <Chip label='SÍ' variant='outlined' color='primary' icon={<CheckCircleIcon />} />
+        return <b><Chip label='SÍ' variant='outlined' color='primary' /></b>
       case 'inactivo':
       case 'no':
-        return <Chip label='NO' variant='outlined' color='secondary' icon={<CancelIcon />} />
+        return <b><Chip label='NO' variant='outlined' color='secondary' /></b>
     }
   } else
     switch (formattedStatus) {
