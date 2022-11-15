@@ -1,140 +1,206 @@
-import { Box, Button, TextField, Container, Grid, FormGroup, FormControlLabel, Switch, CssBaseline, Typography, Alert, DialogTitle, DialogContent, DialogActions } from '@mui/material';
-import React from 'react';
+import {
+	Box, Button, TextField, Grid, FormGroup,
+	FormControlLabel, DialogContent, DialogActions, Checkbox
+} from '@mui/material';
+import React, { useEffect } from 'react';
 import { useForm, Controller, FormProvider } from "react-hook-form";
 import ColorPicker from '../../common/ColorPicker';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { moduleSchema } from '../../../../utils/validator';
-import FileInput from '../../../common/FileInput';
+import { createTemaSchema } from '../../../../utils/validator';
+import { ImageInput } from '../../../common/FileInput';
+import { showAlert } from '../../../../utils/alert';
+import { createModule, updateModule } from '../../../../services/moduleService';
 
-const FormModel = ({ data = 0, handleCloseModal }) => {
-    let defaultValues = {
-        temaIndicador: '',
-        codigo: '',
-        observaciones: '',
-        activo: 'Activo' ? true : false,
-        imagen: '',
-        color: '',
-        urlImagen: '',
-    };
-    defaultValues = data ? data : defaultValues;
-    const methods = useForm({
-        defaultValues,
-        resolver: yupResolver(moduleSchema),
-        mode: 'onBlur',
-    });
+export const FORM_TEMA_ACTIONS = {
+	NEW: 'Nuevo',
+	EDIT: 'Editar'
+}
 
-    const onSubmit = data => alert(JSON.stringify(data));
-    const [color, setColor] = React.useState(defaultValues.color ? defaultValues.color : '#d32f2f');
+const parseToFormData = (tema) => {
+	const formData = new FormData();
+	for (const key in tema) {
+		if (key === 'image' && tema[key].length > 0) {
+			formData.append('urlImagen', tema[key][0]);
+			continue;
+		}
+		if (key === 'activo') {
+			formData.append(key, tema[key] ? 'SI' : 'NO');
+			continue;
+		}
+		if (tema[key]) {
+			formData.append(key, tema[key]);
+		}
+	}
+	return formData;
+}
 
-    return (
-        <>
-            <DialogTitle>Modulo</DialogTitle>
-            <FormProvider {...methods}>
-                <Box
-                    component='form'
-                    onSubmit={methods.handleSubmit(onSubmit)}
-                    noValidate
-                >
-                    <DialogContent>
-                        <Grid
-                            container
-                            columnSpacing={3}
-                            rowSpacing={2}
-                        >
-                            <Grid item xs={12}>
-                                <Grid item xs={12}>
-                                    <FileInput
-                                        accept='image/png, image/jpg, image/jpeg, image/gif'
-                                        name='profileImage'
-                                        label='Subir Archivo'
-                                    />
-                                </Grid>
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <Controller
-                                    name="temaIndicador"
-                                    control={methods.control}
-                                    render={({ field, fieldState: { error } }) =>
-                                        <TextField
-                                            autoComplete='off'
-                                            size='small'
-                                            required
-                                            placeholder='Accesibilidad ciclista'
-                                            error={!!error}
-                                            helperText={error ? error.message : null}
-                                            variant='outlined'
-                                            label='Tema indicador'
-                                            {...field}
-                                        />}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <Controller
-                                    name="codigo"
-                                    control={methods.control}
-                                    render={({ field, fieldState: { error } }) => <TextField
-                                        size='small'
-                                        required
-                                        placeholder='123'
-                                        error={!!error}
-                                        helperText={error ? error.message : null}
-                                        variant='outlined'
-                                        label='Código'
-                                        {...field}
-                                    />}
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <Controller
-                                    name="color"
-                                    control={methods.control}
-                                    render={({ field }) => (
-                                        <ColorPicker color={color} onChange={setColor} />
-                                    )}
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <Controller
-                                    name="observaciones"
-                                    control={methods.control}
-                                    render={({ field, fieldState: { error } }) =>
-                                        <TextField
-                                            multiline
-                                            error={!!error}
-                                            helperText={error ? error.message : null}
-                                            rows={3}
-                                            sx={{ width: '100%' }}
-                                            variant='outlined'
-                                            label='Observaciones'
-                                            {...field}
-                                        />}
-                                />
-                            </Grid>
-                            <Grid item xs={1}>
-                                <Controller
-                                    name="activo"
-                                    control={methods.control}
-                                    render={({ field }) => (
-                                        <FormGroup>
-                                            <FormControlLabel
-                                                control={
-                                                    <Switch {...field} defaultChecked={defaultValues.activo === 'Activo' ? true : false} />
-                                                }
-                                                label='Activo'
-                                                labelPlacement='end'
-                                            />
-                                        </FormGroup>
-                                    )} />
-                            </Grid>
-                        </Grid>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleCloseModal}>Cancelar</Button>
-                        <Button type='submit' variant='contained'>Guardar</Button>
-                    </DialogActions>
-                </Box>
-            </FormProvider>
-        </>
-    )
+const FormModel = (props) => {
+	const { selectedTema, handleCloseModal, action } = props;
+	const methods = useForm({
+		defaultValues: {
+			temaIndicador: '',
+			codigo: '',
+			observaciones: '',
+			activo: true,
+			image: '',
+			color: '#D2D2D2',
+		},
+		resolver: yupResolver(createTemaSchema),
+	});
+	const { control, reset, handleSubmit } = methods;
+	const { NEW, EDIT } = FORM_TEMA_ACTIONS;
+
+	const handleAction = (action, tema) => {
+		const formData = parseToFormData(tema);
+		switch (action) {
+			case NEW:
+				return createModule(formData);
+			case EDIT:
+				return updateModule(tema.id, formData);
+			default:
+				Promise.reject(new Error('Invalid action'));
+		}
+	}
+
+	const onSubmit = data => {
+		handleAction(action, data)
+			.then(res => {
+				if (res) {
+					showAlert({
+						title: 'Operación realizada con éxito',
+						icon: 'success',
+					}).then(handleCloseModal)
+				}
+			})
+			.catch(err => {
+				showAlert({
+					title: 'Hubo un error',
+					icon: 'error',
+					text: err
+				})
+			})
+	}
+
+	useEffect(() => {
+		if (!selectedTema) {
+			return;
+		}
+		reset({ ...selectedTema, activo: selectedTema.activo === 'SI' })
+	}, [selectedTema])
+
+	return (
+		<FormProvider {...methods}>
+			<Box
+				component='form'
+				onSubmit={handleSubmit(onSubmit)}
+				noValidate
+			>
+				<DialogContent>
+					<Grid
+						container
+						columnSpacing={3}
+						rowSpacing={2}
+					>
+						<Grid item xs={12}>
+							<Grid item xs={12}>
+								<ImageInput
+									name='image'
+									label='Imagen representativa'
+									height='400px'
+								/>
+							</Grid>
+						</Grid>
+						<Grid item xs={12} sm={6}>
+							<Controller
+								name="temaIndicador"
+								control={control}
+								render={({ field, fieldState: { error } }) =>
+									<TextField
+										autoComplete='off'
+										fullWidth
+										required
+										placeholder='Accesibilidad ciclista'
+										error={!!error}
+										helperText={error ? error.message : null}
+										variant='outlined'
+										label='Tema indicador'
+										{...field}
+									/>}
+							/>
+						</Grid>
+						<Grid item xs={12} sm={6}>
+							<Controller
+								name="codigo"
+								control={control}
+								render={({ field, fieldState: { error } }) => (
+									<TextField
+										required
+										fullWidth
+										placeholder='ASD'
+										error={!!error}
+										helperText={error ? error.message : null}
+										variant='outlined'
+										label='Código'
+										{...field}
+									/>)}
+							/>
+						</Grid>
+						<Grid item xs={12}>
+							<Controller
+								name='color'
+								control={control}
+								render={({ field: { value, onChange } }) => (
+									<ColorPicker
+										color={value}
+										onChange={onChange}
+									/>
+								)}
+							/>
+						</Grid>
+						<Grid item xs={12}>
+							<Controller
+								name="descripcion"
+								control={control}
+								render={({ field, fieldState: { error } }) =>
+									<TextField
+										multiline
+										error={!!error}
+										helperText={error ? error.message : null}
+										rows={3}
+										sx={{ width: '100%' }}
+										variant='outlined'
+										label='Descripción'
+										value={field.value}
+										onChange={field.onChange}
+									/>}
+							/>
+						</Grid>
+						<Grid item xs={1}>
+							<Controller
+								name='activo'
+								control={control}
+								render={({ field: { value, onChange } }) => (
+									<FormGroup>
+										<FormControlLabel
+											control={(
+												<Checkbox
+													checked={value}
+													onChange={(e) => onChange(e.target.checked)}
+												/>
+											)}
+											label='Activo'
+										/>
+									</FormGroup>
+								)} />
+						</Grid>
+					</Grid>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={handleCloseModal}>Cancelar</Button>
+					<Button type='submit' variant='contained'>Guardar</Button>
+				</DialogActions>
+			</Box>
+		</FormProvider>
+	)
 }
 export default FormModel;
