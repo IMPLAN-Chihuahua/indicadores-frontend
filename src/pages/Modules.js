@@ -144,34 +144,6 @@ export const Modules = () => {
       renderCell: (params) => <Typography noWrap>{params.row.temaIndicador}</Typography>
     },
     {
-      field: "createdAt",
-      headerName: "Creación",
-      flex: 1,
-      minWidth: 100,
-      editable: false,
-      sortable,
-      hide: true,
-      headerAlign: 'left',
-      align: 'left',
-      renderCell: (params) => (<Typography noWrap>
-        {parseDate(params.row.createdAt)}
-      </Typography>)
-    },
-    {
-      field: "updatedAt",
-      headerName: "Edición",
-      flex: 1,
-      minWidth: 100,
-      editable: false,
-      sortable,
-      hide: true,
-      headerAlign: 'left',
-      align: 'left',
-      renderCell: (params) => (<Typography noWrap>
-        {parseDate(params.row.updatedAt)}
-      </Typography>)
-    },
-    {
       field: "color",
       headerName: "Color",
       flex: 0.2,
@@ -219,6 +191,34 @@ export const Modules = () => {
           handleClick={() => toggleStatus(params.row)}
           status={params.row.activo}
         />)
+    },
+    {
+      field: "createdAt",
+      headerName: "Creación",
+      flex: 1,
+      minWidth: 100,
+      editable: false,
+      sortable,
+      hide: true,
+      headerAlign: 'left',
+      align: 'left',
+      renderCell: (params) => (<Typography noWrap>
+        {parseDate(params.row.createdAt)}
+      </Typography>)
+    },
+    {
+      field: "updatedAt",
+      headerName: "Edición",
+      flex: 1,
+      minWidth: 100,
+      editable: false,
+      sortable,
+      hide: true,
+      headerAlign: 'left',
+      align: 'left',
+      renderCell: (params) => (<Typography noWrap>
+        {parseDate(params.row.updatedAt)}
+      </Typography>)
     },
     {
       field: "editar",
