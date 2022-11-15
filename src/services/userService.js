@@ -43,7 +43,7 @@ export const getLastedModules = async () => {
 };
 
 export const useModules = (perPage, page, search) => {
-  const { data, error, mutate } = useSWR(`me/modulos?perPage=${perPage}&page=${page}&searchQuery=${search}`, fetcher)
+  const { data, error, mutate } = useSWR(`me/modulos?perPage=${perPage}&page=${page}&searchQuery=${search}&sortBy=updatedAt&order=DESC`, fetcher)
   return {
     temas: data,
     isLoading: !error && !data,
