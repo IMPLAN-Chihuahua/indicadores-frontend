@@ -31,11 +31,16 @@ const useRelationUsers = (id) => {
 
 const getUsersThatDoesntHaveRelation = async (id) => {
   return protectedApi.get(`/relation/indicador/${id}/usuarios`);
-}
+};
+
+const deleteRelation = async (id) => {
+  return protectedApi.delete(`/relation/${id}`);
+};
 
 export {
   useIndicadorUsuarios,
   createRelation,
   getUsersThatDoesntHaveRelation,
   useRelationUsers,
+  deleteRelation,
 };

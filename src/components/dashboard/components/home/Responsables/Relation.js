@@ -3,8 +3,7 @@ import React from 'react'
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom'
-import { getUsersThatDoesntHaveRelation, useRelationUsers } from '../../../../../services/usuarioIndicadorService';
-import { getLastedUsers } from '../../../../../services/userService';
+import { getUsersThatDoesntHaveRelation, useRelationUsers, deleteRelation } from '../../../../../services/usuarioIndicadorService';
 import DatagridTable from '../../../common/DatagridTable';
 import { Status } from '../../../common/Status';
 import Checkbox from '@mui/material/Checkbox';
@@ -14,7 +13,10 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import PersonalLoader from '../../../../common/PersonalLoader/PersonalLoader';
 import FormDuration from '../../../forms/relationship/FormDuration';
 import FormDialog from '../../../common/FormDialog';
+import ModeEditIcon from "@mui/icons-material/ModeEdit";
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import './responsables.css';
+import Swal from 'sweetalert2';
 
 const Relation = () => {
   const { id } = useParams();
@@ -34,7 +36,6 @@ const Relation = () => {
     setLoading(false);
   };
 
-
   const { indicador, isLoading, hasError, mutate } = useRelationUsers(id);
   const [openModal, setOpenModal] = useState(false);
   const handleOpenModal = () => {
@@ -45,13 +46,37 @@ const Relation = () => {
     setOpenModal(false);
   };
 
-
   const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
   useEffect(() => {
     setUsersArray();
-  }, [])
+  }, []);
+
+  const handleDelete = async ({ id }) => {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: "¡No podrás revertir esto!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, borrar!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteRelation(id)
+          .then(_ => {
+            Swal.fire(
+              'Borrado!',
+              'El usuario ha sido eliminado.',
+              'success'
+            )
+            mutate();
+            setUsersArray();
+          })
+      }
+    })
+  }
 
   const headerClassName = "dt-theme--header";
   const sortable = false;
@@ -130,6 +155,38 @@ const Relation = () => {
       align,
       renderCell: (params) => {
         return (<Status status={params.row.expires} type='expires' />);
+      },
+    },
+    {
+      field: "actions",
+      headerName: "Acciones",
+      flex: 0.5,
+      editable: false,
+      minWidth: 150,
+      headerClassName,
+      sortable,
+      headerAlign,
+      align,
+      renderCell: (params) => {
+        return (
+          <div className="dt-btn-container-tri">
+            <span
+              className="dt-action-delete"
+              onClick={() => {
+                handleDelete(params.row);
+              }}
+            >
+              <DeleteForeverIcon />
+            </span>
+            <span
+              className="dt-action-edit"
+              onClick={() => {
+              }}
+            >
+              <ModeEditIcon />
+            </span>
+          </div>
+        );
       },
     },
   ];
