@@ -39,7 +39,6 @@ export const Users = () => {
   const handleUserFormClose = async () => {
     setSelectedUser(null);
     setOpenModal(false);
-    setFormUserAction('');
     await mutate();
   };
 
