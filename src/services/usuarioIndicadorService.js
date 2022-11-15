@@ -18,12 +18,24 @@ const createRelation = async (id, data, type) => {
   return protectedApi.post(`/relation/create?relationType=${type}&id=${id}`, data);
 };
 
-const getRelationUsers = async (id) => {
-  return protectedApi.get(`/relation/indicador/${id}`);
+const useRelationUsers = (id) => {
+  const { data, error, mutate } = useSWR(`/relation/indicador/${id}`, fetcher);
+
+  return {
+    indicador: data,
+    isLoading: !error && !data,
+    hasError: error,
+    mutate,
+  }
+};
+
+const getUsersThatDoesntHaveRelation = async (id) => {
+  return protectedApi.get(`/relation/indicador/${id}/usuarios`);
 }
 
 export {
   useIndicadorUsuarios,
   createRelation,
-  getRelationUsers,
+  getUsersThatDoesntHaveRelation,
+  useRelationUsers,
 };
