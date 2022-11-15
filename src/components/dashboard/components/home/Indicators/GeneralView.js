@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import './indicator.css'
 
 import { Button, Card, CardContent, Grid, TextField, Typography, ClickAwayListener, Checkbox, FormControlLabel } from '@mui/material';
@@ -37,6 +37,8 @@ const COBERTURA_ID = 3;
 const CATALOGOS = [ODS_ID, UNIDAD_MEDIDA_ID, COBERTURA_ID];
 
 export const GeneralView = () => {
+	const navigate = useNavigate();
+
 	const [indicadorInfo, setIndicadorInfo] = useState(null);
 	const [isLoading, setIsLoading] = useState(true);
 	const { id } = useParams();
@@ -585,7 +587,11 @@ export const GeneralView = () => {
 								</Grid>
 								<br />
 								<Box className='indicator-buttons'>
-									<Button variant='contained'>Cancelar</Button>
+									<Button variant='contained'
+										onClick={() => {
+											navigate(`/indicadores`, [navigate])
+										}}
+									>Cancelar</Button>
 									<Button type='submit' variant='contained' className='btn-bg' form="form-indicator">Guardar</Button>
 								</Box>
 							</Box>
