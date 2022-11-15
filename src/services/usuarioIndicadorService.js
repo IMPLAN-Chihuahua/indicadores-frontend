@@ -37,10 +37,15 @@ const deleteRelation = async (id) => {
   return protectedApi.delete(`/relation/${id}`);
 };
 
+const updateRelation = async (id) => {
+  return protectedApi.patch(`/relation/${id}`);
+};
+
 export {
   useIndicadorUsuarios,
   createRelation,
   getUsersThatDoesntHaveRelation,
   useRelationUsers,
   deleteRelation,
+  updateRelation,
 };

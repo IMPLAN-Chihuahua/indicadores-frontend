@@ -8,14 +8,19 @@ import { updateAuthSchema } from '../../../../utils/validator';
 import { useState } from 'react';
 import { nameConstructor } from '../../../../utils/nameValidator';
 import './FormDuration.css';
-import { createRelation } from '../../../../services/usuarioIndicadorService';
-const FormHistoricos = ({ type, handleCloseModal, users, setUsersArray, mutate, clearUsersSelectedParams }) => {
+import { createRelation, updateRelation } from '../../../../services/usuarioIndicadorService';
+const FormHistoricos = ({ type, handleCloseModal, users, setUsersArray, mutate, clearUsersSelectedParams, action, relationData }) => {
   const { id } = useParams();
   const [expires, setExpires] = useState(true);
-
   const { control, handleSubmit, reset } = useForm(
     {
-      resolver: yupResolver(updateAuthSchema)
+      mode: 'onBlur',
+      resolver: yupResolver(updateAuthSchema),
+      defaultValues: action === 'NEW' ? {} : {
+        hasta: relationData.fechaHasta,
+        desde: relationData.fechaDesde,
+        expires: relationData.expires === 'SI' ? true : false,
+      }
     }
   );
 
@@ -34,7 +39,7 @@ const FormHistoricos = ({ type, handleCloseModal, users, setUsersArray, mutate, 
       relationIds: usersId,
       expires: expires === true ? 'SI' : 'NO',
     };
-    console.log(payload);
+
     Swal.fire({
       customClass: {
         container: 'my-swal'
@@ -48,25 +53,48 @@ const FormHistoricos = ({ type, handleCloseModal, users, setUsersArray, mutate, 
       confirmButtonText: 'Sí, guardar!'
     }).then((result) => {
       if (result.isConfirmed) {
-        createRelation(id, payload, 'usuarios')
-          .then(_ => {
-            Swal.fire(
-              'Guardado!',
-              'Los usuarios han sido asignados.',
-              'success'
-            )
-            mutate();
-            handleCloseModal();
-            setUsersArray();
-            clearUsersSelectedParams();
-          })
-          .catch(err => {
-            Swal.fire(
-              'Error!',
-              err,
-              'error'
-            )
-          })
+        if (action === 'NEW') {
+          createRelation(id, payload, 'usuarios')
+            .then(_ => {
+              Swal.fire(
+                'Guardado!',
+                'Los usuarios han sido asignados.',
+                'success'
+              )
+              mutate();
+              handleCloseModal();
+              setUsersArray();
+              clearUsersSelectedParams();
+            })
+            .catch(err => {
+              Swal.fire(
+                'Error!',
+                err,
+                'error'
+              )
+            })
+        }
+        else {
+          updateRelation(id, payload, 'usuarios')
+            .then(_ => {
+              Swal.fire(
+                'Guardado!',
+                'Los usuarios han sido asignados.',
+                'success'
+              )
+              mutate();
+              handleCloseModal();
+              setUsersArray();
+              clearUsersSelectedParams();
+            })
+            .catch(err => {
+              Swal.fire(
+                'Error!',
+                err,
+                'error'
+              )
+            })
+        }
       }
     }
     )
@@ -75,12 +103,15 @@ const FormHistoricos = ({ type, handleCloseModal, users, setUsersArray, mutate, 
 
   return (
     <>
-      <DialogTitle>Agregar relación</DialogTitle>
+      <DialogTitle>
+        {
+          action === 'NEW' ? 'Asignar usuarios' : `Editar relación de ${users[0].nombres}`
+        }
+      </DialogTitle>
       <FormProvider {...methods}>
         <DialogContent>
-          {/* Render a paragraph for listing the users that are going to be assigned to the indicator */}
           {
-            users && users.length > 0 && (
+            action === 'NEW' && users && users.length > 0 && (
               <Box
                 sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%' }}
                 component="form"

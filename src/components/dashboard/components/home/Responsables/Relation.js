@@ -1,8 +1,8 @@
-import { Box, Button, Grid, TextField, Typography } from '@mui/material';
+import { Box, Button, TextField, Typography } from '@mui/material';
 import React from 'react'
 import { useState } from 'react';
 import { useEffect } from 'react';
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { getUsersThatDoesntHaveRelation, useRelationUsers, deleteRelation } from '../../../../../services/usuarioIndicadorService';
 import DatagridTable from '../../../common/DatagridTable';
 import { Status } from '../../../common/Status';
@@ -19,10 +19,13 @@ import './responsables.css';
 import Swal from 'sweetalert2';
 
 const Relation = () => {
+  const navigate = useNavigate();
   const { id } = useParams();
-  const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
   const [params, setParams] = useState([]);
+  const [editParams, setEditParams] = useState([]);
+  const [action, setAction] = useState('NEW');
+  const [relationData, setRelationData] = useState({});
 
   const usersFetcher = async () => {
     const { data } = await getUsersThatDoesntHaveRelation(id)
@@ -30,16 +33,16 @@ const Relation = () => {
   };
 
   const setUsersArray = async () => {
-    setLoading(true);
     const users = await usersFetcher();
     setUsers(users);
-    setLoading(false);
   };
 
   const { indicador, isLoading, hasError, mutate } = useRelationUsers(id);
   const [openModal, setOpenModal] = useState(false);
-  const handleOpenModal = () => {
+
+  const handleOpenModal = (action) => {
     setOpenModal(true)
+    setAction(action);
   };
 
   const handleCloseModal = () => {
@@ -76,7 +79,18 @@ const Relation = () => {
           })
       }
     })
-  }
+  };
+
+  const handleEdit = (data) => {
+    setEditParams([data.usuario]);
+    setRelationData({
+      id: data.id,
+      fechaDesde: data.fechaDesde,
+      fechaHasta: data.fechaHasta,
+      expires: data.expires
+    });
+    handleOpenModal('EDIT');
+  };
 
   const headerClassName = "dt-theme--header";
   const sortable = false;
@@ -181,6 +195,7 @@ const Relation = () => {
             <span
               className="dt-action-edit"
               onClick={() => {
+                handleEdit(params.row);
               }}
             >
               <ModeEditIcon />
@@ -231,7 +246,7 @@ const Relation = () => {
                   )}
                 />
                 <Box className='responsables-button'>
-                  <Button variant='contained' disabled={params.length === 0 ? true : false} onClick={() => { handleOpenModal(); }}>Agregar</Button>
+                  <Button variant='contained' disabled={params.length === 0 ? true : false} onClick={() => { handleOpenModal('NEW'); }}>Agregar</Button>
                 </Box>
               </Box>
             </Box>
@@ -246,16 +261,19 @@ const Relation = () => {
             />
 
             <Box className='responsables-footer'>
-              <Button variant='contained'>Cancelar</Button>
-              <Button variant='contained'>Guardar</Button>
+              <Button variant='contained'
+                onClick={() => {
+                  clearUsersSelectedParams();
+                  navigate(`/autorizacion`, [navigate])
+                }}
+              >Cancelar</Button>
             </Box>
-
 
             <FormDialog
               open={openModal}
               handleClose={() => setOpenModal(false)}
             >
-              <FormDuration users={params} handleCloseModal={handleCloseModal} setUsersArray={setUsersArray} mutate={mutate} clearUsersSelectedParams={clearUsersSelectedParams} />
+              <FormDuration users={action === 'NEW' ? params : editParams} handleCloseModal={handleCloseModal} setUsersArray={setUsersArray} mutate={mutate} clearUsersSelectedParams={clearUsersSelectedParams} action={action} relationData={relationData} />
             </FormDialog>
           </>
           :
