@@ -9,13 +9,8 @@ export const createModule = async (modulo) => {
     throw error;
   };
 }
-export const changeStatusModule = async (id) => {
-  try {
-    const response = await protectedApi.patch(`/modulos/${id}`);
-    return response.data;
-  } catch (error) {
-    throw error;
-  };
+export const toggleTemaStatus = (id) => {
+  return protectedApi.post(`/modulos/${id}/toggle-status`);
 }
 
 export const getTemas = async () => {

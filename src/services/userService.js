@@ -43,11 +43,12 @@ export const getLastedModules = async () => {
 };
 
 export const useModules = (perPage, page, search) => {
-  const { data, error } = useSWR(`me/modulos?perPage=${perPage}&page=${page}&searchQuery=${search}`, fetcher)
+  const { data, error, mutate } = useSWR(`me/modulos?perPage=${perPage}&page=${page}&searchQuery=${search}`, fetcher)
   return {
-    modulos: data,
+    temas: data,
     isLoading: !error && !data,
-    isError: error,
+    hasError: error,
+    mutate
   }
 };
 export const useIndicators = (perPage, page, search) => {
