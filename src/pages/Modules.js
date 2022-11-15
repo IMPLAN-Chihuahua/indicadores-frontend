@@ -2,16 +2,10 @@ import { useState, useEffect } from "react";
 import DatagridTable from "../components/dashboard/common/DatagridTable";
 import { DataHeader } from "../components/dashboard/common/DataHeader";
 import { useModules } from "../services/userService";
-import ShowImage from "../components/dashboard/common/ShowImage";
 import { Status } from "../components/dashboard/common/Status";
-import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import FormDialog from "../components/dashboard/common/FormDialog";
-import FormModel from "../components/dashboard/forms/model/FormModel";
+import FormModel, { FORM_TEMA_ACTIONS } from "../components/dashboard/forms/model/FormModel";
 import { toggleTemaStatus } from "../services/moduleService";
-import FormDelete from "../components/common/FormDelete";
-import ToggleOnIcon from '@mui/icons-material/ToggleOn';
-import ToggleOffIcon from '@mui/icons-material/ToggleOff';
-import { useAlert } from "../contexts/AlertContext";
 import { getGlobalPerPage } from "../utils/objects";
 import { Avatar, Box, DialogTitle, IconButton, Stack, Typography } from "@mui/material";
 import { parseDate } from "../utils/dateParser";
@@ -24,16 +18,11 @@ export const Modules = () => {
   const [total, setTotal] = useState();
   const [perPage, setPerPage] = useState(getGlobalPerPage);
 
-  const [activeCounter, setActiveCounter] = useState(0);
-  const [inactiveCounter, setInactiveCounter] = useState(0);
-
   const { temas, isLoading, hasError, mutate } = useModules(perPage, page, searchModule);
 
-  const [openModal, setOpenModal] = useState(false);
-  const handleOpenModal = () => setOpenModal(true);
-  const handleCloseModal = () => setOpenModal(false);
-
   const [selectedTema, setSelectedTema] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
+  const [formTemaAction, setFormTemaAction] = useState('');
 
   const [rows, setRows] = useState([]);
 
@@ -46,7 +35,7 @@ export const Modules = () => {
       showCancelButton: true
     }).then(option => {
       if (option.isConfirmed) {
-        return toggleTemaStatus(tema.id)        
+        return toggleTemaStatus(tema.id)
       }
     })
       .then(res => {
@@ -67,9 +56,21 @@ export const Modules = () => {
       })
       .finally(mutate)
   }
+  const handleCloseModal = async () => {
+    setOpenModal(false)
+    setSelectedTema(null)
+    await mutate()
+  }
 
-  const handleEdit = () => {
+  const handleEdit = (tema) => {
+    setOpenModal(true)
+    setFormTemaAction(FORM_TEMA_ACTIONS.EDIT)
+    setSelectedTema(tema)
+  }
 
+  const handleNew = () => {
+    setOpenModal(true)
+    setFormTemaAction(FORM_TEMA_ACTIONS.NEW)
   }
 
   useEffect(() => {
@@ -110,7 +111,7 @@ export const Modules = () => {
     {
       field: "urlImagen",
       headerName: "Imagen",
-      flex: 0.3,
+      flex: 0.2,
       minWidth: 100,
       editable,
       cellClassName: 'cell-overflow',
@@ -134,7 +135,7 @@ export const Modules = () => {
     {
       field: "temaIndicador",
       headerName: "Tema",
-      flex: 1,
+      flex: 0.5,
       minWidth: 150,
       editable,
       sortable,
@@ -194,15 +195,15 @@ export const Modules = () => {
       },
     },
     {
-      field: "observaciones",
-      headerName: "Observaciones",
+      field: "descripcion",
+      headerName: "Descripción",
       flex: 1,
       minWidth: 200,
       editable,
       sortable,
       headerAlign: 'left',
       align: 'left',
-      renderCell: params => <Typography noWrap>{params.row.observaciones}</Typography>
+      renderCell: params => <Typography noWrap>{params.row.descripcion}</Typography>
     },
     {
       field: "activo",
@@ -241,8 +242,8 @@ export const Modules = () => {
 
   const dataModule = {
     topic: "modulo",
-    countEnable: activeCounter,
-    countDisable: inactiveCounter,
+    countEnable: Math.abs(temas?.total - temas?.totalInactivos) || 0,
+    countDisable: temas?.totalInactivos || 0,
     setSearch: setSearchModule,
     searchValue: searchModule
   };
@@ -250,7 +251,7 @@ export const Modules = () => {
     <>
       <DataHeader
         data={dataModule}
-        handleOpenModal={handleOpenModal}
+        handleOpenModal={handleNew}
       />
       <div className='datagrid-container'>
         <DatagridTable
@@ -268,8 +269,8 @@ export const Modules = () => {
         open={openModal}
         handleClose={handleCloseModal}
       >
-        <DialogTitle>Tema de interes</DialogTitle>
-        <FormModel data={selectedTema} handleCloseModal={handleCloseModal} />
+        <DialogTitle>{formTemaAction} Tema de Interés</DialogTitle>
+        <FormModel action={formTemaAction} selectedTema={selectedTema} handleCloseModal={handleCloseModal} />
       </FormDialog>
     </>
   );
