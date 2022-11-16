@@ -13,6 +13,7 @@ import { useAlert } from '../../../../contexts/AlertContext';
 
 const USER_TO_INDICADORES = 'INDICADORES_TO_USER';
 const INDICADOR_TO_USERS = 'USERS_TO_INDICADOR';
+const TEMAS_TO_USERS = 'TEMAS_TO_USERS';
 
 const FormRelationship = ({ handleCloseModal, mutate, isEdit, indicador }) => {
   const [dataList, dispatch] = useReducer(dataReducer, [])
@@ -38,7 +39,7 @@ const FormRelationship = ({ handleCloseModal, mutate, isEdit, indicador }) => {
     setListAlert(false)
     const { one, ...options } = data;
     options.expires = expires === true ? 'SI' : 'NO';
-    const selectedOption = mode === INDICADOR_TO_USERS ? 'relationIds' : 'relationIds';
+    const selectedOption = 'relationIds';
     const payload = {
       ...options,
       [selectedOption]: dataList.map(e => e.id),
@@ -52,7 +53,7 @@ const FormRelationship = ({ handleCloseModal, mutate, isEdit, indicador }) => {
         })
         .catch(err => alert.error(err))
 
-    } else {
+    } else if (mode === INDICADOR_TO_USERS) {
       if (isEdit) {
         createRelation(indicador.id, payload, 'usuarios')
           .then(_ => {
@@ -68,7 +69,13 @@ const FormRelationship = ({ handleCloseModal, mutate, isEdit, indicador }) => {
           })
           .catch(err => alert.error(err))
       }
-
+    } else if (mode === TEMAS_TO_USERS) {
+      createRelation(one.id, payload, 'modulos')
+        .then(_ => {
+          alert.success('Tema (s) asignado (s) exitosamente')
+          mutate();
+        })
+        .catch(err => alert.error(err))
     }
   };
 
@@ -77,13 +84,21 @@ const FormRelationship = ({ handleCloseModal, mutate, isEdit, indicador }) => {
     reset({ one: null })
   };
 
-  const { itemList } = useAutocompleteInput(mode === USER_TO_INDICADORES ? 'usuarios' : 'indicadores');
+  const { itemList } = useAutocompleteInput(
+    mode === USER_TO_INDICADORES
+      ? 'usuarios'
+      : mode === INDICADOR_TO_USERS
+        ? 'indicadores'
+        : 'modulos'
+  );
 
   useEffect(() => {
     if (mode === USER_TO_INDICADORES) {
       setPlaceholder('Selecciona un usuario')
-    } else {
+    } else if (mode === INDICADOR_TO_USERS) {
       setPlaceholder('Selecciona un indicador')
+    } else if (mode === TEMAS_TO_USERS) {
+      setPlaceholder('Selecciona un tema')
     }
   }, [mode])
 
@@ -113,10 +128,12 @@ const FormRelationship = ({ handleCloseModal, mutate, isEdit, indicador }) => {
                     className={`auth-title-btn${(mode === USER_TO_INDICADORES) ? '-active' : ''}`}
                     onClick={() => handleChangeMode(USER_TO_INDICADORES)}>Usuario a indicadores</button>
               }
-
               <button
                 className={`auth-title-btn${(mode === INDICADOR_TO_USERS) ? '-active' : ''}`}
                 onClick={() => handleChangeMode(INDICADOR_TO_USERS)}>Indicador a usuarios</button>
+              <button
+                className={`auth-title-btn${(mode === TEMAS_TO_USERS) ? '-active' : ''}`}
+                onClick={() => handleChangeMode(TEMAS_TO_USERS)}>Temas de interés a usuarios</button>
             </div>
           </div>
         </DialogTitle>
@@ -141,7 +158,10 @@ const FormRelationship = ({ handleCloseModal, mutate, isEdit, indicador }) => {
                       getOptionLabel={item => {
                         return mode && mode === USER_TO_INDICADORES
                           ? `${item.nombres} ${item.apellidoPaterno} ${item.apellidoMaterno || ''}`
-                          : item.nombre
+                          :
+                          mode === INDICADOR_TO_USERS
+                            ? item.nombre
+                            : item.temaIndicador
                       }}
                       isOptionEqualToValue={(option, value) => option.id === value.id}
                       options={[...itemList.data]}
@@ -153,6 +173,7 @@ const FormRelationship = ({ handleCloseModal, mutate, isEdit, indicador }) => {
                           error={!!error}
                           fullWidth
                           helperText={error?.message}
+                          key={mode}
                         />
                       )}
                     />
