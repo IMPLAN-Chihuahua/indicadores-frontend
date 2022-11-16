@@ -210,7 +210,7 @@
 
 .lasted-picture:hover .lasted-picture-hoverable {
     transform: scale(3.5);
-    z-index: 10000;
+    z-index: 99999;
     transition: all .1s ease-in-out;
 }
 
