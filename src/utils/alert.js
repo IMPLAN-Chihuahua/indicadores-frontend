@@ -9,6 +9,7 @@ export const showAlert = (options) => {
     cancelButtonColor: 'whitesmoke',
     confirmButtonText: `<div style="font-weight: 600; font-family: sans-serif">${options?.icon === 'question' ? 'Aceptar' : 'OK'}</div>`,
     cancelButtonText: `<div style="color: #7A7A7A; font-weight: 600; font-family: sans-serif">${options.customCancelButtonText || 'Cancelar operacion'}</div>`,
+    html: options.text || options.html, 
     ...options,
   })
 }
