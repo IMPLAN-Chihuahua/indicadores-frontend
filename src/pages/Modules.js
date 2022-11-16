@@ -101,7 +101,7 @@ export const Modules = () => {
     {
       field: "codigo",
       headerName: "Código",
-      flex: 0.5,
+      flex: 0.2,
       minWidth: 50,
       editable,
       sortable,
