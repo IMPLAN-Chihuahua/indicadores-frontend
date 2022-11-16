@@ -44,13 +44,8 @@ export const setUsersToIndicator = async (id, data) => {
   return protectedApi.post(`/indicadores/${id}/usuarios`, data);
 };
 
-export const changeStatusIndicator = async (id) => {
-  try {
-    const response = await protectedApi.patch(`/indicadores/${id}/toggle-status`);
-    return response.data;
-  } catch (error) {
-    Promise.reject(error)
-  };
+export const toggleIndicadorStatus = async (id) => {
+  return protectedApi.patch(`/indicadores/${id}/toggle-status`);
 }
 
 export const useIndicadorFormula = (id) => {
