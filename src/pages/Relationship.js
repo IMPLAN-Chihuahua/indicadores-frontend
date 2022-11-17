@@ -18,7 +18,7 @@ export const Relationship = () => {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(getGlobalPerPage);
   const [total, setTotal] = useState(0);
-  const { indicadores, isLoading, hasError, mutate } = useIndicadorUsuarios();
+  const { indicadores, isLoading, hasError, mutate } = useIndicadorUsuarios(perPage, page, searchIndicator);
   const [rows, setRows] = useState([]);
   const navigate = useNavigate();
 
