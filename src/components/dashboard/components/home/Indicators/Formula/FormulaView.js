@@ -7,20 +7,19 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useEffect, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { useParams } from "react-router-dom";
-import { BeatLoader } from "react-spinners";
-import { addFormula, getFormulaOfIndicador, useIndicadorFormula } from "../../../../../../services/indicatorService";
+import { addFormula, useIndicadorFormula } from "../../../../../../services/indicatorService";
 import { EquationInput, EquationViewer, FormFormula } from "../../../../forms/formula/FormFormula";
 import { MathJax } from "better-react-mathjax";
 import { deleteVariable } from "../../../../../../services/variablesService";
 import FormDialog from "../../../../common/FormDialog";
 import useIsMounted from "../../../../../../hooks/useIsMounted";
-import Swal from "sweetalert2";
 import '../indicator.css';
 import FormVariable, { defaultVariable, VARIABLE_FORM_ACTIONS } from "./FormVariable";
 import { updateFormula } from "../../../../../../services/formulaService";
 import ErrorContent from "../../../../forms/indicador/ErrorContent";
 import { IndicadorProvider } from "../../../../../../contexts/IndicadorContext";
 import { showAlert } from "../../../../../../utils/alert";
+import PersonalLoader from "../../../../../common/PersonalLoader/PersonalLoader";
 
 const VariableTable = (props) => {
   return (
@@ -176,20 +175,20 @@ const FormulaView = () => {
   }
 
   const handleVariableDelete = (id) => {
-    Swal.fire({
+    showAlert({
       title: '¿Deseas eliminar esta variable?',
       text: 'Al eliminar este registro, dejará de ser visible en la tabla de variables de Chihuahua Métrica y en el sistema de gestión de Chihuahua en Datos.',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#F14156',
-      cancelButtonColor: 'whitesmoke',
-      cancelButtonText: '<div style="color: black; font-weight: 400; font-family: sans-serif">Cancelar, conservar registro</div>',
-      confirmButtonText: '<div style="font-weight: 600; font-family: sans-serif">Aceptar, eliminar registro</div>',
     }).then((result) => {
       if (result.isConfirmed) {
         deleteVariable(id)
           .then(_ => {
-            Swal.fire('Eliminado!', 'El registro ha sido eliminado.', 'success');
+            showAlert({
+              title: 'Eliminado!',
+              text: 'El registro ha sido eliminado.',
+              icon: 'success'
+            });
             mutate()
           })
       }
@@ -228,7 +227,7 @@ const FormulaView = () => {
     <>
       <Box className='indicator' sx={{ overflow: 'scroll', flex: '1 1 auto', height: '500px' }} padding={3}>
         {isLoading
-          ? (<BeatLoader size={15} color='var(--purple-500)' />)
+          ? (<PersonalLoader />)
           : (Object.keys(formula).length === 0)
             ? (
               <Paper
@@ -395,7 +394,6 @@ const FormulaView = () => {
             handleClose={() => setOpenFormFormula(false)}
             fullWidth
             maxWidth='xl'
-            title='formula'
           >
             <IndicadorProvider
               indicador={{ formula: { descripcion: '', ecuacion: '', hasEcuacion: true, variables: [defaultVariable] } }}

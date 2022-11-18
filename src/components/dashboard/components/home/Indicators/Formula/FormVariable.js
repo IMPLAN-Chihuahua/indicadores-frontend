@@ -7,7 +7,6 @@ import { UNIDAD_MEDIDA_ID } from "../../../../../../utils/getCatalog";
 import { Variable, VARIABLE_MODES } from "../../../../../common/formula/Variable";
 import * as Yup from 'yup';
 import { yupResolver } from "@hookform/resolvers/yup";
-import Swal from "sweetalert2";
 import { addVariable } from "../../../../../../services/formulaService";
 import { showAlert } from "../../../../../../utils/alert";
 import { updateVariable } from "../../../../../../services/variablesService";
