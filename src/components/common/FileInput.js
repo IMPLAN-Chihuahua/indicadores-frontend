@@ -5,6 +5,7 @@ import { useFormContext } from "react-hook-form";
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import ImageUploader from "../dashboard/common/ImageUploader";
 import { Clear } from "@material-ui/icons";
+import { isURL } from "../../utils/stringsValidator";
 
 const FileInput = (props) => {
   const { name, label, height, image, type, klass } = props;
@@ -246,17 +247,19 @@ export const ImageInput = ({ name, label, ...props }) => {
             overflow: 'hidden'
           }}>
           {
-            Array.isArray(files) ? (
-              <div>{
-                files?.map((file, index) => (
-                  <img
-                    key={index}
-                    src={URL.createObjectURL(file)}
-                    alt={file.name}
-                    style={{ height: '200px', maxHeight: '200px' }}
-                  />
-                ))
-              }</div>
+            Array.isArray(files) && files[0] !== null ? (
+              <div>
+                {
+                  files?.map((file, index) => (
+                    <img
+                      key={index}
+                      src={isURL(file) ? file : URL.createObjectURL(file)}
+                      alt={file.name}
+                      style={{ height: '200px', maxHeight: '250px' }}
+                    />
+                  ))
+                }
+              </div>
             ) : (
               <Typography textAlign='center' p={3} color='#6c6c6c'>
                 Arrastra la imagen para subirla o haz clic para seleccionarla
@@ -266,7 +269,7 @@ export const ImageInput = ({ name, label, ...props }) => {
         </div>
       </div>
       {
-        Array.isArray(files) && (
+        Array.isArray(files) && files[0] !== null && (
           <IconButton
             onClick={handleClear}
             sx={{

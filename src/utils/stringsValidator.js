@@ -3,4 +3,14 @@ const isNumber = (value) => {
   return !isNaN(value) && !isNaN(parseFloat(value))
 }
 
-export { isNumber }
+const isURL = (str) => {
+  let url;
+  try {
+    url = new URL(str);
+  } catch (_) {
+    return false;
+  }
+  return url.protocol === 'https:' || url.protocol === 'http:';
+}
+
+export { isNumber, isURL }

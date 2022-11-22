@@ -1,4 +1,4 @@
-import { protectedApi } from '.';
+import { protectedApi, publicApi } from '.';
 import useSWRImmutable from 'swr/immutable';
 import useSWR from 'swr';
 
@@ -65,4 +65,12 @@ export const updateFormula = (id, values) => {
 
 export const addFormula = (id, formula) => {
   return protectedApi.post(`/indicadores/${id}/formula`, formula)
+}
+
+export const getMapa = (id) => {
+  return publicApi.get(`/indicadores/${id}/mapa`);
+}
+
+export const createMapa = (id, mapa) => {
+  return protectedApi.post(`/indicadores/${id}/mapa`, mapa);
 }
