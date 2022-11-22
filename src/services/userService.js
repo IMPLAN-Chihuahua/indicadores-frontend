@@ -95,7 +95,7 @@ export const useAutocompleteInput = (key) => {
   const { data, error } = useSWR(key, fetcher)
   return {
     itemList: data,
-    isLoading: !error && !data,
+    isLoadingItems: !error && !data,
     isError: error,
   }
 };
@@ -157,4 +157,18 @@ export const getUserStats = async (id) => {
 
 export const getUsersFromIndicador = async (id) => {
   return protectedApi.get(`/indicadores/${id}/usuarios`);
+}
+
+export const getUsersGeneralInfo = async ({ page, perPage, attributes, id, sortBy, order }) => {
+  const attributesQuery = attributes
+    ? attributes.map(attribute => `attributes[]=${attribute}`).join('&')
+    : '';
+
+  const sortByQuery = sortBy ? `&sortBy=${sortBy}` : '';
+  const orderQuery = order ? `&order=${order}` : '';
+  const pageQuery = page ? `&page=${page}` : '';
+  const perPageQuery = perPage ? `&perPage=${perPage}` : '';
+  const query = `${attributesQuery}${sortByQuery}${orderQuery}${pageQuery}${perPageQuery}`;
+
+  return protectedApi.get(`/usuarios/info/general?b=0&${query}`);
 }
