@@ -16,7 +16,7 @@ export const getCurrentUser = async () => {
   }
 };
 
-export const getLastedUsers = async () => {
+export const getlatestUsers = async () => {
   try {
     const response = await protectedApi.get('/usuarios');
     const { data: users } = response.data;
@@ -29,12 +29,12 @@ export const getLastedUsers = async () => {
   }
 };
 
-export const getLastedModules = async () => {
+export const getlatestModules = async () => {
   try {
     const response = await protectedApi.get('/modulos');
-    const { data: lastedModules } = response.data;
-    if (lastedModules) {
-      return [...lastedModules];
+    const { data: latestModules } = response.data;
+    if (latestModules) {
+      return [...latestModules];
     }
     return {};
   } catch (error) {
@@ -113,7 +113,7 @@ export const getModules = async (page) => {
   }
 };
 
-export const getLastedIndicators = async () => {
+export const getlatestIndicators = async () => {
   try {
     const response = await protectedApi.get('/modulos/1/indicadores');
     const { data: indicadors } = response.data;
