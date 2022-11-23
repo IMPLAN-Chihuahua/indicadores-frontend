@@ -7,6 +7,7 @@ const DatagridTable = (props) => {
     handlePageSizeChange, perPage, page, isLoading, total, ...settings } = props
   return (
     <DataGrid
+      sx={{ background: 'white' }}
       loading={isLoading}
       editMode='row'
       paginationMode='server'
