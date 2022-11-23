@@ -22,7 +22,6 @@ const AuthProvider = ({ children }) => {
     setIsLoading(true);
     try {
       const currentUser = await login(payload.correo, payload.clave);
-      localStorage.setItem('indicadores-user', JSON.stringify(currentUser));
       setUser(currentUser);
       if (onSuccess && typeof onSuccess === 'function') {
         onSuccess();
@@ -49,8 +48,12 @@ const AuthProvider = ({ children }) => {
 
   const reloadCurrentUser = useCallback(async () => {
     const curr = await getCurrentUser();
-    setUser(prev => ({...prev, ...curr}));
+    setUser(prev => ({ ...prev, ...curr }));
   }, [])
+
+  useEffect(() => {
+    localStorage.setItem('indicadores-user', JSON.stringify(user));
+  }, [user])
 
   return (
     <AuthContext.Provider

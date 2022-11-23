@@ -4,7 +4,7 @@ import { setGlobalPerPage } from '../../../utils/objects';
 
 const DatagridTable = (props) => {
   const { columns, rows, handlePageChange,
-    handlePageSizeChange, perPage, page, isLoading, total } = props
+    handlePageSizeChange, perPage, page, isLoading, total, ...settings } = props
   return (
     <DataGrid
       loading={isLoading}
@@ -21,9 +21,9 @@ const DatagridTable = (props) => {
         setGlobalPerPage(size)
         handlePageSizeChange(size)
       }}
-      onFilterModelChange={(filters) => console.log(filters)}
       disableSelectionOnClick
       localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+      {...settings}
     />
   )
 }

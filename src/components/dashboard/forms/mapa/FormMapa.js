@@ -1,4 +1,4 @@
-import { Box, Grid, TextField, Typography } from "@mui/material";
+import { Alert, Box, Grid, Stack, TextField, Typography } from "@mui/material";
 import { useEffect } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { useIndicadorContext } from "../../../../contexts/IndicadorContext";
@@ -10,7 +10,13 @@ const mapaSchema = yup.object({
   url: yup.string().url('Ingresa una URL valida'),
 })
 
-export const FormMapa = () => {
+export const defaultMapa = {
+  url: '',
+  ubicacion: '',
+  urlImagen: null,
+};
+
+export const FormMapa = (props) => {
   const { indicador, onSubmit } = useIndicadorContext();
   const methods = useForm({
     resolver: yupResolver(mapaSchema)
@@ -19,7 +25,7 @@ export const FormMapa = () => {
 
   useEffect(() => {
     reset(indicador.mapa);
-  }, []);
+  }, [indicador.mapa]);
 
   return (
     <FormProvider {...methods}>
@@ -34,9 +40,13 @@ export const FormMapa = () => {
           rowSpacing={2}
           columnSpacing={2}
         >
-          <Grid item xs={12}>
-            <Typography variant='h5' component='h3'>Mapa</Typography>
-          </Grid>
+          {
+            props.defaultTitle && (
+              <Grid item xs={12}>
+                <Typography variant='h5' component='h3'>Mapa</Typography>
+              </Grid>
+            )
+          }
           <Grid item xs={12}>
             <Controller
               control={control}
@@ -73,12 +83,17 @@ export const FormMapa = () => {
               )}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs>
             <ImageInput
-              name='image'
+              name='urlImagen'
               label='Imagen del mapa'
               height='300px'
             />
+            <Alert
+              severity="info"
+              style={{ maxWidth: 'fit-content', marginTop: '5px' }}>
+              Esta imagen será utilizada en el archivo PDF de la ficha técnica.
+            </Alert>
           </Grid>
         </Grid>
       </Box>

@@ -1,4 +1,4 @@
-import { protectedApi } from '.';
+import { protectedApi, publicApi } from '.';
 import useSWRImmutable from 'swr/immutable';
 import useSWR from 'swr';
 
@@ -44,13 +44,8 @@ export const setUsersToIndicator = async (id, data) => {
   return protectedApi.post(`/indicadores/${id}/usuarios`, data);
 };
 
-export const changeStatusIndicator = async (id) => {
-  try {
-    const response = await protectedApi.patch(`/indicadores/${id}/toggle-status`);
-    return response.data;
-  } catch (error) {
-    Promise.reject(error)
-  };
+export const toggleIndicadorStatus = async (id) => {
+  return protectedApi.patch(`/indicadores/${id}/toggle-status`);
 }
 
 export const useIndicadorFormula = (id) => {
@@ -84,4 +79,12 @@ export const getIndicatorsGeneralInfo = async ({ page, perPage, attributes, id, 
   const query = `${attributesQuery}${sortByQuery}${orderQuery}${pageQuery}${perPageQuery}`;
 
   return protectedApi.get(`/indicadores/info/general?b=0&${query}`);
+}
+
+export const getMapa = (id) => {
+  return publicApi.get(`/indicadores/${id}/mapa`);
+}
+
+export const createMapa = (id, mapa) => {
+  return protectedApi.post(`/indicadores/${id}/mapa`, mapa);
 }

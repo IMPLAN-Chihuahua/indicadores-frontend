@@ -4,8 +4,9 @@ import { useAlert } from "../../../../contexts/AlertContext";
 import { IndicadorProvider } from "../../../../contexts/IndicadorContext";
 import useIsMounted from "../../../../hooks/useIsMounted";
 import { createIndicador } from "../../../../services/indicatorService";
+import { defaultVariable } from "../../components/home/Indicators/Formula/FormVariable";
 import { FormFormula } from "../formula/FormFormula";
-import { FormMapa } from "../mapa/FormMapa";
+import { defaultMapa, FormMapa } from "../mapa/FormMapa";
 import ErrorContent from "./ErrorContent";
 import { FormBasic } from "./FormBasic";
 import { FormExtra } from "./FormExtra";
@@ -41,9 +42,9 @@ const getStepContent = (step) => {
     case 0:
       return <FormBasic />
     case 1:
-      return <FormFormula defaultTitle={true} />
+      return <FormFormula defaultTitle />
     case 2:
-      return <FormMapa />
+      return <FormMapa defaultTitle />
     case 3:
       return <FormExtra />
     case 4:
@@ -68,13 +69,9 @@ const initialState = {
     ecuacion: '',
     descripcion: '',
     hasEcuacion: true,
-    variables: [{ nombre: '', dato: '', anio: '', medida: null, variableDesc: ''  }]
+    variables: [defaultVariable]
   },
-  mapa: {
-    url: '',
-    ubicacion: '',
-    image: null,
-  },
+  mapa: defaultMapa,
   observaciones: '',
   fuente: '',
   image: ''
@@ -138,7 +135,7 @@ const createIndicadorFormData = (indicador) => {
       if (indicador[field].ubicacion) {
         formData.append('mapa[ubicacion]', indicador[field].ubicacion)
       }
-      if (indicador[field]?.image && indicador[field].image.length > 0) {
+      if (indicador[field]?.urlImagen && indicador[field].urlImagen.length > 0) {
         formData.append('urlImagen', indicador[field].image[0]);
       }
       continue;

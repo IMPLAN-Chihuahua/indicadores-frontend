@@ -52,11 +52,12 @@ export const useModules = (perPage, page, search) => {
   }
 };
 export const useIndicators = (perPage, page, search) => {
-  const { data, error } = useSWR(`indicadores?perPage=${perPage}&page=${page}&searchQuery=${search}`, fetcher)
+  const { data, error, mutate } = useSWR(`indicadores?perPage=${perPage}&page=${page}&searchQuery=${search}`, fetcher)
   return {
     indicadores: data,
     isLoading: !error && !data,
     hasError: error,
+    mutate
   }
 };
 

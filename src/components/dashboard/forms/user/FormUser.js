@@ -25,8 +25,8 @@ export const FORM_USER_ACTIONS = {
 const parseUserToFormData = (user) => {
   const formData = new FormData();
   for (const key in user) {
-    if (key === 'profileImage' && user[key].length > 0) {
-      formData.append('urlImagen', user[key][0])
+    if (key === 'urlImagen') {
+      formData.append('urlImagen', user[key][0] || null)
       continue;
     }
     if (key === 'activo') {
@@ -157,6 +157,7 @@ const FormUser = (props) => {
       ...props.selectedUser,
       apellidoMaterno: props.selectedUser.apellidoMaterno || '',
       activo: props.selectedUser.activo === 'SI',
+      urlImagen: [props.selectedUser.urlImagen]
     });
 
   }, [])
@@ -180,7 +181,7 @@ const FormUser = (props) => {
                 }}
               >
                 <ImageInput
-                  name='profileImage'
+                  name='urlImagen'
                   label='Imagen de perfil'
                   height='400px'
                 />
