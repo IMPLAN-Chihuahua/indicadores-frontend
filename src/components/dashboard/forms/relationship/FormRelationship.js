@@ -1,8 +1,8 @@
-import { Button, TextField, DialogTitle, DialogContent, DialogActions, Autocomplete, Box, Typography, FormControlLabel, Checkbox } from '@mui/material';
+import { Button, TextField, DialogTitle, DialogContent, DialogActions, Autocomplete, Box, Typography, FormControlLabel, Checkbox, CircularProgress } from '@mui/material';
 import React, { useEffect, useReducer, useState } from 'react';
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { DataSelector } from '../../../common/dataSelector/DataSelector';
-import { useAutocompleteInput } from '../../../../services/userService';
+import { getUsersGeneralInfo } from '../../../../services/userService';
 import { createRelation } from '../../../../services/usuarioIndicadorService';
 import { DataContext } from '../../../common/dataSelector/DataContext';
 import { dataReducer } from '../../../common/dataSelector/dataReducer';
@@ -10,10 +10,18 @@ import { updateAuthSchema, createAuthSchema } from '../../../../utils/validator'
 import { yupResolver } from '@hookform/resolvers/yup'
 import './FormRelationship.css'
 import { useAlert } from '../../../../contexts/AlertContext';
+import { getIndicatorsGeneralInfo } from '../../../../services/indicatorService';
+import { getModulesGeneralInfo } from '../../../../services/moduleService';
 
 const USER_TO_INDICADORES = 'INDICADORES_TO_USER';
 const INDICADOR_TO_USERS = 'USERS_TO_INDICADOR';
 const TEMAS_TO_USERS = 'TEMAS_TO_USERS';
+
+function sleep(delay = 0) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, delay);
+  });
+}
 
 const FormRelationship = ({ handleCloseModal, mutate, isEdit, indicador }) => {
   const [dataList, dispatch] = useReducer(dataReducer, [])
@@ -21,6 +29,10 @@ const FormRelationship = ({ handleCloseModal, mutate, isEdit, indicador }) => {
   const [listAlert, setListAlert] = useState(false);
   const [placeholder, setPlaceholder] = useState()
   const [expires, setExpires] = useState(true);
+  const [open, setOpen] = React.useState(false);
+  const [options, setOptions] = React.useState([]);
+  const loading = open && options.length === 0;
+
   const alert = useAlert();
 
   const { control, handleSubmit, reset } = useForm(
@@ -84,14 +96,6 @@ const FormRelationship = ({ handleCloseModal, mutate, isEdit, indicador }) => {
     reset({ one: null })
   };
 
-  const { itemList } = useAutocompleteInput(
-    mode === USER_TO_INDICADORES
-      ? 'usuarios'
-      : mode === INDICADOR_TO_USERS
-        ? 'indicadores'
-        : 'modulos'
-  );
-
   useEffect(() => {
     if (mode === USER_TO_INDICADORES) {
       setPlaceholder('Selecciona un usuario')
@@ -100,16 +104,56 @@ const FormRelationship = ({ handleCloseModal, mutate, isEdit, indicador }) => {
     } else if (mode === TEMAS_TO_USERS) {
       setPlaceholder('Selecciona un tema')
     }
+    setOptions([]);
   }, [mode])
 
   useEffect(() => {
     setListAlert(false)
   }, [dataList])
 
+  const fetchInformation = async () => {
+    if (mode === USER_TO_INDICADORES) {
+      const { data } = await getUsersGeneralInfo({
+        attributes: ['id', 'nombres', 'apellidoPaterno', 'apellidoMaterno'],
+      });
+      return data;
+    }
+    else if (mode === INDICADOR_TO_USERS) {
+      const { data } = await getIndicatorsGeneralInfo({
+        attributes: ['id', 'nombre'],
+      });
+      return data;
+    } else if (mode === TEMAS_TO_USERS) {
+      const { data } = await getModulesGeneralInfo({
+        attributes: ['id', 'temaIndicador'],
+      });
+      return data;
+    }
+  }
 
   const changeExpires = () => {
     setExpires(!expires)
-  }
+  };
+
+  useEffect(() => {
+    let active = true;
+
+    if (!loading) {
+      return undefined;
+    }
+
+    (async () => {
+      const { data } = await fetchInformation();
+      console.log(data);
+      if (active) {
+        setOptions([...data]);
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [loading]);
 
   return (
     <>
@@ -142,7 +186,7 @@ const FormRelationship = ({ handleCloseModal, mutate, isEdit, indicador }) => {
           noValidate
         >
           <DialogContent>
-            {itemList &&
+            {options &&
               <Controller
                 name='one'
                 control={control}
@@ -153,27 +197,40 @@ const FormRelationship = ({ handleCloseModal, mutate, isEdit, indicador }) => {
                     :
                     <Autocomplete
                       {...props}
+                      id="asynchronous-autocomplete"
                       type='text'
-                      disablePortal
-                      getOptionLabel={item => {
-                        return mode && mode === USER_TO_INDICADORES
-                          ? `${item.nombres} ${item.apellidoPaterno} ${item.apellidoMaterno || ''}`
-                          :
-                          mode === INDICADOR_TO_USERS
-                            ? item.nombre
-                            : item.temaIndicador
+                      open={open}
+                      onOpen={() => {
+                        setOpen(true);
+                      }}
+                      onClose={() => {
+                        setOpen(false);
                       }}
                       isOptionEqualToValue={(option, value) => option.id === value.id}
-                      options={[...itemList.data]}
+                      getOptionLabel={(option) => {
+                        return mode === USER_TO_INDICADORES
+                          ? `${option.nombres} ${option.apellidoPaterno}`
+                          :
+                          mode === INDICADOR_TO_USERS
+                            ? option.nombre
+                            : option.temaIndicador
+                      }}
+                      options={options}
                       onChange={(_, data) => props.onChange(data)}
+                      loading={loading}
                       renderInput={(params) => (
                         <TextField
                           {...params}
                           label={placeholder}
-                          error={!!error}
-                          fullWidth
-                          helperText={error?.message}
-                          key={mode}
+                          InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                              <React.Fragment>
+                                {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                {params.InputProps.endAdornment}
+                              </React.Fragment>
+                            ),
+                          }}
                         />
                       )}
                     />
@@ -261,7 +318,7 @@ const FormRelationship = ({ handleCloseModal, mutate, isEdit, indicador }) => {
       </DataContext.Provider>
     </>
   )
-}
+};
 
 export default FormRelationship;
 
