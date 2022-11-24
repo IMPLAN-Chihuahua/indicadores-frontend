@@ -83,7 +83,6 @@ export const Users = () => {
         setUsersQuantity(data.total);
         const inactive = data.data.filter(({ activo }) => activo === 'NO').length;
         setInactiveUsers(inactive);
-        console.log('ekeke')
       })
   }, [usersQuantity])
 

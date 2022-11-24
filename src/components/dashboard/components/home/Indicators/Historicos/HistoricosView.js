@@ -16,19 +16,22 @@ import Swal from 'sweetalert2';
 import FormDialog from '../../../../common/FormDialog';
 import FormHistoricos from './FormHistoricos';
 import PersonalLoader from '../../../../../common/PersonalLoader/PersonalLoader';
+import { getGlobalPerPage } from '../../../../../../utils/objects';
 
 export const HistoricosView = () => {
-  let perPage = localStorage.getItem('perPage') || 5;
   let totalPages = 1;
   let rowsHistoricos = [];
 
   const { id } = useParams();
 
-  const [perPaginationCounter, setPerPaginationCounter] = useState(perPage);
-  const [paginationCounter, setPaginationCounter] = useState(1);
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(getGlobalPerPage);
+
   const [order, setOrder] = useState('desc');
   const [sortBy, setSortBy] = useState('id');
   const [clickInfo, setClickInfo] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [rows, setRows] = useState([]);
 
 
   const [openModal, setOpenModal] = useState(false);
@@ -41,13 +44,23 @@ export const HistoricosView = () => {
   };
 
   const isMounted = useRef(true);
-  const { historicosList, isLoading, isError, mutate } = useHistoricos(
-    perPaginationCounter,
-    paginationCounter,
+
+  const { historicosList, isLoading, mutate } = useHistoricos(
+    perPage,
+    page,
     id,
     sortBy,
     order,
   );
+
+
+  useEffect(() => {
+    if (!historicosList) {
+      return;
+    }
+    setRows(historicosList.data);
+    setTotal(historicosList.total);
+  }, [historicosList]);
 
   const handleDeleteHistorico = ({ id }) => {
     Swal.fire({
@@ -109,7 +122,6 @@ export const HistoricosView = () => {
     }
   }, [historicosList]);
 
-  const editable = true;
   const headerClassName = "dt-theme--header";
   const sortable = true;
   const headerAlign = "center";
@@ -193,7 +205,11 @@ export const HistoricosView = () => {
             <Grid container className='bottom-panel'>
               <Grid item xs={12} md={6} className='bottom-panel-left'>
                 <Box className='left-item'>
-                  <HistoricosGraph historicosData={historicosList.data} ultimoValor={historicosList.indicadorLastValue} ultimaFecha={historicosList.indicadorLastUpdateDate} />
+                  {
+                    historicosList.data.length > 0 && (
+                      <HistoricosGraph historicosData={historicosList.data} ultimoValor={historicosList.indicadorLastValue} ultimaFecha={historicosList.indicadorLastUpdateDate} />
+                    )
+                  }
                 </Box>
               </Grid>
               <Grid item xs={12} md={6} className='bottom-panel-right'>
@@ -209,12 +225,14 @@ export const HistoricosView = () => {
               </Button>
             </Box>
             <DatagridTable
-              page={historicosList.page}
+              rows={rows}
               columns={columns}
-              rows={rowsHistoricosEdited}
-              perPage={historicosList.perPage}
-              total={historicosList.total}
               isLoading={isLoading}
+              page={page}
+              total={total}
+              perPage={perPage}
+              handlePageChange={newPage => setPage(newPage + 1)}
+              handlePageSizeChange={size => setPerPage(size)}
             />
 
             <FormDialog

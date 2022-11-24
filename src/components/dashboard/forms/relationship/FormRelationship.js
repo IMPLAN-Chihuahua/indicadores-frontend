@@ -138,7 +138,6 @@ const FormRelationship = ({ handleCloseModal, mutate, isEdit, indicador }) => {
 
     (async () => {
       const { data } = await fetchInformation();
-      console.log(data);
       if (active) {
         setOptions([...data]);
       }
