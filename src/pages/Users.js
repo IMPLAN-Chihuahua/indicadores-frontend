@@ -111,7 +111,7 @@ export const Users = () => {
       filterable: false,
       renderCell: params => (
         <Avatar
-          className='lasted-picture'
+          className='latest-picture'
           alt={params.row.nombres}
           src={params.row.urlImagen} />
       ),

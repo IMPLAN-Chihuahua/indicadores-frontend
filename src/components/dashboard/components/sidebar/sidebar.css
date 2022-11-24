@@ -1,10 +1,11 @@
 .sidebar {
   width: var(--sidebar-width);
   height: calc(100vh - var(--navbar-height));
-  background-color: var(--blue-50);
+  background-color: white;
   position: sticky;
   top: var(--navbar-height);
   color: var(--soft-black);
+  border-radius: 0px !important;
 }
 
 .sidebar-icon {
@@ -27,18 +28,21 @@
   display: inline-flex;
   align-items: flex-end;
   column-gap: 5px;
-  width: 100%;
   cursor: pointer;
+  width: 90%;
 }
 
 .sidebar-list-item a {
   cursor: pointer;
-  padding: .5rem 1rem;
+  padding: 0.5rem 1rem;
 }
 
 .sidebar-list-item:hover,
 .sidebar-link-active {
   background-color: var(--blue-100);
+  border-top-right-radius: 5px;
+  width: 90%;
+  border-bottom-right-radius: 5px;
 }
 
 @media (max-width: 820px) {

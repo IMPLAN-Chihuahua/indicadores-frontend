@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link, useMatch } from 'react-router-dom';
-import { IconButton } from '@mui/material';
+import { IconButton, Paper } from '@mui/material';
 import { Lock } from '@mui/icons-material';
 import HomeIcon from '@mui/icons-material/Home';
 import GroupIcon from '@mui/icons-material/Group';
@@ -8,9 +8,6 @@ import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import BubbleChartIcon from '@mui/icons-material/BubbleChart';
 import MenuIcon from '@mui/icons-material/Menu';
 import './sidebar.css'
-import { getCurrentUser } from '../../../../services/userService';
-import { getAuthHeaders } from '../../../../services/authService';
-import { useEffect } from 'react';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { isAdmin } from '../../../../utils/userValidator';
 
@@ -54,7 +51,7 @@ export const Sidebar = () => {
   ]
 
   return (
-    <div className={`sidebar ${isSidebarOpen && 'sidebar-min'}`}>
+    <Paper elevation={1} className={`sidebar ${isSidebarOpen && 'sidebar-min'}`}>
       <IconButton aria-label='menu' onClick={toggleSidebar} sx={{ marginLeft: '.5rem' }}>
         <MenuIcon />
       </IconButton>
@@ -68,7 +65,7 @@ export const Sidebar = () => {
           }
         </ul>
       </div>
-    </div>
+    </Paper>
   )
 };
 
@@ -81,7 +78,7 @@ const SidebarItem = (props) => {
         ((props.label === 'Autorización' || props.label === 'Usuarios') && !isAdmin(user)) ?
           <></>
           :
-          <li className='sidebar-list-item'>
+          <li className='sidebar-list-item' style={{ marginBottom: '3px' }}>
             <Link to={props.to} className={`sidebar-link ${match && 'sidebar-link-active'}`}>
               {props.icon}
               {!props.isSidebarOpen && <span>{props.label}</span>}

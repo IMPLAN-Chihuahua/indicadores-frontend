@@ -143,9 +143,9 @@ export const Modules = () => {
       filterable: false,
       renderCell: (params) => {
         return (
-          <Box className='lasted-picture'>
+          <Box className='latest-picture'>
             <Avatar
-              className='lasted-picture-hoverable'
+              className='latest-picture-hoverable'
               variant='rounded'
               src={params.row.urlImagen}
               alt={params.row.temaIndicador}

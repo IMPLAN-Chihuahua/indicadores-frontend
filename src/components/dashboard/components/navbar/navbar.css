@@ -1,5 +1,5 @@
 .navbar {
-    background-color: #263044;
+    background: var(--really-darker-gradient);
     color: white;
     height: var(--navbar-height);
     width: 100%;
@@ -15,6 +15,12 @@
     justify-content: space-between;
     padding: 0px 20px;
     height: 100%;
+    background-color: rgba(0,0,0,0.2);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0
 }
 
 .navbar-rigth-options {
@@ -32,8 +38,6 @@
 .navbar-option {
     margin: 0px 10px;
     padding: 10px 10px;
-    border-radius: 10px;
-    transition: all 0.2s ease-in-out;
 }
 
 .element {
@@ -49,7 +53,7 @@
     margin: 0;
     padding: 0;
     font-style: italic;
-    font-family: 'Ubuntu', sans-serif;
+    font-family: 'Roboto', sans-serif;
 }
 
 
@@ -62,10 +66,6 @@
 
 .navbar-option-close {
     cursor: pointer;
-}
-
-.navbar-option-close:hover {
-    text-decoration: underline;
 }
 
 .navbar-option-icon {
@@ -84,12 +84,8 @@
     margin-right: 10px;
     padding: 10px;
     border-radius: 10px;
-}
-
-.navbar-option:hover {
-    background-color: #1d2534;
-    transition: 1s;
-    cursor: default;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
 }
 
 @media (max-width: 650px) {
