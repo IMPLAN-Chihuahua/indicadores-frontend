@@ -17,8 +17,8 @@ const createRelation = async (id, data, type) => {
   return protectedApi.post(`/relation/create?relationType=${type}&id=${id}`, data);
 };
 
-const useRelationUsers = (id) => {
-  const { data, error, mutate } = useSWR(`/relation/indicador/${id}`, fetcher);
+const useRelationUsers = (id, page = 1, perPage = 5) => {
+  const { data, error, mutate } = useSWR(`/relation/indicador/${id}?page=${page}&perPage=${perPage}`, fetcher);
 
   return {
     indicador: data,

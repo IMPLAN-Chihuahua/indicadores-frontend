@@ -17,6 +17,7 @@ import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import './responsables.css';
 import Swal from 'sweetalert2';
+import { getGlobalPerPage } from '../../../../../utils/objects';
 
 const Relation = () => {
   const navigate = useNavigate();
@@ -26,6 +27,8 @@ const Relation = () => {
   const [editParams, setEditParams] = useState([]);
   const [action, setAction] = useState('NEW');
   const [relationData, setRelationData] = useState({});
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(getGlobalPerPage);
 
   const usersFetcher = async () => {
     const { data } = await getUsersThatDoesntHaveRelation(id)
@@ -37,7 +40,7 @@ const Relation = () => {
     setUsers(users);
   };
 
-  const { indicador, isLoading, hasError, mutate } = useRelationUsers(id);
+  const { indicador, isLoading, hasError, mutate } = useRelationUsers(id, page, perPage);
   const [openModal, setOpenModal] = useState(false);
 
   const handleOpenModal = (action) => {
@@ -255,9 +258,10 @@ const Relation = () => {
               rows={indicador?.data}
               columns={columns}
               total={indicador?.total}
-              page={1}
-              pageSize={10}
-              perPage={10}
+              page={page}
+              perPage={perPage}
+              handlePageChange={newPage => setPage(newPage + 1)}
+              handlePageSizeChange={size => setPerPage(size)}
             />
 
             <Box className='responsables-footer'>
