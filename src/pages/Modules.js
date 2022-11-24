@@ -5,7 +5,7 @@ import { useModules } from "../services/userService";
 import { Status } from "../components/dashboard/common/Status";
 import FormDialog from "../components/dashboard/common/FormDialog";
 import FormModel, { FORM_TEMA_ACTIONS } from "../components/dashboard/forms/model/FormModel";
-import { toggleTemaStatus } from "../services/moduleService";
+import { getModulesGeneralInfo, toggleTemaStatus } from "../services/moduleService";
 import { getGlobalPerPage } from "../utils/objects";
 import { Avatar, Box, DialogTitle, IconButton, Stack, Typography } from "@mui/material";
 import { parseDate } from "../utils/dateParser";
@@ -19,15 +19,33 @@ export const Modules = () => {
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState();
   const [perPage, setPerPage] = useState(getGlobalPerPage);
-  const { user } = useAuth();
 
   const { temas, isLoading, hasError, mutate } = useModules(perPage, page, searchModule);
 
   const [selectedTema, setSelectedTema] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [formTemaAction, setFormTemaAction] = useState('');
+  const [moduleQuantity, setModulesQuantity] = useState(0);
+  const [inactiveModules, setInactiveModules] = useState(0);
 
   const [rows, setRows] = useState([]);
+  const { user } = useAuth();
+
+
+  const fetchCount = () => {
+    getModulesGeneralInfo({
+      attributes: ['activo']
+    })
+      .then(({ data }) => {
+        setModulesQuantity(data.total);
+        const inactive = data.data.filter(({ activo }) => activo === 'NO').length;
+        setInactiveModules(inactive);
+      })
+  };
+
+  useEffect(() => {
+    fetchCount();
+  }, [moduleQuantity])
 
   const toggleStatus = (tema) => {
     showAlert({
@@ -47,7 +65,8 @@ export const Modules = () => {
             title: 'Estado actualizado exitosamente',
             text: `El estado de ${tema.temaIndicador} ha sido actualizado.`,
             icon: 'success'
-          })
+          });
+          fetchCount();
         }
       })
       .catch(err => {
@@ -246,8 +265,8 @@ export const Modules = () => {
 
   const dataModule = {
     topic: "modulo",
-    countEnable: Math.abs(temas?.total - temas?.totalInactivos) || 0,
-    countDisable: temas?.totalInactivos || 0,
+    countEnable: moduleQuantity || 0,
+    countDisable: inactiveModules || 0,
     setSearch: setSearchModule,
     searchValue: searchModule
   };

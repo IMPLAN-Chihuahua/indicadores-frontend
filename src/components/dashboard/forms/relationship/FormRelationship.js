@@ -17,12 +17,6 @@ const USER_TO_INDICADORES = 'INDICADORES_TO_USER';
 const INDICADOR_TO_USERS = 'USERS_TO_INDICADOR';
 const TEMAS_TO_USERS = 'TEMAS_TO_USERS';
 
-function sleep(delay = 0) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, delay);
-  });
-}
-
 const FormRelationship = ({ handleCloseModal, mutate, isEdit, indicador }) => {
   const [dataList, dispatch] = useReducer(dataReducer, [])
   const [mode, setMode] = useState(isEdit ? INDICADOR_TO_USERS : USER_TO_INDICADORES);
