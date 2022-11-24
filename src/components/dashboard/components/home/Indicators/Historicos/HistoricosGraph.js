@@ -23,15 +23,17 @@ ChartJS.register(
 );
 
 export const HistoricosGraph = ({ historicosData, ultimoValor, ultimaFecha }) => {
+
   const actualDate = new Date(ultimaFecha).getFullYear();
 
-  const orderedHistoricos = orderHistoricos(historicosData);
+  const orderedHistoricos = orderHistoricos([...historicosData]);
 
   const labels = orderedHistoricos.map(historico => {
     return historico.anio;
   });
 
   labels.push(actualDate);
+
   const data = {
     labels,
     datasets: [
@@ -53,20 +55,6 @@ export const HistoricosGraph = ({ historicosData, ultimoValor, ultimaFecha }) =>
 
   data.datasets[0].data.push(ultimoValor);
 
-  const options = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top',
-      },
-      title: {
-        display: true,
-        text: 'Nombre del indicador',
-      },
-      label: {
-        display: false,
-      },
-    },
-  };
+
   return <Line options={{ animation: false, animations: false, label: { display: false } }} data={data} />;
 }
