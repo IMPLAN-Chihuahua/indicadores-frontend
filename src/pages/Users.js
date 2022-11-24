@@ -3,7 +3,7 @@ import DatagridTable from "../components/dashboard/common/DatagridTable";
 import { DataHeader } from "../components/dashboard/common/DataHeader";
 import { Status } from "../components/dashboard/common/Status";
 import FormDialog from "../components/dashboard/common/FormDialog";
-import { toggleUserStatus, useUsers } from "../services/userService";
+import { getUsersGeneralInfo, toggleUserStatus, useUsers } from "../services/userService";
 import FormUser, { FORM_USER_ACTIONS } from "../components/dashboard/forms/user/FormUser";
 import { getGlobalPerPage } from "../utils/objects";
 import { Avatar, DialogTitle, IconButton, Stack, Typography } from "@mui/material";
@@ -22,6 +22,8 @@ export const Users = () => {
   const [openModal, setOpenModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [formUserAction, setFormUserAction] = useState('');
+  const [usersQuantity, setUsersQuantity] = useState(0);
+  const [inactiveUsers, setInactiveUsers] = useState(0);
 
   const [rows, setRows] = useState([]);
 
@@ -71,7 +73,19 @@ export const Users = () => {
         })
       })
       .finally(mutate)
-  }
+  };
+
+  useEffect(() => {
+    getUsersGeneralInfo({
+      attributes: ['activo']
+    })
+      .then(({ data }) => {
+        setUsersQuantity(data.total);
+        const inactive = data.data.filter(({ activo }) => activo === 'NO').length;
+        setInactiveUsers(inactive);
+        console.log('ekeke')
+      })
+  }, [usersQuantity])
 
   const editable = true;
   const sortable = true;
@@ -184,8 +198,8 @@ export const Users = () => {
 
   const dataUser = {
     topic: "usuario",
-    countEnable: (users?.total - users?.totalInactivos) || 0,
-    countDisable: users?.totalInactivos || 0,
+    countEnable: usersQuantity || 0,
+    countDisable: inactiveUsers || 0,
     setSearch: setSearchUser,
     searchValue: searchUser
   };

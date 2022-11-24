@@ -11,7 +11,7 @@ import { IconButton, Link, Typography } from "@mui/material";
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { parseDate } from "../utils/dateParser";
 import { showAlert } from "../utils/alert";
-import { toggleIndicadorStatus } from "../services/indicatorService";
+import { getIndicatorsGeneralInfo, toggleIndicadorStatus } from "../services/indicatorService";
 
 export const Indicators = () => {
   const navigate = useNavigate();
@@ -19,13 +19,29 @@ export const Indicators = () => {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(getGlobalPerPage);
   const [total, setTotal] = useState(0)
-  const { indicadores, isLoading, hasError, mutate } = useIndicators(perPage, page, searchIndicator);
+  const { indicadores, isLoading, mutate } = useIndicators(perPage, page, searchIndicator);
   const [isFormVisible, setFormVisible] = useState(false);
-  const handleOpenModal = () => setFormVisible(true);
-  const handleCloseModal = () => setFormVisible(false);
+  const [indicatorsQuantity, setIndicatorsQuantity] = useState(0);
+  const [inactiveIndicators, setInactiveIndicators] = useState(0);
 
-  const [changeData, setChangeData] = useState({});
+  const handleOpenModal = () => setFormVisible(true);
+
   const [rows, setRows] = useState([]);
+
+  const fetchCount = () => {
+    getIndicatorsGeneralInfo({
+      attributes: ['activo']
+    })
+      .then(({ data }) => {
+        setIndicatorsQuantity(data.total);
+        const inactive = data.data.filter(({ activo }) => activo === 'NO').length;
+        setInactiveIndicators(inactive);
+      })
+  };
+
+  useEffect(() => {
+    fetchCount();
+  }, [indicatorsQuantity])
 
   useEffect(() => {
     if (!indicadores) {
@@ -53,7 +69,8 @@ export const Indicators = () => {
             title: 'Estado actualizado exitosamente',
             text: `El estado de ${indicador.nombre} ha sido actualizado.`,
             icon: 'success'
-          })
+          });
+          fetchCount();
         }
       })
       .catch(err => {
@@ -67,7 +84,6 @@ export const Indicators = () => {
   }
 
   const editable = true;
-  const headerClassName = "dt-theme--header";
   const sortable = false;
   const headerAlign = "center";
   const align = "center";
@@ -188,8 +204,8 @@ export const Indicators = () => {
 
   const dataIndicator = {
     topic: "indicador",
-    countEnable: indicadores ? indicadores.total - indicadores.totalInactive : '',
-    countDisable: indicadores ? indicadores.totalInactive : '',
+    countEnable: indicatorsQuantity || 0,
+    countDisable: inactiveIndicators || 0,
     setSearch: setSearchIndicator,
     searchValue: searchIndicator
   };

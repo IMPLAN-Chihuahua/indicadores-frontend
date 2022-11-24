@@ -169,6 +169,7 @@ export const getUsersGeneralInfo = async ({ page, perPage, attributes, id, sortB
   const orderQuery = order ? `&order=${order}` : '';
   const pageQuery = page ? `&page=${page}` : '';
   const perPageQuery = perPage ? `&perPage=${perPage}` : '';
+
   const query = `${attributesQuery}${sortByQuery}${orderQuery}${pageQuery}${perPageQuery}`;
 
   return protectedApi.get(`/usuarios/info/general?b=0&${query}`);

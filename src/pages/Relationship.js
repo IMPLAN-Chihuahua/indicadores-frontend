@@ -10,6 +10,7 @@ import { getGlobalPerPage } from "../utils/objects";
 import { useNavigate } from "react-router-dom";
 import PersonIcon from '@mui/icons-material/Person';
 import AddIcon from '@mui/icons-material/Add';
+import { getIndicatorsGeneralInfo } from "../services/indicatorService";
 
 export const Relationship = () => {
   const [searchIndicator, setSearchIndicator] = useState('');
@@ -18,9 +19,27 @@ export const Relationship = () => {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(getGlobalPerPage);
   const [total, setTotal] = useState(0);
-  const { indicadores, isLoading, hasError, mutate } = useIndicadorUsuarios(perPage, page, searchIndicator);
+  const [indicatorsQuantity, setIndicatorsQuantity] = useState(0);
+  const [inactiveIndicators, setInactiveIndicators] = useState(0);
+  const { indicadores, isLoading, mutate } = useIndicadorUsuarios(perPage, page, searchIndicator);
   const [rows, setRows] = useState([]);
   const navigate = useNavigate();
+
+  const fetchCount = () => {
+    getIndicatorsGeneralInfo({
+      attributes: ['activo']
+    })
+      .then(({ data }) => {
+        setIndicatorsQuantity(data.total);
+        const inactive = data.data.filter(({ activo }) => activo === 'NO').length;
+        setInactiveIndicators(inactive);
+      })
+  };
+
+  useEffect(() => {
+    fetchCount();
+  }, [indicatorsQuantity])
+
 
   const [openModal, setOpenModal] = useState(false);
   const handleOpenModal = (e) => {
@@ -167,8 +186,8 @@ export const Relationship = () => {
 
   const dataIndicator = {
     topic: "registro",
-    countEnable: 0,
-    countDisable: 0,
+    countEnable: indicatorsQuantity || 0,
+    countDisable: inactiveIndicators || 0,
     setSearch: setSearchIndicator,
     searchValue: searchIndicator
   };
