@@ -154,23 +154,25 @@ const FormRelationship = ({ handleCloseModal, mutate, isEdit, indicador }) => {
         <DialogTitle>
           <div className='auth-title'>
             <div className='auth-title-left'>
-              Autorizacion
+              Autorizacion a indicadores
             </div>
             <div className='auth-title-right'>
               {
                 isEdit ?
                   <></>
                   :
-                  <button
-                    className={`auth-title-btn${(mode === USER_TO_INDICADORES) ? '-active' : ''}`}
-                    onClick={() => handleChangeMode(USER_TO_INDICADORES)}>Usuario a indicadores</button>
+                  <>
+                    <button
+                      className={`auth-title-btn${(mode === USER_TO_INDICADORES) ? '-active' : ''}`}
+                      onClick={() => handleChangeMode(USER_TO_INDICADORES)}>Usuario a indicadores</button>
+                    <button
+                      className={`auth-title-btn${(mode === TEMAS_TO_USERS) ? '-active' : ''}`}
+                      onClick={() => handleChangeMode(TEMAS_TO_USERS)}>Temas de interés a usuarios</button>
+                  </>
               }
               <button
                 className={`auth-title-btn${(mode === INDICADOR_TO_USERS) ? '-active' : ''}`}
                 onClick={() => handleChangeMode(INDICADOR_TO_USERS)}>Indicador a usuarios</button>
-              <button
-                className={`auth-title-btn${(mode === TEMAS_TO_USERS) ? '-active' : ''}`}
-                onClick={() => handleChangeMode(TEMAS_TO_USERS)}>Temas de interés a usuarios</button>
             </div>
           </div>
         </DialogTitle>
