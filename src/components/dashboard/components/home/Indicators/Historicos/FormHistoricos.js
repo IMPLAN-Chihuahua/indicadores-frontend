@@ -8,7 +8,8 @@ import Swal from 'sweetalert2';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../../../../../../contexts/AuthContext';
 
-const FormHistoricos = ({ type, anio, valor, fuente, id, handleCloseModal, mutate }) => {
+const FormHistoricos = (props) => {
+  const { type, anio, valor, fuente, id, handleCloseModal, mutate } = props;
   const idIndicador = useParams();
   const { user } = useAuth();
   const methods = useForm({
@@ -100,10 +101,11 @@ const FormHistoricos = ({ type, anio, valor, fuente, id, handleCloseModal, mutat
 
   return (
     <>
-      <DialogTitle>{type === 1 ? 'Editar' : "Agregar"} histórico</DialogTitle>
+      <DialogTitle>{type === 1 ? 'Editar' : "Agregar"} Histórico</DialogTitle>
       <FormProvider {...methods}>
         <DialogContent>
-          <Box sx={{ p: 2 }}
+          <Box 
+            mt={1}
             component='form'
             onSubmit={methods.handleSubmit(onSubmit)}
             noValidate
@@ -119,7 +121,6 @@ const FormHistoricos = ({ type, anio, valor, fuente, id, handleCloseModal, mutat
                 <TextField
                   label='Año'
                   variant='outlined'
-                  size='small'
                   required
                   error={!!error}
                   helperText={error ? error.message : null}
@@ -140,7 +141,6 @@ const FormHistoricos = ({ type, anio, valor, fuente, id, handleCloseModal, mutat
                 <TextField
                   label='Valor'
                   variant='outlined'
-                  size='small'
                   required
                   error={!!error}
                   helperText={error ? error.message : null}
@@ -161,7 +161,6 @@ const FormHistoricos = ({ type, anio, valor, fuente, id, handleCloseModal, mutat
                 <TextField
                   label='Fuente de información'
                   variant='outlined'
-                  size='small'
                   required
                   error={!!error}
                   helperText={error ? error.message : null}
@@ -175,7 +174,7 @@ const FormHistoricos = ({ type, anio, valor, fuente, id, handleCloseModal, mutat
             <Box
               sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end', gap: 1 }}
             >
-              <Button variant='outlined' onClick={() => {
+              <Button variant='text' onClick={() => {
                 handleCloseModal()
               }}>
                 Cancelar

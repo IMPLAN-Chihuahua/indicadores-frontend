@@ -1,10 +1,12 @@
 .indicator {
+}
+
+.indicator-background {
 	background: #712370;
 	background: linear-gradient(90deg, #511750 0%, #D12D6A 100%);
 	background: -moz-linear-gradient(90deg, #511750 0%, #D12D6A 100%);
 	background: -webkit-linear-gradient(90deg, #511750 0%, #D12D6A 100%);
 	filter: progid: DXImageTransform.Microsoft.gradient(startColorstr="#712370", endColorstr="#D12D6A", GradientType=1);
-	padding: 0 0 0 0;
 }
 
 .nav-indicator {

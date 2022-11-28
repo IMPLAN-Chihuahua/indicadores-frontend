@@ -10,6 +10,7 @@ import { Avatar, DialogTitle, IconButton, Stack, Typography } from "@mui/materia
 import EditIcon from '@mui/icons-material/Edit';
 import { parseDate } from "../utils/dateParser";
 import { showAlert } from "../utils/alert";
+import useIsMounted from "../hooks/useIsMounted";
 
 
 export const Users = () => {
@@ -18,7 +19,7 @@ export const Users = () => {
   const [searchUser, setSearchUser] = useState('');
   const [total, setTotal] = useState(0);
   const { users, isLoading, mutate } = useUsers(perPage, page, searchUser);
-
+  const isMounted = useIsMounted();
   const [openModal, setOpenModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [formUserAction, setFormUserAction] = useState('');
@@ -80,11 +81,13 @@ export const Users = () => {
       attributes: ['activo']
     })
       .then(({ data }) => {
-        setUsersQuantity(data.total);
-        const inactive = data.data.filter(({ activo }) => activo === 'NO').length;
-        setInactiveUsers(inactive);
+        if (isMounted()) {
+          setUsersQuantity(data.total);
+          const inactive = data.data.filter(({ activo }) => activo === 'NO').length;
+          setInactiveUsers(inactive);
+        }
       })
-  }, [usersQuantity])
+  }, [usersQuantity, isMounted])
 
   const editable = true;
   const sortable = true;
@@ -191,9 +194,11 @@ export const Users = () => {
     if (!users) {
       return;
     }
-    setRows(users.data);
-    setTotal(users.total);
-  }, [users]);
+    if (isMounted()) {
+      setRows(users.data);
+      setTotal(users.total);
+    }
+  }, [users, isMounted]);
 
   const dataUser = {
     topic: "usuario",
