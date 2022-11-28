@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link, useMatch } from 'react-router-dom';
-import { IconButton, Paper } from '@mui/material';
+import { Box, IconButton, Paper } from '@mui/material';
 import { Lock } from '@mui/icons-material';
 import HomeIcon from '@mui/icons-material/Home';
 import GroupIcon from '@mui/icons-material/Group';
@@ -51,7 +51,7 @@ export const Sidebar = () => {
   ]
 
   return (
-    <Paper elevation={1} className={`sidebar ${isSidebarOpen && 'sidebar-min'}`}>
+    <Box sx={{ borderRight: 1, borderColor: 'divider' }} className={`sidebar ${isSidebarOpen && 'sidebar-min'}`}>
       <IconButton aria-label='menu' onClick={toggleSidebar} sx={{ marginLeft: '.5rem' }}>
         <MenuIcon />
       </IconButton>
@@ -65,7 +65,7 @@ export const Sidebar = () => {
           }
         </ul>
       </div>
-    </Paper>
+    </Box>
   )
 };
 
