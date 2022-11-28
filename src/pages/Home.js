@@ -9,7 +9,7 @@ export const Home = () => {
     <Box
       sx={{
         backgroundColor: 'var(--gray-95)',
-        p: { xs: 1, md: 3 }
+        p: { xs: 1, md: 2 }
       }}
       className='fill-remaining-space'
     >

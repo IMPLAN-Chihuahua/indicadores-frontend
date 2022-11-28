@@ -6,7 +6,7 @@ import FormDialog from "../components/dashboard/common/FormDialog";
 import { getUsersGeneralInfo, toggleUserStatus, useUsers } from "../services/userService";
 import FormUser, { FORM_USER_ACTIONS } from "../components/dashboard/forms/user/FormUser";
 import { getGlobalPerPage } from "../utils/objects";
-import { Avatar, DialogTitle, IconButton, Stack, Typography } from "@mui/material";
+import { Avatar, Box, DialogTitle, IconButton, Stack, Typography } from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit';
 import { parseDate } from "../utils/dateParser";
 import { showAlert } from "../utils/alert";
@@ -209,7 +209,7 @@ export const Users = () => {
   };
 
   return (
-    <>
+    <Box display='flex' flexDirection='column' p={2} height='100%'>
       <DataHeader
         isLoading={isLoading}
         data={dataUser}
@@ -238,6 +238,6 @@ export const Users = () => {
           selectedUser={selectedUser}
         />
       </FormDialog>
-    </>
+    </Box>
   );
 };
