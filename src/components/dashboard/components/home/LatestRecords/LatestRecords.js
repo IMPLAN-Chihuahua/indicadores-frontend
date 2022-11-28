@@ -66,7 +66,7 @@ export const LatestRecords = () => {
     <Box mt={3}>
       <Grid container spacing={4}>
         <Grid item xs={12} md={6} lg={5}>
-          <Paper elevation={1} sx={{ p: 2 }}>
+          <Paper variant='outlined' sx={{ p: 2 }}>
             <Typography variant='h6'>Usuarios Recientes</Typography>
             {
               users.length > 0 ?
@@ -115,7 +115,7 @@ export const LatestRecords = () => {
 
         <Grid item xs={12} md={6} lg={7} className='latest-right-box'>
           <Stack direction='column' spacing={3}>
-            <Paper sx={{ p: 2 }}>
+            <Paper sx={{ p: 2 }} variant='outlined'>
               <Typography variant='h6'>Temas de Interés</Typography>
               {
                 modules.slice((modules.length - 3), modules.length).reverse().map((modules, i) => {
@@ -143,7 +143,7 @@ export const LatestRecords = () => {
               }
             </Paper>
 
-            <Paper sx={{ p: 2 }}>
+            <Paper sx={{ p: 2 }} variant='outlined'>
               <Typography variant='h6'>Indicadores</Typography>
               {
                 indicators.slice((indicators.length - 3), indicators.length).reverse().map((indicator, i) => {

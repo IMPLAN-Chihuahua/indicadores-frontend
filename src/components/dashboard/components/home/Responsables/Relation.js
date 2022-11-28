@@ -1,5 +1,5 @@
-import { Box, Button, TextField, Typography } from '@mui/material';
-import React from 'react'
+import { Box, Button, IconButton, Stack, TextField, Tooltip, Typography } from '@mui/material';
+import React, { useCallback } from 'react'
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom'
@@ -18,6 +18,8 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import './responsables.css';
 import Swal from 'sweetalert2';
 import { getGlobalPerPage } from '../../../../../utils/objects';
+import useIsMounted from '../../../../../hooks/useIsMounted';
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 
 const Relation = () => {
   const navigate = useNavigate();
@@ -29,16 +31,19 @@ const Relation = () => {
   const [relationData, setRelationData] = useState({});
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(getGlobalPerPage);
+  const isMounted = useIsMounted();
 
   const usersFetcher = async () => {
     const { data } = await getUsersThatDoesntHaveRelation(id)
     return data;
   };
 
-  const setUsersArray = async () => {
+  const setUsersArray = useCallback(async () => {
     const users = await usersFetcher();
-    setUsers(users);
-  };
+    if (isMounted()) {
+      setUsers(users);
+    }
+  }, [isMounted]);
 
   const { indicador, isLoading, hasError, mutate } = useRelationUsers(id, page, perPage);
   const [openModal, setOpenModal] = useState(false);
@@ -57,7 +62,7 @@ const Relation = () => {
 
   useEffect(() => {
     setUsersArray();
-  }, []);
+  }, [setUsersArray]);
 
   const handleDelete = async ({ id }) => {
     Swal.fire({
@@ -95,7 +100,7 @@ const Relation = () => {
     handleOpenModal('EDIT');
   };
 
-  const headerClassName = "dt-theme--header";
+  const headerClassName = "";
   const sortable = false;
   const headerAlign = "center";
   const align = "center";
@@ -106,8 +111,8 @@ const Relation = () => {
       flex: 0.1,
       headerClassName,
       sortable,
-      headerAlign,
-      align,
+      headerAlign: 'right',
+      align: 'right',
       hide: true
     },
     {
@@ -117,8 +122,6 @@ const Relation = () => {
       minWidth: 150,
       headerClassName,
       sortable,
-      headerAlign,
-      align: 'center',
       renderCell: (params) => {
         return (
           <Typography>
@@ -134,8 +137,6 @@ const Relation = () => {
       minWidth: 50,
       headerClassName,
       sortable,
-      headerAlign,
-      align,
       renderCell: (params) => {
         return (
           <Typography>
@@ -151,8 +152,6 @@ const Relation = () => {
       minWidth: 50,
       headerClassName,
       sortable,
-      headerAlign,
-      align,
       renderCell: (params) => {
         return (
           <Typography>
@@ -164,12 +163,10 @@ const Relation = () => {
     {
       field: "expires",
       headerName: "¿Expira?",
-      flex: 0.5,
-      minWidth: 100,
+      flex: 0.2,
+      minWidth: 50,
       headerClassName,
       sortable,
-      headerAlign,
-      align,
       renderCell: (params) => {
         return (<Status status={params.row.expires} type='expires' />);
       },
@@ -184,28 +181,24 @@ const Relation = () => {
       sortable,
       headerAlign,
       align,
-      renderCell: (params) => {
-        return (
-          <div className="dt-btn-container-tri">
-            <span
-              className="dt-action-delete"
-              onClick={() => {
-                handleDelete(params.row);
-              }}
+      renderCell: (params) => (
+        <Stack direction='row'>
+          <Tooltip title='Eliminar autorización'>
+            <IconButton
+              onClick={() => handleDelete(params.row)}
             >
               <DeleteForeverIcon />
-            </span>
-            <span
-              className="dt-action-edit"
-              onClick={() => {
-                handleEdit(params.row);
-              }}
+            </IconButton>
+          </Tooltip>
+          <Tooltip title='Editar autorización'>
+            <IconButton 
+              onClick={() => handleEdit(params.row)}
             >
               <ModeEditIcon />
-            </span>
-          </div>
-        );
-      },
+            </IconButton>
+          </Tooltip>
+        </Stack>
+      )
     },
   ];
 
@@ -213,77 +206,85 @@ const Relation = () => {
     setParams([]);
   }
 
+  if (isLoading) {
+    return <PersonalLoader />;
+  }
+
   return (
-    <>
-      {
-        !isLoading ?
-          <>
-            <Box className='responsables-header '>
-              <h1>Indicador: {indicador?.nombre}</h1>
-              <Box className='responsables-header-button'>
-                <Autocomplete
-                  multiple
-                  id="checkboxes-tags-demo"
-                  options={users}
-                  disableCloseOnSelect
-                  onChange={(event, value) => {
-                    setParams(value);
-                  }}
-                  value={params}
-                  filterSelectedOptions
-                  getOptionLabel={(option) => option.nombres}
-                  renderOption={(props, option, { selected }) => (
-                    <li {...props}>
-                      <Checkbox
-                        icon={icon}
-                        checkedIcon={checkedIcon}
-                        style={{ marginRight: 8 }}
-                        checked={selected}
-                      />
-                      {option.nombres}
-                    </li>
-                  )}
-                  style={{ width: 500 }}
-                  renderInput={(params) => (
-                    <TextField {...params} variant="outlined" label="Usuarios" placeholder="Usuarios" />
-                  )}
-                />
-                <Box className='responsables-button'>
-                  <Button variant='contained' disabled={params.length === 0 ? true : false} onClick={() => { handleOpenModal('NEW'); }}>Agregar</Button>
-                </Box>
-              </Box>
-            </Box>
-
-            <DatagridTable
-              rows={indicador?.data}
-              columns={columns}
-              total={indicador?.total}
-              page={page}
-              perPage={perPage}
-              handlePageChange={newPage => setPage(newPage + 1)}
-              handlePageSizeChange={size => setPerPage(size)}
-            />
-
-            <Box className='responsables-footer'>
-              <Button variant='contained'
-                onClick={() => {
-                  clearUsersSelectedParams();
-                  navigate(`/autorizacion`, [navigate])
-                }}
-              >Cancelar</Button>
-            </Box>
-
-            <FormDialog
-              open={openModal}
-              handleClose={() => setOpenModal(false)}
+    <Box display='flex' flexDirection='column' height='100%' p={2}>
+      <Stack justifyContent='space-between' direction='row' justifySelf='flex-start'>
+        <Box display='flex' alignItems='center'>
+          <Tooltip title='Regresar'>
+            <IconButton
+              sx={{ border: 1, borderColor: 'divider', mr: 1, backgroundColor: 'white' }}
+              onClick={() => {
+                clearUsersSelectedParams();
+                navigate(-1);
+              }}
             >
-              <FormDuration users={action === 'NEW' ? params : editParams} handleCloseModal={handleCloseModal} setUsersArray={setUsersArray} mutate={mutate} clearUsersSelectedParams={clearUsersSelectedParams} action={action} relationData={relationData} />
-            </FormDialog>
-          </>
-          :
-          <PersonalLoader color="#1976D2" />
-      }
-    </>
+              <NavigateBeforeIcon fontSize='large' />
+            </IconButton>
+          </Tooltip>
+          <Typography variant='h4'>Indicador: {indicador?.nombre}</Typography>
+        </Box>
+        <Box className='responsables-header-button'>
+          <Autocomplete
+            multiple
+            id="checkboxes-tags-demo"
+            options={users}
+            disableCloseOnSelect
+            onChange={(event, value) => {
+              setParams(value);
+            }}
+            value={params}
+            filterSelectedOptions
+            getOptionLabel={(option) => option.nombres}
+            renderOption={(props, option, { selected }) => (
+              <li {...props}>
+                <Checkbox
+                  icon={icon}
+                  checkedIcon={checkedIcon}
+                  style={{ marginRight: 8 }}
+                  checked={selected}
+                />
+                {option.nombres}
+              </li>
+            )}
+            style={{ width: 500 }}
+            renderInput={(params) => (
+              <TextField {...params} variant="outlined" label="Usuarios" placeholder="Usuarios" />
+            )}
+          />
+          <Box className='responsables-button'>
+            <Button variant='contained' disabled={params.length === 0 ? true : false} onClick={() => { handleOpenModal('NEW'); }}>Agregar</Button>
+          </Box>
+        </Box>
+      </Stack>
+
+      <DatagridTable
+        rows={indicador?.data}
+        columns={columns}
+        total={indicador?.total}
+        page={page}
+        perPage={perPage}
+        handlePageChange={newPage => setPage(newPage + 1)}
+        handlePageSizeChange={size => setPerPage(size)}
+      />
+      <FormDialog
+        open={openModal}
+        handleClose={() => setOpenModal(false)}
+      >
+        <FormDuration
+          users={action === 'NEW' ? params : editParams}
+          handleCloseModal={handleCloseModal}
+          setUsersArray={setUsersArray}
+          mutate={mutate}
+          clearUsersSelectedParams={clearUsersSelectedParams}
+          action={action}
+          relationData={relationData}
+        />
+      </FormDialog>
+    </Box>
   )
 }
 

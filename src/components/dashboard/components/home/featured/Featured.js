@@ -67,7 +67,7 @@ export const Featured = () => {
             stats.map(({ id, title, enable, color, icon }) => {
               return (
                 <Grid item xs={12} md={4} key={id}>
-                  <Paper elevation={1} sx={{height: '120px', position: 'relative'}}>
+                  <Paper variant='outlined' sx={{height: '120px', position: 'relative'}}>
                     <Box className="featured-item-values featured-item-values-top">
                       <Typography align="left" variant="subtitle1" p={1}>{title}</Typography>
                       <div className="featured-circle-icon" style={{ backgroundColor: color }}>
