@@ -271,7 +271,7 @@ export const Modules = () => {
     searchValue: searchModule
   };
   return (
-    <>
+    <Box display='flex' flexDirection='column' p={2} height='100%'>
       <DataHeader
         data={dataModule}
         handleOpenModal={handleNew}
@@ -295,6 +295,6 @@ export const Modules = () => {
         <DialogTitle>{formTemaAction} Tema de Interés</DialogTitle>
         <FormModel action={formTemaAction} selectedTema={selectedTema} handleCloseModal={handleCloseModal} />
       </FormDialog>
-    </>
+    </Box>
   );
 };

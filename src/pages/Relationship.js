@@ -4,13 +4,17 @@ import DatagridTable from "../components/dashboard/common/DatagridTable";
 import { DataHeader } from "../components/dashboard/common/DataHeader";
 import { useIndicadorUsuarios } from "../services/usuarioIndicadorService";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import FormDialog from "../components/dashboard/common/FormDialog";
 import FormRelationship from "../components/dashboard/forms/relationship/FormRelationship";
 import { getGlobalPerPage } from "../utils/objects";
 import { useNavigate } from "react-router-dom";
 import PersonIcon from '@mui/icons-material/Person';
 import AddIcon from '@mui/icons-material/Add';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { getIndicatorsGeneralInfo } from "../services/indicatorService";
+import { Box, IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { parseDate } from "../utils/dateParser";
 
 export const Relationship = () => {
   const [searchIndicator, setSearchIndicator] = useState('');
@@ -67,7 +71,7 @@ export const Relationship = () => {
   }, [indicadores]);
 
   const editable = true;
-  const headerClassName = "dt-theme--header";
+  const headerClassName = "";
   const sortable = false;
   const headerAlign = "center";
   const align = "center";
@@ -81,8 +85,8 @@ export const Relationship = () => {
       editable,
       headerClassName,
       sortable,
-      headerAlign,
-      align,
+      headerAlign: 'right',
+      align: 'right',
       hide: true,
     },
     {
@@ -93,45 +97,27 @@ export const Relationship = () => {
       editable,
       headerClassName,
       sortable,
-      headerAlign,
-      align,
-      renderCell: (params) => {
-        return (
-          <span className="dt-theme--text">{params.row.nombre}</span>
-        );
-      },
     },
     {
       field: "count",
       headerName: "Cantidad de usuarios asignados",
-      flex: 1,
+      flex: 0.5,
       minWidth: 150,
       editable,
       headerClassName,
       sortable,
-      headerAlign,
-      align,
-      renderCell: (params) => {
-        return (
-          <span className="dt-theme--text">{params.row.count}</span>
-        );
-      },
+      headerAlign: 'right',
+      align: 'right',
     },
     {
       field: "owner",
       headerName: "Responsable del indicador",
-      flex: 1,
+      flex: 0.5,
       minWidth: 150,
       editable,
       headerClassName,
       sortable,
-      headerAlign,
-      align,
-      renderCell: (params) => {
-        return (
-          <span className="dt-theme--text">{params.row.owner}</span>
-        );
-      },
+      renderCell: params => params.row.owner
     },
 
     {
@@ -142,8 +128,7 @@ export const Relationship = () => {
       editable,
       headerClassName,
       sortable,
-      headerAlign,
-      align,
+      renderCell: params => parseDate(params.row.updatedAt)
     },
     {
       field: "actions",
@@ -156,31 +141,23 @@ export const Relationship = () => {
       headerAlign,
       align,
       filterable,
-      renderCell: (params) => {
-        return (
-          <div className="dt-btn-container-tri">
-            <span
-              className="dt-action-edit"
-              title="Ver usuarios del indicador"
-              onClick={() => {
-                navigate(`/autorizacion/indicador/${params.id}`, [navigate])
-              }}
+      renderCell: params => (
+        <Stack direction='row'>
+          <Tooltip title={`Agregar usuarios responsables a ${params.row.nombre}`}>
+            <IconButton onClick={() => handleOpenModal(params.row)}>
+              <GroupAddIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={`Ver usuarios asignados a ${params.row.nombre}`}>
+            <IconButton
+              sx={{ border: 1, borderColor: 'divider' }}
+              onClick={() => navigate(`/autorizacion/indicador/${params.id}`, [navigate])}
             >
-              <PersonIcon />
-            </span>
-            <span
-              className="dt-action-edit"
-              title="Agregar usuarios responsables"
-              onClick={() => {
-                handleOpenModal(params.row);
-              }}
-            >
-              <AddIcon />
-            </span>
-          </div>
-
-        );
-      },
+              <NavigateNextIcon />
+            </IconButton>
+          </Tooltip>
+        </Stack>
+      )
     },
   ];
 
@@ -193,7 +170,7 @@ export const Relationship = () => {
   };
 
   return (
-    <>
+    <Box display='flex' flexDirection='column' p={2} height='100%'>
       <DataHeader
         data={dataIndicator}
         handleOpenModal={() => handleOpenModal()}
@@ -218,6 +195,6 @@ export const Relationship = () => {
       >
         <FormRelationship data={clickInfo} handleCloseModal={handleCloseModal} mutate={mutate} isEdit={isEdit} indicador={indicador} />
       </FormDialog>
-    </>
+    </Box>
   );
 };

@@ -188,7 +188,7 @@ export const GeneralView = () => {
 				<PersonalLoader />
 			)
 			: (
-				<Box sx={{ flex: '1 1 auto', overflowY: 'scroll', height: '500px' }} className='indicator'>
+				<Box sx={{ flex: '1 1 auto', overflowY: 'scroll', height: '500px' }}>
 					<FormProvider {...methods}>
 						<Box className='general-view-body'
 							component='form'
@@ -303,7 +303,7 @@ export const GeneralView = () => {
 								</Paper>
 							</Grid>
 
-							<Grid container p={2} columnGap={3}>
+							<Grid container p={3} columnGap={3} pt={1}>
 								{/* Sección izquierda que contiene la información del indicador */}
 								<Paper component={Grid} item xs={12} md={4} py={3} px={2} mb={{ xs: 2, md: 0 }}>
 									<Typography variant='h5' mb={2}>Información básica</Typography>

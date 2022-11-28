@@ -7,8 +7,8 @@ import FormDialog from "../components/dashboard/common/FormDialog";
 import { FormIndicador } from "../components/dashboard/forms/indicador/FormIndicador";
 import { useNavigate } from 'react-router-dom';
 import { getGlobalPerPage } from "../utils/objects";
-import { IconButton, Link, Typography } from "@mui/material";
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import { Box, IconButton, Link, Typography } from "@mui/material";
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { parseDate } from "../utils/dateParser";
 import { showAlert } from "../utils/alert";
 import { getIndicatorsGeneralInfo, toggleIndicadorStatus } from "../services/indicatorService";
@@ -196,7 +196,7 @@ export const Indicators = () => {
           }}
           onClick={() => navigate(`/indicadores/${params.row.id}`)}
         >
-          <KeyboardArrowRightIcon />
+          <NavigateNextIcon />
         </IconButton>
       )
     },
@@ -211,7 +211,7 @@ export const Indicators = () => {
   };
 
   return (
-    <>
+    <Box display='flex' flexDirection='column' p={2} height='100%'>
       <DataHeader
         data={dataIndicator}
         handleOpenModal={handleOpenModal}
@@ -241,6 +241,6 @@ export const Indicators = () => {
           </FormDialog>
         )
       }
-    </>
+    </Box>
   );
 };

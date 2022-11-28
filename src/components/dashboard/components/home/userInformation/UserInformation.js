@@ -27,7 +27,7 @@ export const UserInformation = () => {
       <Paper
         component={Stack}
         direction={{ md: 'row', xs: 'column' }}
-        elevation={1}
+        variant='outlined'
         sx={{
           mb: 3,
           p: 2,
