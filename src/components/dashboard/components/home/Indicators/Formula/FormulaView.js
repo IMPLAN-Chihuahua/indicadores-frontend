@@ -348,20 +348,23 @@ const FormulaView = () => {
                   md
                   backgroundColor='white'
                   padding={3}
-                  borderRadius='4px'>
-                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                    <Button
-                      variant='contained'
-                      onClick={handleAddVariable}>
-                      Agregar Variable
-                    </Button>
-                  </div>
-                  <VariableTable
-                    variables={formula.variables || []}
-                    handleDelete={handleVariableDelete}
-                    handleUpdate={handleVariableUpdate}
-                    isFormula={formula && formula?.isFormula === 'SI'}
-                  />
+                  borderRadius='4px'
+                  position='relative'
+                >
+                  <Button
+                    variant='contained'
+                    display='block'
+                    onClick={handleAddVariable}>
+                    Agregar Variable
+                  </Button>
+                  <Box overflow='scroll'>
+                    <VariableTable
+                      variables={formula.variables || []}
+                      handleDelete={handleVariableDelete}
+                      handleUpdate={handleVariableUpdate}
+                      isFormula={formula && formula?.isFormula === 'SI'}
+                    />
+                  </Box>
                 </Paper>
               </Grid >
             )

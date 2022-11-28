@@ -4,18 +4,14 @@
 	background: -moz-linear-gradient(90deg, #511750 0%, #D12D6A 100%);
 	background: -webkit-linear-gradient(90deg, #511750 0%, #D12D6A 100%);
 	filter: progid: DXImageTransform.Microsoft.gradient(startColorstr="#712370", endColorstr="#D12D6A", GradientType=1);
-	padding: 0 0 1% 0;
+	padding: 0 0 0 0;
 }
 
 .nav-indicator {
-	color: white;
 	font-weight: bold;
 	display: flex;
-	flex-direction: column;
-	align-items: center;
+	align-items: stretch;
 	justify-content: space-evenly;
-	padding: 5%;
-	gap: 30px;
 }
 
 .information-card {
@@ -31,7 +27,6 @@
 
 .information-card-actions {
 	margin-top: 0 !important;
-	margin-left: 2%;
 	padding: 0 !important;
 }
 
@@ -61,14 +56,18 @@
 }
 
 .indicador-icon {
-	color: rgba(154, 148, 148, 0.429) !important;
-	font-size: 40px !important;
+	color: var(--blue-200) !important;
+	opacity: 0.2;
+	font-size: 200px !important;
+	position: absolute;
+	right: 0;
+	top: 0;
 }
 
 .tendencia-actual {
 	display: flex;
-	justify-content: space-around;
 	align-items: center;
+	text-align: center;
 }
 
 .tendencia-ascendente {
@@ -86,10 +85,7 @@
 .body-left {
 	display: flex;
 	flex-direction: column;
-	align-items: center;
 	justify-content: space-around;
-	background: white;
-	box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 20px, rgba(0, 0, 0, 0.22) 0px 15px 12px;
 	border-radius: 10px;
 	margin-left: 10%;
 	height: 100%;
@@ -153,15 +149,6 @@
 	-moz-animation: AnimationName 10s ease infinite;
 	animation: AnimationName 10s ease infinite;
 }
-
-.indicator-owner {
-	display: flex;
-	flex-direction: row;
-	justify-content: center;
-	align-items: center;
-	padding: 5vh 0 5vh 0;
-}
-
 
 @media (max-width: 900px) {
 	.body-left {

@@ -29,7 +29,7 @@ export const DataHeader = ({ data, handleOpenModal }) => {
   }, [])
 
   return (
-    <Box position='sticky' maxWidth='100%' mb={2} overflow='hide' className='dh-container'>
+    <Box position='sticky' maxWidth='100%' mb={2} overflow='hide'>
       <Paper component={Grid} container pb={2} pt={2} variant='outlined'>
         <Grid item xs={12} md={3} className='dh-counters'>
           <Box className='dh-count'>

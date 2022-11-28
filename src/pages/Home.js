@@ -10,7 +10,7 @@ export const Home = () => {
       flex: '1 1 auto',
       overflowY: 'scroll',
       backgroundColor: 'var(--gray-95)',
-      p: 3
+      p: { xs: 1, md: 3 }
     }}>
       <UserInformation />
       <Featured />

@@ -68,8 +68,8 @@ const LoginComponent = () => {
                     >
                         <LockIcon fontSize='large' />
                     </Box>
-                    <Typography component="h1" variant="h4" mt={2} sx={{fontSize: '24px'}}>
-                        INICIAR SESIÓN
+                    <Typography component="h1" variant="h1" mt={2} sx={{fontSize: '28px'}}>
+                        Chihuahua en Datos
                     </Typography>
                     <Box
                         component="form"

@@ -27,18 +27,27 @@ export const Indicator = () => {
   };
 
   return (
-    <Box sx={{height: '100%', display: 'flex', flexDirection: 'column'}}>
-      <Tabs value={value} onChange={handleChange} aria-label="basic tabs example" className='indicador-tab'>
-        <LinkTab label="Indicador" />
-        <LinkTab label="Fórmula" />
-        <LinkTab label="Históricos" />
-        <LinkTab label="Mapa" />
-      </Tabs>
+    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs
+          value={value}
+          onChange={handleChange}
+          aria-label="componentes del indicador"
+          variant='scrollable'
+          scrollButtons='auto'
+          sx={{ backgroundColor: 'white' }}
+        >
+          <LinkTab label="General" />
+          <LinkTab label="Fórmula" />
+          <LinkTab label="Mapa" />
+          <LinkTab label="Históricos" />
+        </Tabs>
+      </Box>
       {
         value === 0 ? <GeneralView />
           : value === 1 ? <FormulaView />
-            : value === 2 ? <HistoricosView />
-              : value === 3 ? <MapView />
+            : value === 2 ? <MapView />
+              : value === 3 ? <HistoricosView />
                 : null
       }
     </Box>
