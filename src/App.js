@@ -16,6 +16,7 @@ import { Profile } from "./pages/Profile";
 import { MathJaxContext } from 'better-react-mathjax';
 import { GeneralView } from "./components/dashboard/components/home/Indicators/GeneralView";
 import Relation from "./components/dashboard/components/home/Responsables/Relation";
+import Unauthorized from "./pages/Unauthorized";
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
                 <Route index element={<Home />} />
                 <Route path='*' element={<>Not found</>} />
                 <Route path='/modulos' element={<Modules />} />
+                <Route path='/unauthorized' element={<Unauthorized />} />
                 <Route path='/indicadores' element={<Indicators />} />
                 <Route path='/indicadores/:id' element={<Indicator />} />
                 <Route path='/indicadores/:id/general' element={<GeneralView />} />
