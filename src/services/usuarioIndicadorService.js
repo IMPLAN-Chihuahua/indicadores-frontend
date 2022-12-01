@@ -36,8 +36,8 @@ const deleteRelation = async (id) => {
   return protectedApi.delete(`/relation/${id}`);
 };
 
-const updateRelation = async (id) => {
-  return protectedApi.patch(`/relation/${id}`);
+const updateRelation = async (id, data) => {
+  return protectedApi.patch(`/relation/${id}`, data);
 };
 
 export {
