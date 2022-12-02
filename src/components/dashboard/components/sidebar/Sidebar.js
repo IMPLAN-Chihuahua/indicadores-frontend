@@ -34,7 +34,7 @@ export const Sidebar = () => {
     label: 'Usuarios',
     icon: <GroupIcon className='sidebar-icon' />
   }, {
-    to: '/modulos',
+    to: '/temas',
     label: 'Temas',
     icon: <ViewModuleIcon className='sidebar-icon' />
   },

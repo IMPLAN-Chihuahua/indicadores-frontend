@@ -12,7 +12,6 @@ import { ForgotPassword } from "./pages/ForgotPassword";
 import { AlertProvider } from "./contexts/AlertContext";
 import { Indicators } from "./pages/Indicators";
 import { Relationship } from "./pages/Relationship";
-import { Profile } from "./pages/Profile";
 import { MathJaxContext } from 'better-react-mathjax';
 import { GeneralView } from "./components/dashboard/components/home/Indicators/GeneralView";
 import Relation from "./components/dashboard/components/home/Responsables/Relation";
@@ -40,7 +39,7 @@ function App() {
                   </PrivateRoute>} >
                 <Route index element={<Home />} />
                 <Route path='*' element={<>Not found</>} />
-                <Route path='/modulos' element={<Modules />} />
+                <Route path='/temas' element={<Modules />} />
                 <Route path='/indicadores' element={<Indicators />} />
                 <Route path='/indicadores/:id' element={<Indicator />} />
                 <Route path='/indicadores/:id/general' element={<GeneralView />} />
