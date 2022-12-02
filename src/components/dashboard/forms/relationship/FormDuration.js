@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { nameConstructor } from '../../../../utils/nameValidator';
 import './FormDuration.css';
 import { createRelation, updateRelation } from '../../../../services/usuarioIndicadorService';
-const FormHistoricos = ({ type, handleCloseModal, users, setUsersArray, mutate, clearUsersSelectedParams, action, relationData }) => {
+const FormDuration = ({ type, handleCloseModal, users, setUsersArray, mutate, clearUsersSelectedParams, action, relationData }) => {
   const { id } = useParams();
   const [expires, setExpires] = useState(true);
   const { control, handleSubmit, reset } = useForm(
@@ -34,12 +34,16 @@ const FormHistoricos = ({ type, handleCloseModal, users, setUsersArray, mutate, 
 
   const onSubmit = data => {
     const usersId = users.map(user => user.id);
+    if (expires === false || expires === 'NO') {
+      data.hasta = null;
+      data.desde = null;
+    }
+
     const payload = {
       ...data,
-      relationIds: usersId,
+      relationIds: action === 'NEW' ? usersId : relationData.id,
       expires: expires === true ? 'SI' : 'NO',
     };
-
     Swal.fire({
       customClass: {
         container: 'my-swal'
@@ -75,7 +79,7 @@ const FormHistoricos = ({ type, handleCloseModal, users, setUsersArray, mutate, 
             })
         }
         else {
-          updateRelation(id, payload, 'usuarios')
+          updateRelation(relationData.id, payload, 'usuarios')
             .then(_ => {
               Swal.fire(
                 'Guardado!',
@@ -156,7 +160,7 @@ const FormHistoricos = ({ type, handleCloseModal, users, setUsersArray, mutate, 
               control={control}
               defaultValue=''
               render={({ field: { value, onChange }, fieldState: { error } }) => (
-                <TextField
+                < TextField
                   type="date"
                   value={value}
                   onChange={onChange}
@@ -176,8 +180,9 @@ const FormHistoricos = ({ type, handleCloseModal, users, setUsersArray, mutate, 
               render={({ field: { value, onChange }, fieldState: { error } }) => (
                 <FormControlLabel
                   control={
-                    <Checkbox
-                      checked={value}
+                    setExpires(value),
+                    < Checkbox
+                      checked={value === 'SI' ? true : value === 'NO' ? false : value}
                       onChange={onChange}
                       name="expires"
                       color="primary"
@@ -219,4 +224,4 @@ const FormHistoricos = ({ type, handleCloseModal, users, setUsersArray, mutate, 
   )
 }
 
-export default FormHistoricos
+export default FormDuration

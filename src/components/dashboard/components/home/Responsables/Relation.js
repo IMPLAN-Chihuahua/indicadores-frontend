@@ -191,7 +191,7 @@ const Relation = () => {
             </IconButton>
           </Tooltip>
           <Tooltip title='Editar autorización'>
-            <IconButton 
+            <IconButton
               onClick={() => handleEdit(params.row)}
             >
               <ModeEditIcon />
