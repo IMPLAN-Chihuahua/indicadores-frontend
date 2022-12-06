@@ -6,7 +6,7 @@ WORKDIR /app
 COPY ./nginx.conf /nginx.conf
 COPY package*.json /app/
 
-RUN npm install
+RUN npm ci --ommit=dev --legacy-peer-deps
 
 COPY ./ /app/
 
