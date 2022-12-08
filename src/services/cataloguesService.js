@@ -25,7 +25,7 @@ const getCatalogosDetails = async (id) => {
 
 const getCatalogosFromIndicador = async (id) => {
     try {
-        const response = await protectedApi.get(`/catalogos/indicador/${id}`);
+        const response = await protectedApi.get(`/indicadores/${id}/catalogos`);
         return response.data.data;
     } catch (error) {
         throw error;
@@ -36,7 +36,7 @@ const updateOrCreateCatalogo = async (id, data) => {
     try {
         console.log()
         // console.log(data);
-        // const response = await protectedApi.patch(`/catalogos/indicador/${id}`, data);
+        // const response = await protectedApi.patch(`/indicadores/${id}/catalogos`, data);
         return 1;
     } catch (error) {
         throw error;
