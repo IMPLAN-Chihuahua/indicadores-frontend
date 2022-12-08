@@ -6,7 +6,7 @@ const fetcher = (url) => protectedApi.get(url).then(res => res.data);
 export const useHistoricos = (perPage, page, idIndicador, sortBy, order) => {
   const { data, error, mutate } =
     useSWR(
-      `/historicos/indicador/${idIndicador}?perPage=${perPage}&page=${page}&order=${order}&sortBy=${sortBy}`,
+      `/indicadores/${idIndicador}/historicos?perPage=${perPage}&page=${page}&order=${order}&sortBy=${sortBy}`,
       fetcher,
     );
 
@@ -38,7 +38,7 @@ export const editHistoricos = (idHistorico, data) => {
 
 export const createHistoricos = (idIndicador, data) => {
   try {
-    const response = protectedApi.post(`/historicos/${idIndicador}`, data);
+    const response = protectedApi.post(`/indicadores/${idIndicador}/historicos`, data);
     return response;
   } catch (error) {
     Promise.reject(error);
