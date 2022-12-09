@@ -2,7 +2,7 @@ import {
   Box, Button, TextField, Grid, FormGroup,
   FormControlLabel, DialogContent, DialogActions, Checkbox
 } from '@mui/material';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm, Controller, FormProvider } from "react-hook-form";
 import ColorPicker from '../../common/ColorPicker';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -36,6 +36,7 @@ const parseToFormData = (tema) => {
 
 const FormModel = (props) => {
   const { selectedTema, handleCloseModal, action } = props;
+  const [isSubmitting, setSubmitting] = useState(false);
   const methods = useForm({
     defaultValues: {
       temaIndicador: '',
@@ -62,6 +63,7 @@ const FormModel = (props) => {
   }
 
   const onSubmit = data => {
+    setSubmitting(true);
     handleAction(action, data)
       .then(res => {
         if (res) {
@@ -77,6 +79,9 @@ const FormModel = (props) => {
           icon: 'error',
           text: err
         })
+      })
+      .finally(_ => {
+        setSubmitting(false);
       })
   }
 
@@ -200,7 +205,11 @@ const FormModel = (props) => {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseModal}>Cancelar</Button>
-          <Button type='submit' variant='contained'>Guardar</Button>
+          <Button
+            type='submit'
+            variant='contained'
+            disabled={isSubmitting}
+          >Guardar</Button>
         </DialogActions>
       </Box>
     </FormProvider>

@@ -93,6 +93,7 @@ const SelectRoleInput = () => {
 
 const FormUser = (props) => {
   const { handleCloseModal, action } = props;
+  const [isSubmitting, setSubmitting] = useState(false);
   const { reloadCurrentUser } = useAuth();
   const methods = useForm({
     defaultValues: {
@@ -126,6 +127,7 @@ const FormUser = (props) => {
   }
 
   const onSubmit = (user) => {
+    setSubmitting(true);
     handleAction(action, user)
       .then(res => {
         if (res) {
@@ -143,6 +145,7 @@ const FormUser = (props) => {
         })
       })
       .finally(_ => {
+        setSubmitting(false)
         if (action === FORM_USER_ACTIONS.EDIT_PROFILE) {
           reloadCurrentUser();
         }
@@ -361,7 +364,12 @@ const FormUser = (props) => {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseModal}>Cancelar</Button>
-          <Button variant='contained' type='submit' form='form-user'>Aceptar</Button>
+          <Button
+            variant='contained'
+            type='submit'
+            form='form-user'
+            disabled={isSubmitting}
+          >Aceptar</Button>
         </DialogActions>
       </Box>
     </FormProvider>
