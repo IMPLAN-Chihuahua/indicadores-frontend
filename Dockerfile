@@ -1,5 +1,5 @@
 # build application
-FROM node:16-alpine3.15 as build-stage
+FROM node:lts-alpine3.15 as build-stage
 
 WORKDIR /app
 
