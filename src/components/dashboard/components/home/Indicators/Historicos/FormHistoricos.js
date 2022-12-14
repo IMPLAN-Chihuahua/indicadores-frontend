@@ -7,6 +7,7 @@ import { editHistoricos, createHistoricos } from '../../../../../../services/his
 import Swal from 'sweetalert2';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../../../../../../contexts/AuthContext';
+import { showAlert } from '../../../../../../utils/alert';
 
 const FormHistoricos = (props) => {
   const { type, anio, valor, fuente, id, handleCloseModal, mutate } = props;
@@ -25,7 +26,7 @@ const FormHistoricos = (props) => {
 
   const onSubmit = async (data) => {
 
-    Swal.fire({
+    showAlert({
       customClass: {
         container: 'my-swal'
       },
@@ -33,10 +34,8 @@ const FormHistoricos = (props) => {
       text: `Al ${type === 1 ? 'editar' : 'agregar'} este registro, los cambios generados se actualizarán en la tabla de valores históricos de Chihuahua Métrica y en el sistema de gestión de Chihuahua en Datos.`,
       icon: 'question',
       showCancelButton: true,
-      confirmButtonColor: type === 1 ? '#2D9CDB' : '#6bca3f',
-      cancelButtonColor: '#B7BFCC',
-      cancelButtonText: `<div style="color: #7A7A7A; font-weight: 600; font-family: sans-serif">Cancelar ${type === 1 ? 'edición de registro' : 'operación'}</div>`,
-      confirmButtonText: '<div style="font-weight: 500; font-family: sans-serif">Guardar cambios</div>',
+      customCancelButtonText: `Cancelar ${type === 1 ? 'edición de registro' : 'operación'}`,
+      customConfirmButtonText: 'Guardar cambios',
     }).then((result) => {
       if (result.isConfirmed) {
         type === 1 ? editHistorico(id, data) : createHistorico(data);

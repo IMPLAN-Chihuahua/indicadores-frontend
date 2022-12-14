@@ -15,6 +15,7 @@ import FormHistoricos from './FormHistoricos';
 import PersonalLoader from '../../../../../common/PersonalLoader/PersonalLoader';
 import { getGlobalPerPage } from '../../../../../../utils/objects';
 import useIsMounted from '../../../../../../hooks/useIsMounted';
+import { showAlert } from '../../../../../../utils/alert';
 
 export const HistoricosView = () => {
   const { id } = useParams();
@@ -59,22 +60,33 @@ export const HistoricosView = () => {
   }, [historicosList, isMounted]);
 
   const handleDeleteHistorico = ({ id }) => {
-    Swal.fire({
+    showAlert({
       title: '¿Deseas eliminar este valor histórico?',
       text: 'Al eliminar este registro, dejará de ser visible en la tabla de valores históricos de Chihuahua Métrica y en el sistema de gestión de Chihuahua en Datos.',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#F14156',
-      cancelButtonColor: '#B7BFCC',
-      cancelButtonText: '<div style="color: #7A7A7A; font-weight: 600; font-family: sans-serif">Cancelar, conservar registro</div>',
-      confirmButtonText: '<div style="font-weight: 500; font-family: sans-serif">Aceptar, eliminar registro</div>',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        deleteHistorico(id);
-        Swal.fire('Eliminado!', 'El registro ha sido eliminado.', 'success');
-        mutate();
+      cancelButtonColor: 'white',
+      customConfirmButtonColor: 'var(--danger-main)',
+      customCancelButtonText: 'Cancelar, conservar registro',
+      confirmButtonText: 'Aceptar, eliminar registro',
+    }).then((option) => {
+      if (option.isConfirmed) {
+        return deleteHistorico(id);
       }
-    });
+    })
+      .then(res => {
+        if (res) {
+          Swal.fire('Eliminado!', 'El registro ha sido eliminado.', 'success');
+          mutate();
+        }
+      })
+      .catch(err => {
+        showAlert({
+          title: 'Hubo un error',
+          text: err,
+          icon: 'error'
+        })
+      });
   }
 
   historicosList && (rowsHistoricos = historicosList.data);
