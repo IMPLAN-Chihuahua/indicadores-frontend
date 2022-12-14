@@ -155,12 +155,6 @@ const FormulaView = () => {
         } else if (res.isDenied) {
           setOpenFormFormula(false);
         }
-      }, err => {
-        showAlert({
-          title: 'Error',
-          text: err,
-          icon: 'error'
-        })
       })
       .then(status => {
         if (status) {
@@ -172,6 +166,14 @@ const FormulaView = () => {
           mutate();
         }
       })
+      .catch(err => {
+        console.log(err)
+        showAlert({
+          title: 'Error',
+          text: err,
+          icon: 'error'
+        })
+      })
   }
 
   const handleVariableDelete = (id) => {
@@ -182,17 +184,26 @@ const FormulaView = () => {
       showCancelButton: true,
     }).then((result) => {
       if (result.isConfirmed) {
-        deleteVariable(id)
-          .then(_ => {
-            showAlert({
-              title: 'Eliminado!',
-              text: 'El registro ha sido eliminado.',
-              icon: 'success'
-            });
-            mutate()
-          })
+        return deleteVariable(id)
       }
-    });
+    })
+      .then(res => {
+        if (res) {
+          showAlert({
+            title: 'Eliminado!',
+            text: 'El registro ha sido eliminado.',
+            icon: 'success'
+          });
+          mutate()
+        }
+      })
+      .catch(err => {
+        showAlert({
+          title: 'Error',
+          icon: 'error',
+          text: err
+        })
+      })
   }
 
   const handleVariableUpdate = (variable) => {

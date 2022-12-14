@@ -20,7 +20,7 @@ const MapView = () => {
     const fd = new FormData();
     for (const field in mapObj) {
       if (field === 'urlImagen') {
-        fd.append(field, mapObj[field][0] || null);
+        fd.append(field, mapObj[field] ? mapObj[field][0] : null);
         continue;
       }
       if (mapObj[field]) {
