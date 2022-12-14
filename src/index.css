@@ -64,6 +64,7 @@ html {
   --light-blue: #edf2fb;
   --light-purple: #c8b6ff;
   --gray-95: var(--blue-50);
+  --danger-main: #d32f2f;
 }
 
 body {

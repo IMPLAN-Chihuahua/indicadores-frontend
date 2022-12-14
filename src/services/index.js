@@ -60,8 +60,7 @@ protectedApi.interceptors.response.use(
       message = message.replace(',', '')
       message += '</ul>'
     } else {
-      message = (error.response && error.response.data && error.response.data.message)
-        || error.message || error.toString();
+      message = (error.response && error.response.data) || error.message || error.toString();
     }
     return Promise.reject(message)
   }
