@@ -1,23 +1,30 @@
 import React from 'react';
-import { Grid, IconButton, TextField, Autocomplete } from '@mui/material';
+import { Grid, IconButton, TextField, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { Controller, useFormContext } from 'react-hook-form';
+import AutoCompleteInput from '../AutoCompleteInput';
 
-const options = ['option 1', 'option 2']
+export const VARIABLE_MODES = {
+  SINGLE: 'single',
+  MULTIPLE: 'multiple'
+}
 
 export const Variable = (props) => {
   const methods = useFormContext();
 
   const { getValues } = methods;
-  const { index } = props;
-  const { addVariable, deleteVariable } = props;
+  const { index, mode } = props;
+  const { addVariable, deleteVariable } = props || null;
+
   const handleOnClick = () => {
     if (addVariable) {
       const newVariable = {
         nombre: getValues('nombre'),
         dato: getValues('dato'),
-        anio: getValues('anio')
+        anio: getValues('anio'),
+        variableDesc: getValues('variableDesc'),
+        medida: getValues('medida'),
       }
       addVariable(newVariable);
     } else if (deleteVariable) {
@@ -25,29 +32,31 @@ export const Variable = (props) => {
     }
   }
 
+  const isSingleMode = mode === VARIABLE_MODES.SINGLE;
+
   return (
     <Grid
       container
+      direction={isSingleMode ? 'column' : 'row'}
       sx={{
-        borderRadius: 5,
-        alignItems: 'self-start',
-        justifyContent: 'space-evenly',
-        gap: 1
+        alignItems: 'stretch',
+        justifyContent: 'center',
+        gap: isSingleMode ? 2 : 1
       }}
     >
       <Grid item xs>
         <Controller
           control={methods.control}
-          name={`variables[${index}].nombre`}
-          defaultValue=''
+          name={isSingleMode ? 'nombre' : `variables.${index}.nombre`}
           render={({
-            field: { onChange, value }
+            field, fieldState: { error }
           }) => (
             <TextField
               label='Variable'
-              placeholder='x'
-              onChange={onChange}
-              value={value}
+              fullWidth
+              error={!!error}
+              helperText={error ? error.message : null}
+              {...field}
             />
           )}
         />
@@ -55,16 +64,16 @@ export const Variable = (props) => {
       <Grid item xs={2}>
         <Controller
           control={methods.control}
-          name={`variables[${index}].dato`}
-          defaultValue=''
+          name={isSingleMode ? 'dato' : `variables.${index}.dato`}
           render={({
-            field: { onChange, value }
+            field, fieldState: { error }
           }) => (
             <TextField
               label='Dato'
-              placeholder='123'
-              onChange={onChange}
-              value={value}
+              fullWidth
+              error={!!error}
+              helperText={error ? error.message : null}
+              {...field}
             />
           )}
         />
@@ -72,45 +81,70 @@ export const Variable = (props) => {
       <Grid item xs={1}>
         <Controller
           control={methods.control}
-          name={`variables[${index}].anio`}
-          defaultValue=''
+          name={isSingleMode ? 'anio' : `variables.${index}.anio`}
           render={({
-            field: { onChange, value }
+            field, fieldState: { error }
           }) => (
             <TextField
               label='Año'
-              placeholder={'2022'}
-              onChange={onChange}
-              value={value}
+              error={!!error}
+              helperText={error ? error.message : null}
+              fullWidth
+              {...field}
             />
           )}
         />
       </Grid>
       <Grid item xs={3}>
-        <Autocomplete
-          options={options}
-          renderInput={(params) => <TextField {...params} label="Unidad Medida" />}
+        <Controller
+          control={methods.control}
+          name={isSingleMode ? 'variableDesc' : `variables.${index}.variableDesc`}
+          render={({
+            field: { value, onChange }
+          }) => (
+            <TextField
+              label='Descripción'
+              multiline
+              fullWidth
+              value={value}
+              onChange={onChange}
+              maxRows={4}
+            />
+          )}
         />
       </Grid>
-      <Grid item xs={3}>
-        <TextField
-          name='nombreAtributo'
-          label='Descripcion'
-          placeholder='Lorem ipsum'
-          multiline
-          fullWidth
+      <Grid item xs>
+        <Controller
+          name={isSingleMode ? 'medida' : `variables.${index}.medida`}
+          control={methods.control}
+          render={({
+            field: { value, onChange },
+            fieldState: { error }
+          }) => (
+            <AutoCompleteInput
+              value={value}
+              onChange={onChange}
+              error={error}
+              label='Unidad de medida'
+              getOptionLabel={(item) => item.nombre}
+              opts={props.medidaOptions}
+            />
+          )}
         />
       </Grid>
-      <Grid item xs={1} alignSelf='center'>
-        <IconButton
-          onClick={handleOnClick}
-          color='primary'
-        >
-          {
-            addVariable ? <AddIcon /> : <RemoveIcon />
-          }
-        </IconButton>
-      </Grid>
-    </Grid >
+      {(addVariable || deleteVariable) && (
+        <Grid item xs={1} alignSelf='center'>
+          <IconButton
+            onClick={handleOnClick}
+            color='primary'
+            sx={{ backgroundColor: 'aliceBlue' }}
+          >
+            {
+              addVariable ? <AddIcon /> : <RemoveIcon />
+            }
+          </IconButton>
+        </Grid>
+      )}
+    </Grid>
   );
 }

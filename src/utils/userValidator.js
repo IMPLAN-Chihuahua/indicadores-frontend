@@ -3,12 +3,12 @@ import * as yup from 'yup';
 const createUserSchema = yup.object({
   correo:
     yup.string()
-      .required('Por favor, ingrese un correo')
-      .email('Por favor, ingrese un correo validdo'),
+      .required('El correo es obligatorio')
+      .email('Ingresa un correo validdo'),
 
   clave:
     yup.string()
-      .required('Por favor, ingrese la contraseña')
+      .required('Ingresa la contraseña')
       .min(8, 'La contraseña debe contener al menos 8 caracteres'),
 
   confirmClave:
@@ -17,28 +17,32 @@ const createUserSchema = yup.object({
 
   nombres:
     yup.string()
-      .required('Por favor, ingrese el nombre del usuario'),
+      .required('El nombre es requerido'),
 
   idRol:
     yup.string()
-      .required('Por favor, seleccione algún rol'),
+      .required('Selecciona algún rol'),
 
   apellidoPaterno:
     yup.string()
-      .required('Por favor, ingrese el apellido paterno del usuario')
+      .required('El apellido paterno es obligatorio')
 });
 
 const editUserSchema = yup.object(
   {
     nombres:
       yup.string()
-        .required('Por favor, ingrese el nombre del usuario'),
+        .required('El nombre es obligatorio'),
 
     apellidoPaterno:
       yup.string()
-        .required('Por favor, ingrese el apellido paterno del usuario')
+        .required('El apellido paterno es obligatorio')
 
   }
 )
 
-export { createUserSchema, editUserSchema }
+const isAdmin = ({ idRol }) => {
+  return idRol === 1;
+}
+
+export { createUserSchema, editUserSchema, isAdmin }

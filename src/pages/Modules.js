@@ -1,114 +1,120 @@
-import { Box } from "@mui/material";
-import React, { useRef } from "react";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import DatagridTable from "../components/dashboard/common/DatagridTable";
 import { DataHeader } from "../components/dashboard/common/DataHeader";
 import { useModules } from "../services/userService";
-import { BeatLoader } from "react-spinners";
-import ShowImage from "../components/dashboard/common/ShowImage";
 import { Status } from "../components/dashboard/common/Status";
-import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import FormDialog from "../components/dashboard/common/FormDialog";
-import FormModel from "../components/dashboard/forms/model/FormModel";
-import { DataPagination } from "../components/dashboard/common/DataPagination";
-import { changeStatusModule } from "../services/moduleService";
-import FormDelete from "../components/common/FormDelete";
-import ToggleOnIcon from '@mui/icons-material/ToggleOn';
-import ToggleOffIcon from '@mui/icons-material/ToggleOff';
-import { useAlert } from "../contexts/AlertContext";
+import FormModel, { FORM_TEMA_ACTIONS } from "../components/dashboard/forms/model/FormModel";
+import { getModulesGeneralInfo, toggleTemaStatus } from "../services/moduleService";
+import { getGlobalPerPage } from "../utils/objects";
+import { Avatar, Box, DialogTitle, IconButton, Stack, Typography } from "@mui/material";
+import { parseDate } from "../utils/dateParser";
+import EditIcon from '@mui/icons-material/Edit';
+import { showAlert } from "../utils/alert";
+import { useAuth } from "../contexts/AuthContext";
+import { isAdmin } from "../utils/userValidator";
 
 export const Modules = () => {
-
-  let perPage = localStorage.getItem("perPage") || 5;
-  let totalPages = 1;
-  let rowsModules = [];
-
   const [searchModule, setSearchModule] = useState("");
-  const [paginationCounter, setPaginationCounter] = useState(1);
-  const [perPaginationCounter, setPerPaginationCounter] = useState(perPage);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState();
+  const [perPage, setPerPage] = useState(getGlobalPerPage);
 
-  const [activeCounter, setActiveCounter] = useState(0);
-  const [inactiveCounter, setInactiveCounter] = useState(0);
+  const { temas, isLoading, hasError, mutate } = useModules(perPage, page, searchModule);
 
-  const isMounted = useRef(true);
-  const { modulesList, isLoading, isError } = useModules(
-    perPaginationCounter,
-    paginationCounter,
-    searchModule
-  );
+  const [selectedTema, setSelectedTema] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
+  const [formTemaAction, setFormTemaAction] = useState('');
+  const [moduleQuantity, setModulesQuantity] = useState(0);
+  const [inactiveModules, setInactiveModules] = useState(0);
 
-  const alert = useAlert();
-  const [openModal, setOpenModal] = React.useState(false);
-  const handleOpenModal = () => setOpenModal(true);
-  const handleCloseModal = () => setOpenModal(false);
-
-  const [clickInfo, setClickInfo] = React.useState({
-    row: { temaIndicador: "" },
-  });
-
-  const [removeOpenModal, setRemoveOpenModal] = React.useState(false);
-  const handleRemoveOpenModal = () => setRemoveOpenModal(true);
-  const handleRemoveCloseModal = () => setRemoveOpenModal(false);
-
-  const [changeData, setChangeData] = useState({});
-  const [dataStore, setDataStore] = useState([]);
+  const [rows, setRows] = useState([]);
+  const { user } = useAuth();
 
 
-  const handleStatusModule = (id, topic, element, type ) => {
-    setChangeData({
-      id,
-      topic,
-      element,
-      type
-    });
-    handleRemoveOpenModal();  
-  }
+  const fetchCount = () => {
+    getModulesGeneralInfo({
+      attributes: ['activo']
+    })
+      .then(({ data }) => {
+        setModulesQuantity(data.total);
+        const inactive = data.data.filter(({ activo }) => activo === 'NO').length;
+        setInactiveModules(inactive);
+      })
+  };
 
-  if (activeCounter == 0 && inactiveCounter == 0 && modulesList) {
-    setActiveCounter(modulesList.total - modulesList.totalInactivos);
-    setInactiveCounter(modulesList.totalInactivos);
-  }
-  modulesList && (totalPages = modulesList.totalPages);
-  modulesList && (rowsModules = modulesList.data);
-      
-    useEffect(() => {
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
-  
-    useEffect(() => {
-      if(modulesList){
-        let rowsModulesEdited = []; 
-        rowsModules.map((data) => {
-          rowsModulesEdited = [
-              ...rowsModulesEdited,
-              {
-                ...data,
-                createdAt: data.createdAt.split("T")[0],
-                updatedAt: data.updatedAt.split("T")[0],
-                activo: data.activo == "SI" ? "Activo" : "Inactivo",
-                actions: "Acciones",
-              },
-            ];
-          })
-          setDataStore(rowsModulesEdited)
+  useEffect(() => {
+    fetchCount();
+  }, [moduleQuantity])
+
+  const toggleStatus = (tema) => {
+    showAlert({
+      title: `¿Deseas cambiar el estado de ${tema.temaIndicador}?`,
+      text: `Al actualizar este registro, el estado del tema se alternará, 
+      es decir, si se encuentra ACTIVO pasará a estar INACTIVO y viceversa.`,
+      icon: 'warning',
+      showCancelButton: true
+    }).then(option => {
+      if (option.isConfirmed) {
+        return toggleTemaStatus(tema.id)
       }
-  }, [modulesList]);
-  
-  const editable = true,
-    headerClassName = "dt-theme--header",
-    sortable = false,
-    headerAlign = "center", 
-    align = "center",
-    filterable = false;
-  const columnsModule = [
+    })
+      .then(res => {
+        if (res) {
+          showAlert({
+            title: 'Estado actualizado exitosamente',
+            text: `El estado de ${tema.temaIndicador} ha sido actualizado.`,
+            icon: 'success'
+          });
+          fetchCount();
+        }
+      })
+      .catch(err => {
+        showAlert({
+          title: 'Hubo un error',
+          text: err,
+          icon: 'error'
+        })
+      })
+      .finally(mutate)
+  }
+  const handleCloseModal = async () => {
+    setOpenModal(false)
+    setSelectedTema(null)
+    await mutate()
+  }
+
+  const handleEdit = (tema) => {
+    setOpenModal(true)
+    setFormTemaAction(FORM_TEMA_ACTIONS.EDIT)
+    setSelectedTema(tema)
+  }
+
+  const handleNew = () => {
+    setOpenModal(true)
+    setFormTemaAction(FORM_TEMA_ACTIONS.NEW)
+  }
+
+  useEffect(() => {
+    if (!temas) {
+      return;
+    }
+    setRows(temas.data);
+    setTotal(temas.total);
+  }, [temas]);
+
+  const editable = true;
+  const sortable = false;
+  const headerAlign = "center";
+  const align = "center";
+  const filterable = false;
+
+  const columns = [
     {
       field: "id",
       headerName: "ID ",
       flex: 0.1,
       editable,
-      headerClassName,
       sortable,
       headerAlign,
       align,
@@ -116,82 +122,55 @@ export const Modules = () => {
     },
     {
       field: "codigo",
-      headerName: "#",
-      flex: 0.5,
+      headerName: "Código",
+      flex: 0.2,
       minWidth: 50,
       editable,
-      headerClassName,
       sortable,
-      headerAlign,
-      align,
-    },
-    {
-      field: "temaIndicador",
-      headerName: "Tema",
-      flex: 1,
-      minWidth: 150,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-      renderCell: (params) => {
-        return (
-          <span className="dt-theme--text">{params.row.temaIndicador}</span>
-        );
-      },
-    },
-    {
-      field: "createdAt",
-      headerName: "Creacion",
-      flex: 0.5,
-      minWidth: 100,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-    },
-    {
-      field: "updatedAt",
-      headerName: "Edicion",
-      flex: 0.5,
-      minWidth: 100,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
+      headerAlign: 'left',
+      align: 'left',
     },
     {
       field: "urlImagen",
       headerName: "Imagen",
-      flex: 0.5,
+      flex: 0.2,
       minWidth: 100,
       editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-      filterable,
+      cellClassName: 'cell-overflow',
+      headerAlign: 'left',
+      align: 'left',
+      sortable: false,
+      filterable: false,
       renderCell: (params) => {
         return (
-          <ShowImage
-            data={{
-              title: params.row.temaIndicador,
-              url: params.row.urlImagen,
-            }}
-          />
+          <Box className='latest-picture'>
+            <Avatar
+              className='latest-picture-hoverable'
+              variant='rounded'
+              src={params.row.urlImagen}
+              alt={params.row.temaIndicador}
+            />
+          </Box>
         );
       },
     },
     {
+      field: "temaIndicador",
+      headerName: "Tema",
+      flex: 0.5,
+      minWidth: 150,
+      editable,
+      sortable,
+      headerAlign: 'left',
+      align: 'left',
+      renderCell: (params) => <Typography noWrap>{params.row.temaIndicador}</Typography>
+    },
+    {
       field: "color",
       headerName: "Color",
-      flex: 0.5,
+      flex: 0.2,
       minWidth: 80,
-      editable,
-      headerClassName,
+      editable: false,
       sortable,
       headerAlign,
       align,
@@ -210,144 +189,112 @@ export const Modules = () => {
       },
     },
     {
-      field: "observaciones",
-      headerName: "Observaciones",
+      field: "descripcion",
+      headerName: "Descripción",
       flex: 1,
       minWidth: 200,
       editable,
-      headerClassName,
       sortable,
-      headerAlign,
-      align,
-      renderCell: (params) => {
-        return (
-          <span className="dt-theme--text">{params.row.observaciones}</span>
-        );
-      },
+      headerAlign: 'left',
+      align: 'left',
+      renderCell: params => <Typography noWrap>{params.row.descripcion}</Typography>
     },
     {
       field: "activo",
       headerName: "Estado",
-      flex: 0.5,
-      editable: true,
-      minWidth: 100,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-      renderCell: (params) => {
-        return (<Status status={params.row.activo} />);
-      },
-    },
-    {
-      field: "actions",
-      headerName: "Acciones",
-      flex: 0.5,
+      flex: 0.2,
       editable: false,
       minWidth: 100,
-      headerClassName,
+      sortable: false,
+      headerAlign: 'left',
+      align: 'left',
+      renderCell: params => (
+        <Status
+          handleClick={() => toggleStatus(params.row)}
+          status={params.row.activo}
+        />)
+    },
+    {
+      field: "createdAt",
+      headerName: "Creación",
+      flex: 1,
+      minWidth: 100,
+      editable: false,
+      sortable,
+      hide: true,
+      headerAlign: 'left',
+      align: 'left',
+      renderCell: (params) => (<Typography noWrap>
+        {parseDate(params.row.createdAt)}
+      </Typography>)
+    },
+    isAdmin(user) &&
+    {
+      field: "updatedAt",
+      headerName: "Edición",
+      flex: 1,
+      minWidth: 100,
+      editable: false,
+      sortable,
+      hide: true,
+      headerAlign: 'left',
+      align: 'left',
+      renderCell: (params) => (<Typography noWrap>
+        {parseDate(params.row.updatedAt)}
+      </Typography>)
+    },
+    {
+      field: "editar",
+      headerName: "Editar",
+      flex: 0.2,
+      editable: false,
+      minWidth: 100,
       sortable,
       headerAlign,
       align,
       filterable,
-      renderCell: (params) => {
-        return (
-          <div className="dt-btn-container">
-            {
-              (params.row.activo == 'Activo')
-              ?
-            <span className="dt-action-delete"
-            onClick={() => handleStatusModule(params.row.id, "modulo",params.row.temaIndicador, "off")}
-            >
-                <ToggleOnIcon />
-            </span>
-                :
-                <span className="dt-action-delete"
-                onClick={() => handleStatusModule(params.row.id, "modulo",params.row.temaIndicador, "on")}
-                >
-                    <ToggleOffIcon/>
-                </span>
-              }
-            <span
-              className="dt-action-edit"
-              onClick={() => {
-                setOpenModal((prev) => !prev);
-                setClickInfo(params.row);
-              }}
-            >
-              <ModeEditIcon />
-            </span>
-          </div>
-        );
-      },
+      renderCell: params => (
+        <Stack direction='row'>
+          <IconButton aria-label='editar' onClick={() => handleEdit(params.row)}>
+            <EditIcon />
+          </IconButton>
+        </Stack>
+      ),
     },
   ];
 
-  const dataTable = [columnsModule, dataStore];
   const dataModule = {
     topic: "modulo",
-    countEnable: activeCounter,
-    countDisable: inactiveCounter,
+    countEnable: moduleQuantity || 0,
+    countDisable: inactiveModules || 0,
     setSearch: setSearchModule,
     searchValue: searchModule
   };
   return (
-    <>
+    <Box display='flex' flexDirection='column' p={2} height='100%'>
       <DataHeader
         data={dataModule}
-        handleOpenModal={handleOpenModal}
+        handleOpenModal={handleNew}
       />
-      <Box className="dt-table">
-        {isLoading ? (
-          <Box className="dt-loading">
-            <BeatLoader size={15} color="#1976D2" />
-          </Box>
-        ) : (
-          <>
-            <DatagridTable data={dataTable} />  
-            <DataPagination
-              data={{
-                dataModule,
-                paginationCounter,
-                setPaginationCounter,
-                perPaginationCounter,
-                setPerPaginationCounter,
-                totalPages,
-                perPage,
-              }}
-            />
-          </>
-        )}
-      </Box>
-
+      <div className='datagrid-container'>
+        <DatagridTable
+          rows={rows}
+          columns={columns}
+          isLoading={isLoading}
+          page={page}
+          total={total}
+          perPage={perPage}
+          handlePageChange={newPage => setPage(newPage + 1)}
+          handlePageSizeChange={size => setPerPage(size)}
+        />
+      </div>
       <FormDialog
         open={openModal}
-        setOpenModal={setOpenModal}
-        title={`Editar módulo ${clickInfo.temaIndicador}`}
+        handleClose={handleCloseModal}
       >
-        <FormModel data={clickInfo} handleCloseModal={handleCloseModal} />
+        <DialogTitle>{formTemaAction} Tema de Interés</DialogTitle>
+        <FormModel action={formTemaAction} selectedTema={selectedTema} handleCloseModal={handleCloseModal} />
       </FormDialog>
-      <FormDialog
-        open={removeOpenModal}
-        setOpenModal={setRemoveOpenModal}
-      >
-        <FormDelete topic={changeData?.topic} element={changeData?.element} type={changeData?.type}  handleCloseModal={handleRemoveCloseModal}  
-        handleDelete = {
-          () => {
-            try {
-              changeStatusModule(changeData?.id);
-              if(dataStore.find(x => x.id == changeData?.id).activo == 'Activo'){
-                dataStore.find(x => x.id == changeData?.id).activo = 'Inactivo';
-              }else{
-                dataStore.find(x => x.id == changeData?.id).activo = 'Activo';
-              }
-              alert.success('Estado del modulo cambiado exitosamente');
-              handleRemoveCloseModal();
-            } catch (err) {
-              alert.error(err);
-            }
-          }}/>
-      </FormDialog>
-    </>
+    </Box>
   );
 };

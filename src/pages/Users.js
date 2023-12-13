@@ -1,171 +1,130 @@
-import { Box } from "@mui/material";
-import React, { useRef } from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import DatagridTable from "../components/dashboard/common/DatagridTable";
 import { DataHeader } from "../components/dashboard/common/DataHeader";
-import { BeatLoader } from "react-spinners";
-import ShowImage from "../components/dashboard/common/ShowImage";
 import { Status } from "../components/dashboard/common/Status";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import FormDialog from "../components/dashboard/common/FormDialog";
-import { DataPagination } from "../components/dashboard/common/DataPagination";
-
-import { changeStatusUser, useUsers } from "../services/userService";
-import FormUser from "../components/dashboard/forms/user/FormUser";
-import ToggleOnIcon from '@mui/icons-material/ToggleOn';
-import ToggleOffIcon from '@mui/icons-material/ToggleOff';
-import { useAlert } from "../contexts/AlertContext";
-import FormDelete from "../components/common/FormDelete";
+import { getUsersGeneralInfo, toggleUserStatus, useUsers } from "../services/userService";
+import FormUser, { FORM_USER_ACTIONS } from "../components/dashboard/forms/user/FormUser";
+import { getGlobalPerPage } from "../utils/objects";
+import { Avatar, Box, DialogTitle, IconButton, Stack, Typography } from "@mui/material";
+import EditIcon from '@mui/icons-material/Edit';
+import { parseDate } from "../utils/dateParser";
+import { showAlert } from "../utils/alert";
+import useIsMounted from "../hooks/useIsMounted";
 
 
 export const Users = () => {
+  const [perPage, setPerPage] = useState(getGlobalPerPage);
+  const [page, setPage] = useState(1);
+  const [searchUser, setSearchUser] = useState('');
+  const [total, setTotal] = useState(0);
+  const { users, isLoading, mutate } = useUsers(perPage, page, searchUser);
+  const isMounted = useIsMounted();
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [formUserAction, setFormUserAction] = useState('');
+  const [usersQuantity, setUsersQuantity] = useState(0);
+  const [inactiveUsers, setInactiveUsers] = useState(0);
 
-  let perPage = localStorage.getItem("perPage") || 5;
-  let totalPages = 1;
-  let rowsUsers = [];
+  const [rows, setRows] = useState([]);
 
-  const [searchUser, setSearchUser] = useState("");
-  const [paginationCounter, setPaginationCounter] = useState(1);
-  const [perPaginationCounter, setPerPaginationCounter] = useState(perPage);
-
-  const [activeCounter, setActiveCounter] = useState(0);
-  const [inactiveCounter, setInactiveCounter] = useState(0);
-
-  const isMounted = useRef(true);
-  const { usersList, isLoading, isError } = useUsers(
-    perPaginationCounter,
-    paginationCounter,
-    searchUser
-  );
-
-  const alert = useAlert();
-  const [openModal, setOpenModal] = React.useState(false);
-  const handleOpenModal = () => setOpenModal(true);
-  const handleCloseModal = () => setOpenModal(false);
-
-  const [clickInfo, setClickInfo] = React.useState({
-    row: { temaIndicador: "" },
-  });
-
-  const [removeOpenModal, setRemoveOpenModal] = React.useState(false);
-  const handleRemoveOpenModal = () => setRemoveOpenModal(true);
-  const handleRemoveCloseModal = () => setRemoveOpenModal(false);
-
-  const [changeData, setChangeData] = useState({});
-  const [dataStore, setDataStore] = useState([]);
-
-  const handleStatus = (id, topic, element, type) => {
-    setChangeData({
-      id,
-      topic,
-      element,
-      type
-    });
-    handleRemoveOpenModal();
+  const handleEditUser = (user) => {
+    setOpenModal(true);
+    setSelectedUser(user);
+    setFormUserAction(FORM_USER_ACTIONS.EDIT);
   }
 
-  if (activeCounter === 0 && inactiveCounter === 0 && usersList) {
-    setActiveCounter(usersList.total - usersList.totalInactivos);
-    setInactiveCounter(usersList.totalInactivos);
+  const handleNewUser = () => {
+    setOpenModal(true);
+    setFormUserAction(FORM_USER_ACTIONS.NEW);
   }
 
-  usersList && (totalPages = usersList.totalPages);
-  usersList && (rowsUsers = usersList.data);
+  const handleUserFormClose = async () => {
+    setSelectedUser(null);
+    setOpenModal(false);
+    await mutate();
+  };
 
-  // let rowsUsersEdited = [];
-  // rowsUsers.forEach((data) => {
-  //   rowsUsersEdited = [
-  //     ...rowsUsersEdited,
-  //     {
-  //       ...data,
-  //       createdAt: data.createdAt.split("T")[0],
-  //       updatedAt: data.updatedAt.split("T")[0],
-  //       idRol: data.idRol === 1 ? "Administrador" : data.idRol === 2 ? "Usuario" : "N/A",
-  //       activo: data.activo === "SI" ? "Activo" : "Inactivo",
-  //       actions: "Acciones",
-  //      
-  //     },
-  //   ];
-  //});
-
-
-  useEffect(() => {
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (usersList) {
-      let rowsUsersEdited = [];
-      rowsUsers.map((data) => {
-        rowsUsersEdited = [
-          ...rowsUsersEdited,
-          {
-            ...data,
-            createdAt: data.createdAt.split("T")[0],
-            updatedAt: data.updatedAt.split("T")[0],
-            idRol: data.idRol === 1 ? "Administrador" : data.idRol === 2 ? "Usuario" : "N/A",
-            activo: data.activo === "SI" ? "Activo" : "Inactivo",
-            actions: "Acciones",
-          },
-        ];
+  const toggleStatus = user => {
+    showAlert({
+      title: `¿Deseas cambiar el estado de ${user.nombres} ${user.apellidoPaterno}?`,
+      text: `Al actualizar este registro, el estado del usuario se alternará, 
+      es decir, si se encuentra ACTIVO pasará a estar INACTIVO y viceversa.`,
+      icon: 'warning',
+      showCancelButton: true
+    }).then(option => {
+      if (option.isConfirmed) {
+        return toggleUserStatus(user.id);
+      }
+    })
+      .then(res => {
+        if (res) {
+          showAlert({
+            title: 'Estado actualizado exitosamente',
+            text: `El estado de ${user.nombres} ha sido actualizado.`,
+            icon: 'success'
+          })
+        }
       })
-      setDataStore(rowsUsersEdited)
-    }
-  }, [usersList]);
+      .catch(err => {
+        showAlert({
+          title: 'Hubo un error',
+          text: err,
+          icon: 'error'
+        })
+      })
+      .finally(mutate)
+  };
 
-  const editable = true,
-    headerClassName = "dt-theme--header",
-    sortable = false,
-    headerAlign = "center",
-    align = "center",
-    filterable = false;
-  const columnsUsers = [
+  useEffect(() => {
+    getUsersGeneralInfo({
+      attributes: ['activo']
+    })
+      .then(({ data }) => {
+        if (isMounted()) {
+          setUsersQuantity(data.total);
+          const inactive = data.data.filter(({ activo }) => activo === 'NO').length;
+          setInactiveUsers(inactive);
+        }
+      })
+  }, [usersQuantity, isMounted])
+
+  const editable = true;
+  const sortable = true;
+  const headerAlign = "center";
+  const align = "center";
+  const columns = [
     {
       field: "id",
-      headerName: "ID ",
+      headerName: "ID",
+      flex: 0.3,
+      editable: false,
+      sortable,
+      headerAlign: 'right',
+      align: 'right',
+      hide: true
+    },
+    {
+      field: "urlImagen",
+      headerName: "Imagen",
       flex: 0.1,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align
-    },
-
-    {
-      field: "nombres",
-      headerName: "Nombre (s)",
-      flex: 1,
-      minWidth: 130,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
+      minWidth: 80,
+      editable: false,
+      sortable: false,
+      filterable: false,
+      renderCell: params => (
+        <Avatar
+          className='latest-picture'
+          alt={params.row.nombres}
+          src={params.row.urlImagen} />
+      ),
     },
     {
-      field: "apellidoPaterno",
-      headerName: "Apellido Paterno ",
+      field: 'nombre',
+      headerName: 'Nombre',
+      valueGetter: ({ row }) => `${row.nombres} ${row.apellidoPaterno} ${row.apellidoMaterno || ''}`,
       flex: 1,
-      minWidth: 160,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-    },
-    {
-      field: "apellidoMaterno",
-      headerName: "Apellido Materno ",
-      flex: 1,
-      minWidth: 160,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
+      minWidth: 200
     },
     {
       field: "correo",
@@ -173,194 +132,112 @@ export const Users = () => {
       flex: 1,
       minWidth: 200,
       editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-    },
-    {
-      field: "createdAt",
-      headerName: "Creacion",
-      flex: 0.5,
-      minWidth: 100,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-    },
-    {
-      field: "updatedAt",
-      headerName: "Edicion",
-      flex: 0.5,
-      minWidth: 100,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-    },
-    {
-      field: "urlImagen",
-      headerName: "Avatar ",
-      flex: 0.5,
-      minWidth: 80,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-      filterable,
-      renderCell: (params) => {
-        return (
-          <ShowImage
-            data={{
-              title: params.row.correo,
-              url: params.row.urlImagen,
-            }}
-          />
-        );
-      },
+      sortable
     },
     {
       field: "idRol",
       headerName: "Rol",
-      flex: 0.5,
-      minWidth: 150,
-      headerClassName,
+      flex: 0.2,
+      minWidth: 100,
       sortable,
-      headerAlign,
-      align,
-      renderCell: (params) => {
-        return (<Status status={params.row.idRol} />);
-      },
+      renderCell: params => <Status status={params.row.rol.rol} />,
     },
     {
       field: "activo",
       headerName: "Estado",
-      flex: 0.5,
+      flex: 0.2,
       minWidth: 100,
-      headerClassName,
       sortable,
-      headerAlign,
-      align,
-      renderCell: (params) => {
-        return (<Status status={params.row.activo} />)
-      },
+      renderCell: params => <Status handleClick={() => toggleStatus(params.row)} status={params.row.activo} />
     },
     {
-      field: "actions",
-      headerName: "Acciones",
+      field: "createdAt",
+      headerName: "Creación",
       flex: 0.5,
+      minWidth: 100,
+      editable,
+      sortable,
+      hide: true,
+      renderCell: params => <Typography noWrap>{parseDate(params.row.createdAt)}</Typography>
+    },
+    {
+      field: "updatedAt",
+      headerName: "Edición",
+      flex: 0.5,
+      minWidth: 100,
+      editable,
+      sortable,
+      hide: true,
+      renderCell: params => <Typography noWrap>{parseDate(params.row.createdAt)}</Typography>
+    },
+    {
+      field: "editar",
+      headerName: "Editar",
+      flex: 0.2,
       editable: false,
       minWidth: 100,
-      headerClassName,
-      sortable,
+      sortable: false,
       headerAlign,
       align,
-      filterable,
-      renderCell: (params) => {
-        // console.log(params.row)
-        return (
-          <div className="dt-btn-container">
-            {
-              (params.row.activo == 'Activo')
-                ?
-                <span className="dt-action-delete"
-                  onClick={() => handleStatus(params.row.id, "usuario", params.row.nombres + " " + params.row.apellidoPaterno + " " + params.row.apellidoMaterno, "off")}
-                >
-                  <ToggleOnIcon />
-                </span>
-                :
-                <span className="dt-action-delete"
-                  onClick={() => handleStatus(params.row.id, "usuario", params.row.nombres + " " + params.row.apellidoPaterno + " " + params.row.apellidoMaterno, "on")}
-                >
-                  <ToggleOffIcon />
-                </span>
-            }
-            <span
-              className="dt-action-edit"
-              onClick={() => {
-                setOpenModal((prev) => !prev);
-                setClickInfo(params.row);
-              }}
-            >
-              <ModeEditIcon />
-            </span>
-          </div>
-        );
-      },
+      filterable: false,
+      renderCell: params => (
+        <Stack direction='row'>
+          <IconButton aria-label='editar' onClick={() => handleEditUser(params.row)}>
+            <EditIcon />
+          </IconButton>
+        </Stack>
+      )
     },
   ];
 
-  const dataTable = [columnsUsers, dataStore];
+  useEffect(() => {
+    if (!users) {
+      return;
+    }
+    if (isMounted()) {
+      setRows(users.data);
+      setTotal(users.total);
+    }
+  }, [users, isMounted]);
 
   const dataUser = {
     topic: "usuario",
-    countEnable: activeCounter,
-    countDisable: inactiveCounter,
+    countEnable: usersQuantity || 0,
+    countDisable: inactiveUsers || 0,
     setSearch: setSearchUser,
     searchValue: searchUser
   };
-  return (
-    <>
-      <DataHeader
-        data={dataUser}
-        handleOpenModal={handleOpenModal}
-      />
-      <Box className="dt-table">
-        {isLoading ? (
-          <Box className="dt-loading">
-            <BeatLoader size={15} color="#1976D2" />
-          </Box>
-        ) : (
-          <>
-            <DatagridTable data={dataTable} />
-            <DataPagination
-              data={{
-                dataRecords: dataUser,
-                paginationCounter,
-                setPaginationCounter,
-                perPaginationCounter,
-                setPerPaginationCounter,
-                totalPages,
-                perPage,
-              }}
-            />
-          </>
-        )}
-      </Box>
 
+  return (
+    <Box display='flex' flexDirection='column' p={2} height='100%'>
+      <DataHeader
+        isLoading={isLoading}
+        data={dataUser}
+        handleOpenModal={handleNewUser}
+      />
+      <div className='datagrid-container'>
+        <DatagridTable
+          rows={rows}
+          columns={columns}
+          page={page}
+          perPage={perPage}
+          total={total}
+          isLoading={isLoading}
+          handlePageSizeChange={size => setPerPage(size)}
+          handlePageChange={page => setPage(page + 1)}
+        />
+      </div>
       <FormDialog
         open={openModal}
-        setOpenModal={setOpenModal}
-        title={`Editar Usuario`}
+        handleClose={handleUserFormClose}
       >
-        <FormUser handleCloseModal={handleCloseModal} />
+        <DialogTitle>{formUserAction} Usuario</DialogTitle>
+        <FormUser
+          handleCloseModal={handleUserFormClose}
+          action={formUserAction}
+          selectedUser={selectedUser}
+        />
       </FormDialog>
-      <FormDialog
-        open={removeOpenModal}
-        setOpenModal={setRemoveOpenModal}
-      >
-        <FormDelete topic={changeData?.topic} element={changeData?.element} type={changeData?.type} handleCloseModal={handleRemoveCloseModal}
-          handleDelete={
-            () => {
-
-              changeStatusUser(changeData?.id)
-                .then(res => res.data)
-                .then(res => {
-                  if (dataStore.find(x => x.id === changeData?.id).activo === 'Activo') {
-                    dataStore.find(x => x.id === changeData?.id).activo = 'Inactivo';
-                  } else {
-                    dataStore.find(x => x.id === changeData?.id).activo = 'Activo';
-                  }
-                  alert.success('Estado del usuario cambiado exitosamente');
-                  handleRemoveCloseModal();
-                })
-                .catch(err => alert.error(err))
-
-            }} />
-      </FormDialog>
-    </>
+    </Box>
   );
 };

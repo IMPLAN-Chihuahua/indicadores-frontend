@@ -1,64 +1,94 @@
-import { Container, Grid } from '@mui/material';
+import { Button, Container, Grid, IconButton, Paper, Stack } from '@mui/material';
 import { Box } from '@mui/system';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { BeatLoader } from 'react-spinners';
-
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { useHistoricos, deleteHistorico } from '../../../../../../services/historicosService';
 import DatagridTable from '../../../../common/DatagridTable';
-import { DataHeader } from '../../../../common/DataHeader';
-import { DataPagination } from '../../../../common/DataPagination';
 import { ActualValue } from './ActualValue';
 import { HistoricosGraph } from './HistoricosGraph';
-
-import ModeEditIcon from "@mui/icons-material/ModeEdit";
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import { useAlert } from '../../../../../../contexts/AlertContext';
-
-import { useNavigate } from 'react-router-dom';
-
 import './historicos.css';
 import { useParams } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import FormDialog from '../../../../common/FormDialog';
+import FormHistoricos from './FormHistoricos';
+import PersonalLoader from '../../../../../common/PersonalLoader/PersonalLoader';
+import { getGlobalPerPage } from '../../../../../../utils/objects';
+import useIsMounted from '../../../../../../hooks/useIsMounted';
+import { showAlert } from '../../../../../../utils/alert';
 
 export const HistoricosView = () => {
-  let perPage = localStorage.getItem('perPage') || 5;
-  let totalPages = 1;
-  let rowsHistoricos = [];
-
-  const alert = useAlert();
   const { id } = useParams();
+  let rowsHistoricos = [];
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(getGlobalPerPage);
+  const isMounted = useIsMounted();
 
-  const [perPaginationCounter, setPerPaginationCounter] = useState(perPage);
-  const [paginationCounter, setPaginationCounter] = useState(1);
   const [order, setOrder] = useState('desc');
   const [sortBy, setSortBy] = useState('id');
+  const [clickInfo, setClickInfo] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [rows, setRows] = useState([]);
 
-  const [activeCounter, setActiveCounter] = useState(0);
-  const [inactiveCounter, setInactiveCounter] = useState(0);
 
-  const isMounted = useRef(true);
-  const { historicosList, isLoading, isError } = useHistoricos(
-    perPaginationCounter,
-    paginationCounter,
+  const [openModal, setOpenModal] = useState(false);
+  const handleOpenModal = () => {
+    setOpenModal(true)
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
+
+  const { historicosList, isLoading, mutate } = useHistoricos(
+    perPage,
+    page,
     id,
     sortBy,
     order,
   );
 
-  const [dataStore, setDataStore] = useState([]);
 
-  const handleDelete = (id) => {
-    deleteHistorico(id)
-      .then(
-        alert.success('Historico eliminado exitosamente.'))
-      .catch(err => { console.log(err); });
+  useEffect(() => {
+    if (!historicosList) {
+      return;
+    }
+    if (isMounted()) {
+      setRows(historicosList.data);
+      setTotal(historicosList.total);
+    }
+  }, [historicosList, isMounted]);
 
+  const handleDeleteHistorico = ({ id }) => {
+    showAlert({
+      title: '¿Deseas eliminar este valor histórico?',
+      text: 'Al eliminar este registro, dejará de ser visible en la tabla de valores históricos de Chihuahua Métrica y en el sistema de gestión de Chihuahua en Datos.',
+      icon: 'warning',
+      showCancelButton: true,
+      cancelButtonColor: 'white',
+      customConfirmButtonColor: 'var(--danger-main)',
+      customCancelButtonText: 'Cancelar, conservar registro',
+      confirmButtonText: 'Aceptar, eliminar registro',
+    }).then((option) => {
+      if (option.isConfirmed) {
+        return deleteHistorico(id);
+      }
+    })
+      .then(res => {
+        if (res) {
+          Swal.fire('Eliminado!', 'El registro ha sido eliminado.', 'success');
+          mutate();
+        }
+      })
+      .catch(err => {
+        showAlert({
+          title: 'Hubo un error',
+          text: err,
+          icon: 'error'
+        })
+      });
   }
 
-  if (activeCounter == 0 && inactiveCounter == 0 && historicosList) {
-    setActiveCounter(historicosList.total - historicosList.totalInactivos);
-    setInactiveCounter(historicosList.totalInactivos);
-  }
-  historicosList && (totalPages = historicosList.totalPages);
   historicosList && (rowsHistoricos = historicosList.data);
 
   let rowsHistoricosEdited = [];
@@ -67,18 +97,14 @@ export const HistoricosView = () => {
       rowsHistoricosEdited = [
         ...rowsHistoricosEdited,
         {
-          ...data,
-          fechaIngreso: data.fechaIngreso.split('T')[0],
+          id: data.id,
+          anio: data.anio,
+          valor: data.valor,
+          fuente: data.fuente,
         },
       ];
     })
   });
-
-  useEffect(() => {
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
 
   useEffect(() => {
     if (historicosList) {
@@ -87,137 +113,143 @@ export const HistoricosView = () => {
         rowsHistoricosEdited = [
           ...rowsHistoricosEdited,
           {
-            ...data,
-            fechaIngreso: data.fechaIngreso.split('T')[0],
+            id: data.id,
+            anio: data.anio,
+            valor: data.valor,
+            fuente: data.fuente,
           },
         ];
       })
-      setDataStore(rowsHistoricosEdited);
     }
   }, [historicosList]);
 
-  const editable = false,
-    headerClassName = "dt-theme--header",
-    sortable = false,
-    headerAlign = "center",
-    align = "center",
-    filterable = false;
+  const sortable = true;
 
-  const columnHistoricos = [
+  const columns = [
     {
-      field: 'id',
-      headerName: 'ID',
-      flex: 0.1,
-      editable,
-      headerClassName,
+      field: 'anio',
+      headerName: 'Año de referencia',
+      flex: 0.5,
       sortable,
-      headerAlign,
-      align,
-      hide: true,
+      headerAlign: 'right',
+      align: 'right'
     },
     {
       field: 'valor',
       headerName: 'Valor',
-      flex: 0.1,
-      minWidth: 50,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
+      flex: 1,
+      minWidth: 80,
+      headerAlign: 'right',
+      align: 'right'
     },
     {
       field: 'fuente',
       headerName: 'Fuente',
-      flex: 0.5,
-      minWidth: 50,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-    },
-    {
-      field: "fechaIngreso",
-      headerName: "Registro",
-      flex: 0.1,
-      minWidth: 100,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
+      flex: 1,
+      minWidth: 80,
     },
     {
       field: "actions",
       headerName: "Acciones",
-      flex: 0.3,
+      flex: 0.5,
       editable: false,
       minWidth: 100,
-      headerClassName,
       sortable,
-      headerAlign,
-      align,
-      filterable,
-      renderCell: (params) => {
-        return (
-          <div className="dt-btn-container">
-            <span className="dt-action-delete"
-              onClick={() => handleDelete(params.row.id)}
-            >
-              <DeleteForeverIcon />
-            </span>
-            <span
-              className="dt-action-edit"
-            >
-              <ModeEditIcon />
-            </span>
-          </div>
-        );
-      },
+      headerAlign: 'center',
+      align: 'center',
+      filterable: false,
+      renderCell: params => (
+        <Stack direction='row'>
+          <IconButton aria-label='eliminar historico' onClick={() => handleDeleteHistorico(params.row)}>
+            <DeleteForeverIcon />
+          </IconButton>
+          <IconButton aria-label='editar historico' onClick={() => {
+            handleOpenModal();
+            setClickInfo({ type: 1, ...params.row });
+          }}>
+            <EditIcon />
+          </IconButton>
+        </Stack>
+      )
     },
-  ];
+  ]
 
-  const dataTable = [columnHistoricos, dataStore];
+  if (isLoading) {
+    return <PersonalLoader />
+  }
+
   return (
     <>
-      <br />
-      <Box className="dt-container">
-        {
-          isLoading ? (
-            <Box>
-              <BeatLoader size={15} color="#1976D2" />
-            </Box>
-          ) : (
-            <>
-              <DatagridTable data={dataTable} className='upper-panel' />
-              <br />
-              <Grid container className='bottom-panel'>
-                <Grid item xs={12} md={6} className='bottom-panel-left'>
-                  <Box className='left-item'>
-                    <HistoricosGraph historicosData={dataTable[1]} />
-                  </Box>
-                </Grid>
-                <Grid item xs={12} md={6} className='bottom-panel-right'>
-                  <Box className='actual-value-container right-item'>
-                    <ActualValue value={historicosList.indicadorLastValue} date={historicosList.indicadorLastUpdateDate} />
-                  </Box>
-                </Grid>
-              </Grid>
-              <DataPagination
-                data={{
-                  paginationCounter,
-                  setPaginationCounter,
-                  perPaginationCounter,
-                  setPerPaginationCounter,
-                  totalPages,
-                  perPage,
-                }}
-              />
-            </>
-          )
-        }
+      <Box
+        p={3}
+        display='flex'
+        flexDirection='column'
+        sx={{
+          flex: '1 1 auto',
+          overflowY: 'scroll',
+          height: '500px'
+        }}>
+        <Grid container columnGap={2}>
+          <Paper component={Grid} item xs={12} md={6} elevation={1} p={1}>
+            {
+              historicosList.data.length > 0 && (
+                <HistoricosGraph
+                  historicosData={historicosList.data}
+                  ultimoValor={historicosList.indicadorLastValue}
+                  ultimaFecha={historicosList.indicadorLastUpdateDate}
+                />
+              )
+            }
+          </Paper>
+          <Paper
+            component={Grid}
+            item
+            xs={12}
+            md
+            elevation={1}
+            alignItems='center'
+          >
+            <ActualValue value={historicosList.indicadorLastValue} date={historicosList.indicadorLastUpdateDate} />
+          </Paper>
+        </Grid>
+        <Box mt={1} mb={1} ml='auto'>
+          <Button
+            variant='contained'
+            onClick={() => {
+              handleOpenModal();
+              setClickInfo({ type: 2 });
+            }}
+          >
+            Agregar histórico
+          </Button>
+        </Box>
+        <div className='datagrid-container'>
+          <DatagridTable
+            rows={rows}
+            columns={columns}
+            isLoading={isLoading}
+            page={page}
+            total={total}
+            perPage={perPage}
+            handlePageChange={newPage => setPage(newPage + 1)}
+            handlePageSizeChange={size => setPerPage(size)}
+          />
+        </div>
       </Box>
+      <FormDialog
+        open={openModal}
+        handleClose={() => setOpenModal(false)}
+      >
+        <FormHistoricos
+          type={clickInfo.type}
+          id={clickInfo.id}
+          anio={clickInfo.anio}
+          valor={clickInfo.valor}
+          fuente={clickInfo.fuente}
+          handleCloseModal={handleCloseModal}
+          mutate={mutate}
+        />
+      </FormDialog>
     </>
   )
 }

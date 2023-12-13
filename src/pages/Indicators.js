@@ -1,140 +1,98 @@
-import { Box } from "@mui/material";
-import React, { useRef } from "react";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import DatagridTable from "../components/dashboard/common/DatagridTable";
 import { DataHeader } from "../components/dashboard/common/DataHeader";
 import { useIndicators } from "../services/userService";
-import { BeatLoader } from "react-spinners";
-import ShowImage from "../components/dashboard/common/ShowImage";
 import { Status } from "../components/dashboard/common/Status";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import FormDialog from "../components/dashboard/common/FormDialog";
-import FormModel from "../components/dashboard/forms/model/FormModel";
-import { DataPagination } from "../components/dashboard/common/DataPagination";
 import { FormIndicador } from "../components/dashboard/forms/indicador/FormIndicador";
-import { HorizontalStepper } from "../components/dashboard/forms/indicador/HorizontalStepper";
-import { FormProvider, useForm } from "react-hook-form";
-import { Provider } from "react-redux";
-import { indicadorStore } from "../components/dashboard/forms/indicador/store";
-import FormDelete from "../components/common/FormDelete";
-import ToggleOnIcon from '@mui/icons-material/ToggleOn';
-import ToggleOffIcon from '@mui/icons-material/ToggleOff';
-import { useAlert } from "../contexts/AlertContext";
-import { changeStatusIndicator } from "../services/indicatorService";
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { useNavigate } from 'react-router-dom';
-
+import { getGlobalPerPage } from "../utils/objects";
+import { Box, IconButton, Link, Typography } from "@mui/material";
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import { parseDate } from "../utils/dateParser";
+import { showAlert } from "../utils/alert";
+import { getIndicatorsGeneralInfo, toggleIndicadorStatus } from "../services/indicatorService";
 
 export const Indicators = () => {
-
-  let perPage = localStorage.getItem("perPage") || 5;
-  let totalPages = 1;
-  let rowsIndicators = [];
-
-  const [searchIndicator, setSearchIndicator] = useState("");
-  const [paginationCounter, setPaginationCounter] = useState(1);
-  const [perPaginationCounter, setPerPaginationCounter] = useState(perPage);
-
-  const [activeCounter, setActiveCounter] = useState(0);
-  const [inactiveCounter, setInactiveCounter] = useState(0);
-
-  const isMounted = useRef(true);
-  const { IndicatorsList, isLoading, isError } = useIndicators(
-    perPaginationCounter,
-    paginationCounter,
-    searchIndicator
-  );
-
-  const alert = useAlert();
-  const [openModal, setOpenModal] = React.useState(false);
-  const handleOpenModal = () => setOpenModal(true);
-  const handleCloseModal = () => setOpenModal(false);
-
-  const [clickInfo, setClickInfo] = React.useState({
-    row: { temaIndicador: "" },
-  });
-
-  const [removeOpenModal, setRemoveOpenModal] = React.useState(false);
-  const handleRemoveOpenModal = () => setRemoveOpenModal(true);
-  const handleRemoveCloseModal = () => setRemoveOpenModal(false);
-
-  const [changeData, setChangeData] = useState({});
-  const [dataStore, setDataStore] = useState([]);
-
   const navigate = useNavigate();
+  const [searchIndicator, setSearchIndicator] = useState("");
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(getGlobalPerPage);
+  const [total, setTotal] = useState(0)
+  const { indicadores, isLoading, mutate } = useIndicators(perPage, page, searchIndicator);
+  const [isFormVisible, setFormVisible] = useState(false);
+  const [indicatorsQuantity, setIndicatorsQuantity] = useState(0);
+  const [inactiveIndicators, setInactiveIndicators] = useState(0);
 
-  const handleStatus = (id, topic, element, type) => {
-    setChangeData({
-      id,
-      topic,
-      element,
-      type
-    });
-    handleRemoveOpenModal();
-  }
+  const handleOpenModal = () => setFormVisible(true);
 
-  if (activeCounter == 0 && inactiveCounter == 0 && IndicatorsList) {
-    setActiveCounter(IndicatorsList.total - IndicatorsList.totalInactivos);
-    setInactiveCounter(IndicatorsList.totalInactivos);
-  }
-  IndicatorsList && (totalPages = IndicatorsList.totalPages);
-  IndicatorsList && (rowsIndicators = IndicatorsList.data);
+  const [rows, setRows] = useState([]);
 
-  let rowsIndicatorsEdited = [];
-  useMemo(() => {
-    rowsIndicators.map((data) => {
-      rowsIndicatorsEdited = [
-        ...rowsIndicatorsEdited,
-        {
-          ...data,
-          createdAt: data.createdAt.split("T")[0],
-          updatedAt: data.updatedAt.split("T")[0],
-          activo: data.activo == "SI" ? "Activo" : "Inactivo",
-          actions: "Acciones",
-        },
-      ];
+  const fetchCount = () => {
+    getIndicatorsGeneralInfo({
+      attributes: ['activo']
     })
-  });
-
-  useEffect(() => {
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (IndicatorsList) {
-      let rowsIndicatorsEdited = [];
-      rowsIndicators.map((data) => {
-        rowsIndicatorsEdited = [
-          ...rowsIndicatorsEdited,
-          {
-            ...data,
-            createdAt: data.createdAt.split("T")[0],
-            updatedAt: data.updatedAt.split("T")[0],
-            activo: data.activo == "SI" ? "Activo" : "Inactivo",
-            actions: "Acciones",
-          },
-        ];
+      .then(({ data }) => {
+        setIndicatorsQuantity(data.total);
+        const inactive = data.data.filter(({ activo }) => activo === 'NO').length;
+        setInactiveIndicators(inactive);
       })
-      setDataStore(rowsIndicatorsEdited)
-    }
-  }, [IndicatorsList]);
+  };
 
-  const editable = true,
-    headerClassName = "dt-theme--header",
-    sortable = false,
-    headerAlign = "center",
-    align = "center",
-    filterable = false;
-  const columnsIndicator = [
+  useEffect(() => {
+    fetchCount();
+  }, [indicatorsQuantity])
+
+  useEffect(() => {
+    if (!indicadores) {
+      return;
+    }
+    setRows(indicadores.data);
+    setTotal(indicadores.total);
+  }, [indicadores]);
+
+  const toggleStatus = (indicador) => {
+    showAlert({
+      title: `¿Deseas cambiar el estado de ${indicador.nombre}?`,
+      text: `Al actualizar este registro, el estado del indicador se alternará, 
+      es decir, si se encuentra ACTIVO pasará a estar INACTIVO y viceversa.`,
+      icon: 'warning',
+      showCancelButton: true
+    }).then(option => {
+      if (option.isConfirmed) {
+        return toggleIndicadorStatus(indicador.id);
+      }
+    })
+      .then(res => {
+        if (res) {
+          showAlert({
+            title: 'Estado actualizado exitosamente',
+            text: `El estado de ${indicador.nombre} ha sido actualizado.`,
+            icon: 'success'
+          });
+          fetchCount();
+        }
+      })
+      .catch(err => {
+        showAlert({
+          title: 'Hubo un error',
+          text: err,
+          icon: 'error'
+        })
+      })
+      .finally(mutate)
+  }
+
+  const editable = true;
+  const sortable = false;
+  const headerAlign = "center";
+  const align = "center";
+  const columns = [
     {
       field: "id",
       headerName: "ID ",
       flex: 0.1,
       editable,
-      headerClassName,
       sortable,
       headerAlign,
       align,
@@ -142,259 +100,147 @@ export const Indicators = () => {
     },
     {
       field: "codigo",
-      headerName: "#",
-      flex: 0.5,
+      headerName: "Código",
+      flex: 0.2,
       minWidth: 50,
-      editable,
-      headerClassName,
+      editable: 'false',
       sortable,
-      headerAlign,
-      align,
-    },
-    {
-      field: "codigoObjeto",
-      headerName: "#S",
-      flex: 1,
-      minWidth: 50,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
+      headerAlign: 'left',
+      align: 'left',
     },
     {
       field: "nombre",
       headerName: "Nombre",
       flex: 1,
       minWidth: 150,
-      editable,
-      headerClassName,
+      editable: false,
       sortable,
-      headerAlign,
-      align,
-      renderCell: (params) => {
-        return (
-          <span className="dt-theme--text">{params.row.nombre}</span>
-        );
-      },
+      headerAlign: 'left',
+      align: 'left',
+      renderCell: (params) => <Typography noWrap>{params.row.nombre}</Typography>,
     },
-
     {
       field: "ultimoValorDisponible",
       headerName: "Valor actual",
-      flex: 1,
+      flex: .5,
+      minWidth: 100,
+      editable,
+      sortable,
+      headerAlign: 'right',
+      align: 'right',
+    },
+    {
+      field: "definicion",
+      headerName: "Definición",
+      flex: 2,
       minWidth: 150,
-      editable,
-      headerClassName,
+      editable: false,
       sortable,
-      headerAlign,
-      align,
-    },
-
-    {
-      field: "tendenciaActual",
-      headerName: "Actual",
-      flex: 1,
-      minWidth: 100,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-      renderCell: (params) => {
-        return (<Status status={params.row.tendenciaActual} />);
-      },
-    },
-    {
-      field: "tendenciaDeseada",
-      headerName: "Deseado",
-      flex: 1,
-      minWidth: 100,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-      renderCell: (params) => {
-        return (<Status status={params.row.tendenciaDeseada} />);
-      },
-    },
-    {
-      field: "urlImagen",
-      headerName: "Imagen",
-      flex: 0.5,
-      minWidth: 100,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-      filterable,
-      hide: true,
-    },
-    {
-      field: "createdAt",
-      headerName: "Creacion",
-      flex: 0.5,
-      minWidth: 100,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-    },
-    {
-      field: "updatedAt",
-      headerName: "Edicion",
-      flex: 0.5,
-      minWidth: 100,
-      editable,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
+      headerAlign: 'left',
+      align: 'left',
+      renderCell: (params) => <Typography noWrap>{params.row.definicion}</Typography>,
     },
     {
       field: "activo",
       headerName: "Estado",
-      flex: 0.5,
-      editable: true,
+      flex: 0.2,
+      editable: false,
       minWidth: 100,
-      headerClassName,
       sortable,
-      headerAlign,
-      align,
-      renderCell: (params) => {
-        return (<Status status={params.row.activo} />);
-      },
+      renderCell: (params) => (
+        <Status
+          status={params.row.activo}
+          handleClick={() => toggleStatus(params.row)}
+        />
+      ),
     },
     {
-      field: "actions",
-      headerName: "Acciones",
+      field: "createdAt",
+      headerName: "Creación",
       flex: 0.5,
-      editable: false,
-      minWidth: 150,
-      headerClassName,
+      minWidth: 100,
+      editable,
       sortable,
-      headerAlign,
-      align,
-      filterable,
-      renderCell: (params) => {
-        return (
-          <div className="dt-btn-container-tri">
-            <span
-              className="dt-action-delete"
-              onClick={() => {
-                navigate(`/indicadores/${params.id}`, [navigate])
-              }}
-            >
-              <OpenInNewIcon />
-            </span>
-            {
-              (params.row.activo == 'Activo')
-                ?
-                <span className="dt-action-delete"
-                  onClick={() => handleStatus(params.row.id, "indicador", params.row.nombre, "off")}
-                >
-                  <ToggleOnIcon />
-                </span>
-                :
-                <span className="dt-action-delete"
-                  onClick={() => handleStatus(params.row.id, "indicador", params.row.nombre, "on")}
-                >
-                  <ToggleOffIcon />
-                </span>
-            }
-            <span
-              className="dt-action-edit"
-              onClick={() => {
-                setOpenModal((prev) => !prev);
-                setClickInfo(params.row);
-              }}
-            >
-              <ModeEditIcon />
-            </span>
-
-          </div>
-        );
-      },
+      headerAlign: 'left',
+      hide: true,
+      align: 'left',
+      renderCell: (params) => (<Typography noWrap>
+        {parseDate(params.row.createdAt)}
+      </Typography>)
+    },
+    {
+      field: "updatedAt",
+      headerName: "Edición",
+      flex: 0.3,
+      minWidth: 100,
+      editable,
+      sortable,
+      headerAlign: 'left',
+      hide: true,
+      align: 'left',
+      renderCell: (params) => (<Typography noWrap>
+        {parseDate(params.row.updatedAt)}
+      </Typography>)
+    },
+    {
+      field: "moreInfo",
+      headerName: "Editar",
+      flex: 0.2,
+      minWidth: 30,
+      editable: false,
+      sortable: false,
+      renderCell: (params) => (
+        <IconButton
+          sx={{
+            border: '1px solid #d2d2d2',
+          }}
+          onClick={() => navigate(`/indicadores/${params.row.id}`)}
+        >
+          <NavigateNextIcon />
+        </IconButton>
+      )
     },
   ];
 
-  const dataTable = [columnsIndicator, dataStore];
-
   const dataIndicator = {
     topic: "indicador",
-    // countEnable: activeCounter,
-    // countDisable: inactiveCounter,
-    countEnable: 100,
-    countDisable: 10,
+    countEnable: indicatorsQuantity || 0,
+    countDisable: inactiveIndicators || 0,
     setSearch: setSearchIndicator,
     searchValue: searchIndicator
   };
 
-  console.log(dataTable);
-
   return (
-    <>
+    <Box display='flex' flexDirection='column' p={2} height='100%'>
       <DataHeader
         data={dataIndicator}
         handleOpenModal={handleOpenModal}
       />
-      <Box className="dt-table">
-        {isLoading ? (
-          <Box className="dt-loading">
-            <BeatLoader size={15} color="#1976D2" />
-          </Box>
-        ) : (
-          <>
-            <DatagridTable data={dataTable} />
-            <DataPagination
-              data={{
-                dataIndicator,
-                paginationCounter,
-                setPaginationCounter,
-                perPaginationCounter,
-                setPerPaginationCounter,
-                totalPages,
-                perPage,
-              }}
-            />
-          </>
-        )}
-      </Box>
-      <FormDialog
-        open={openModal}
-        setOpenModal={setOpenModal}
-        fullWidth
-        keepMounted
-        maxWidth='lg'
-      >
-        <Provider store={indicadorStore}>
-          <HorizontalStepper />
-        </Provider>
-      </FormDialog>
-      <FormDialog
-        open={removeOpenModal}
-        setOpenModal={setRemoveOpenModal}
-      >
-        <FormDelete topic={changeData?.topic} element={changeData?.element} type={changeData?.type} handleCloseModal={handleRemoveCloseModal}
-          handleDelete={
-            () => {
-              try {
-                changeStatusIndicator(changeData?.id);
-                if (dataStore.find(x => x.id == changeData?.id).activo == 'Activo') {
-                  dataStore.find(x => x.id == changeData?.id).activo = 'Inactivo';
-                } else {
-                  dataStore.find(x => x.id == changeData?.id).activo = 'Activo';
-                }
-                alert.success('Estado del modulo cambiado exitosamente');
-                handleRemoveCloseModal();
-              } catch (err) {
-                alert.error(err);
-              }
-            }} />
-      </FormDialog>
-    </>
+      <div className='datagrid-container'>
+        <DatagridTable
+          rows={rows}
+          columns={columns}
+          isLoading={isLoading}
+          page={page}
+          total={total}
+          perPage={perPage}
+          handlePageChange={newPage => setPage(newPage + 1)}
+          handlePageSizeChange={size => setPerPage(size)}
+        />
+      </div>
+      {
+        isFormVisible && (
+          <FormDialog
+            open={isFormVisible}
+            handleClose={() => setFormVisible(false)}
+            fullWidth
+            keepMounted
+            maxWidth='xl'
+          >
+            <FormIndicador close={() => setFormVisible(false)} />
+          </FormDialog>
+        )
+      }
+    </Box>
   );
 };

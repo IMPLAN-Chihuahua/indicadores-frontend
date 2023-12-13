@@ -6,16 +6,20 @@ export const AlertProvider = ({ children }) => {
     const [alertSeverity, setAlertSeverity] = useState('');
     const [alertMessage, setAlertMessage] = useState('');
 
-    const success = (message, timeout = 5000) => {
+    const success = (message) => {
         setAlertSeverity('success');
         setAlertMessage(message);
     };
 
-    const error = (message, timeout = 5000) => {
+    const error = (message) => {
         setAlertSeverity('error');
         setAlertMessage(message);
-        
     };
+
+    const warning = (message) => {
+        setAlertSeverity('warning');
+        setAlertMessage(message);
+    }
 
     const clear = () => {
         setAlertMessage('');
@@ -27,6 +31,7 @@ export const AlertProvider = ({ children }) => {
             value={{
                 success,
                 error,
+                warning,
                 clear,
                 severity: alertSeverity,
                 message: alertMessage,

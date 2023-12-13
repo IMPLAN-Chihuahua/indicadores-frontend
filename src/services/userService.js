@@ -16,7 +16,7 @@ export const getCurrentUser = async () => {
   }
 };
 
-export const getLastedUsers = async () => {
+export const getlatestUsers = async () => {
   try {
     const response = await protectedApi.get('/usuarios');
     const { data: users } = response.data;
@@ -29,12 +29,12 @@ export const getLastedUsers = async () => {
   }
 };
 
-export const getLastedModules = async () => {
+export const getlatestModules = async () => {
   try {
     const response = await protectedApi.get('/modulos');
-    const { data: lastedModules } = response.data;
-    if (lastedModules) {
-      return [...lastedModules];
+    const { data: latestModules } = response.data;
+    if (latestModules) {
+      return [...latestModules];
     }
     return {};
   } catch (error) {
@@ -43,34 +43,42 @@ export const getLastedModules = async () => {
 };
 
 export const useModules = (perPage, page, search) => {
-  const { data, error } = useSWR(`me/modulos?perPage=${perPage}&page=${page}&searchQuery=${search}`, fetcher)
+  const { data, error, mutate } = useSWR(`me/modulos?perPage=${perPage}&page=${page}&searchQuery=${search}&sortBy=updatedAt&order=DESC`, fetcher)
   return {
-    modulesList: data,
+    temas: data,
     isLoading: !error && !data,
-    isError: error,
+    hasError: error,
+    mutate
   }
 };
 export const useIndicators = (perPage, page, search) => {
-  const { data, error } = useSWR(`indicadores?perPage=${perPage}&page=${page}&searchQuery=${search}`, fetcher)
+  const { data, error, mutate } = useSWR(`indicadores?perPage=${perPage}&page=${page}&searchQuery=${search}`, fetcher)
   return {
-    IndicatorsList: data,
+    indicadores: data,
     isLoading: !error && !data,
-    isError: error,
+    hasError: error,
+    mutate
   }
 };
 
 export const useUsers = (perPage, page, search) => {
-  const { data, error } = useSWR(`usuarios?perPage=${perPage}&page=${page}&searchQuery=${search}`, fetcher)
+  const endpoint = new URLSearchParams({
+    perPage,
+    page,
+    searchQuery: search
+  })
+  const { data, error, mutate } = useSWR(`usuarios?${endpoint.toString()}`, fetcher)
   return {
-    usersList: data,
+    users: data,
     isLoading: !error && !data,
-    isError: error,
+    hasError: error,
+    mutate
   }
 };
 
 export const useSelector = (topic, perPage, page, search) => {
   const { data, error } = useSWR(
-    (topic == 'Indicadores')
+    (topic === 'Indicadores')
       ?
       `indicadores?perPage=${perPage}&page=${page}&searchQuery=${search}`
       :
@@ -83,18 +91,12 @@ export const useSelector = (topic, perPage, page, search) => {
     isError: error,
   }
 };
-export const useAutocompleteInput = (topic) => {
-  const { data, error } = useSWR(
-    (topic == 'Indicadores')
-      ?
-      `usuarios`
-      :
-      `indicadores`
-    , fetcher
-  )
+
+export const useAutocompleteInput = (key) => {
+  const { data, error } = useSWR(key, fetcher)
   return {
     itemList: data,
-    isLoading: !error && !data,
+    isLoadingItems: !error && !data,
     isError: error,
   }
 };
@@ -111,7 +113,7 @@ export const getModules = async (page) => {
   }
 };
 
-export const getLastedIndicators = async () => {
+export const getlatestIndicators = async () => {
   try {
     const response = await protectedApi.get('/modulos/1/indicadores');
     const { data: indicadors } = response.data;
@@ -134,24 +136,41 @@ export const createUser = async (user) => {
   }
 }
 
-export const updateUser = async (user) => {
-  try {
-    const response = await protectedApi.patch('/usuarios', user);
-    return 1;
-  } catch (err) {
-    throw err;
-  }
+export const updateUser = (id, values) => {
+  return protectedApi.patch(`/usuarios/${id}`, values);
 }
 
-export const updateMe = async (user) => {
-  try {
-    const response = await protectedApi.patch('/me', user);
-    return 1;
-  } catch (err) {
-    throw err;
-  }
+export const updateProfile = async (user) => {
+  return protectedApi.patch('/me', user);
 }
 
-export const changeStatusUser = async (id) => {
-  return protectedApi.patch(`/usuarios/${id}/toggle-status`);
+export const toggleUserStatus = async (id) => {
+  return protectedApi.post(`/usuarios/${id}/toggle-status`);
+}
+
+export const setIndicatorsToUser = (id, data) => {
+  return protectedApi.post(`/usuarios/${id}/indicadores`, data);
+}
+
+export const getUserStats = async (id) => {
+  return protectedApi.get(`/me/stats/${id}`);
+}
+
+export const getUsersFromIndicador = async (id) => {
+  return protectedApi.get(`/indicadores/${id}/usuarios`);
+}
+
+export const getUsersGeneralInfo = async ({ page, perPage, attributes, id, sortBy, order }) => {
+  const attributesQuery = attributes
+    ? attributes.map(attribute => `attributes[]=${attribute}`).join('&')
+    : '';
+
+  const sortByQuery = sortBy ? `&sortBy=${sortBy}` : '';
+  const orderQuery = order ? `&order=${order}` : '';
+  const pageQuery = page ? `&page=${page}` : '';
+  const perPageQuery = perPage ? `&perPage=${perPage}` : '';
+
+  const query = `${attributesQuery}${sortByQuery}${orderQuery}${pageQuery}${perPageQuery}`;
+
+  return protectedApi.get(`/usuarios/info/general?b=0&${query}`);
 }

@@ -1,53 +1,102 @@
-import { Box, Button, DialogActions, DialogContent, Grid, TextField } from "@mui/material";
+import { Alert, Box, Grid, Stack, TextField, Typography } from "@mui/material";
+import { useEffect } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
-import FileInput from "../../../common/FileInput";
+import { useIndicadorContext } from "../../../../contexts/IndicadorContext";
+import { ImageInput } from "../../../common/FileInput";
+import * as yup from 'yup';
+import { yupResolver } from "@hookform/resolvers/yup";
 
-export const FormMapa = ({ handleBack, handleNext }) => {
-  const methods = useForm();
-  const { control, handleSubmit, reset } = methods;
-  const onSubmit = data => {
-    handleNext();
-  }
+const mapaSchema = yup.object({
+  url: yup.string().url('Ingresa una URL valida'),
+})
+
+export const defaultMapa = {
+  url: '',
+  ubicacion: '',
+  urlImagen: null,
+};
+
+export const FormMapa = (props) => {
+  const { indicador, onSubmit } = useIndicadorContext();
+  const methods = useForm({
+    resolver: yupResolver(mapaSchema)
+  });
+  const { handleSubmit, reset, control } = methods;
+
+  useEffect(() => {
+    reset(indicador.mapa);
+  }, [indicador.mapa]);
 
   return (
-    <>
-      <DialogContent style={{ height: '60vh' }}>
-        <FormProvider {...methods}>
-          <Box
-            component='form'
-            noValidate
-            onSubmit={handleSubmit(onSubmit)}
-            onReset={reset}
-          >
-            <Grid container rowSpacing={2}>
-              <Grid item xs={6}>
-                <Controller
-                  control={control}
-                  name='url'
-                  render={() => (
-                    <TextField
-                      fullWidth
-                      label='URL del mapa'
-                      placeholder="https://geoportal.implanchihuahua.org"
-                    />
-                  )}
-                />
-              </Grid>
+    <FormProvider {...methods}>
+      <Box
+        id='form-mapa'
+        component='form'
+        noValidate
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <Grid
+          container
+          rowSpacing={2}
+          columnSpacing={2}
+        >
+          {
+            props.defaultTitle && (
               <Grid item xs={12}>
-                <FileInput
-                  name='imgMapa'
-                  label='Imagen del mapa'
-                  height='300px'
-                />
+                <Typography variant='h5' component='h3'>Mapa</Typography>
               </Grid>
-            </Grid>
-          </Box>
-        </FormProvider>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleBack}>Atras</Button>
-        <Button variant='contained' onClick={handleSubmit(onSubmit)}>Siguiente</Button>
-      </DialogActions>
-    </>
+            )
+          }
+          <Grid item xs={12}>
+            <Controller
+              control={control}
+              name='url'
+              defaultValue=''
+              render={({ field: { value, onChange }, fieldState: { error } }) => (
+                <TextField
+                  value={value}
+                  onChange={onChange}
+                  fullWidth
+                  error={!!error}
+                  helperText={error?.message}
+                  label='URL ArcGIS'
+                  placeholder="https://geoportal.implanchihuahua.org"
+                />
+              )}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Controller
+              control={control}
+              name='ubicacion'
+              defaultValue=''
+              render={({ field: { value, onChange }, fieldState: { error } }) => (
+                <TextField
+                  value={value}
+                  onChange={onChange}
+                  fullWidth
+                  error={!!error}
+                  helperText={error?.message}
+                  label='Ubicación'
+                  placeholder="\\10.218.108.49\Geomatica\Activo\IMPLAN2022\GM2201_Datos_para_todos\Octubre\octubre_rosa.shp"
+                />
+              )}
+            />
+          </Grid>
+          <Grid item xs>
+            <ImageInput
+              name='urlImagen'
+              label='Imagen del mapa'
+              height='300px'
+            />
+            <Alert
+              severity="info"
+              style={{ maxWidth: 'fit-content', marginTop: '5px' }}>
+              Esta imagen será utilizada en el archivo PDF de la ficha técnica.
+            </Alert>
+          </Grid>
+        </Grid>
+      </Box>
+    </FormProvider>
   );
 };

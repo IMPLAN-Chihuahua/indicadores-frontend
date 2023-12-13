@@ -1,85 +1,83 @@
-import { Box } from "@mui/material";
-import React, { useRef } from "react";
-import { useState, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect } from "react";
+import { useState } from "react";
 import DatagridTable from "../components/dashboard/common/DatagridTable";
 import { DataHeader } from "../components/dashboard/common/DataHeader";
-import { useIndicators } from "../services/userService";
-import { BeatLoader } from "react-spinners";
-import ShowImage from "../components/dashboard/common/ShowImage";
-import { Status } from "../components/dashboard/common/Status";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import { useIndicadorUsuarios } from "../services/usuarioIndicadorService";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import FormDialog from "../components/dashboard/common/FormDialog";
-import FormModel from "../components/dashboard/forms/model/FormModel";
-import { DataPagination } from "../components/dashboard/common/DataPagination";
 import FormRelationship from "../components/dashboard/forms/relationship/FormRelationship";
+import { getGlobalPerPage } from "../utils/objects";
+import { useNavigate } from "react-router-dom";
+import PersonIcon from '@mui/icons-material/Person';
+import AddIcon from '@mui/icons-material/Add';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import { getIndicatorsGeneralInfo } from "../services/indicatorService";
+import { Box, IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { parseDate } from "../utils/dateParser";
 
 export const Relationship = () => {
-  let perPage = 5;
-  localStorage.getItem("perPage") &&
-    (perPage = localStorage.getItem("perPage"));
-  let totalPages = 1;
-  let rowsIndicators = [];
+  const [searchIndicator, setSearchIndicator] = useState('');
+  const [isEdit, setIsEdit] = useState(false);
+  const [indicador, setIndicador] = useState({});
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(getGlobalPerPage);
+  const [total, setTotal] = useState(0);
+  const [indicatorsQuantity, setIndicatorsQuantity] = useState(0);
+  const [inactiveIndicators, setInactiveIndicators] = useState(0);
+  const { indicadores, isLoading, mutate } = useIndicadorUsuarios(perPage, page, searchIndicator);
+  const [rows, setRows] = useState([]);
+  const navigate = useNavigate();
+
+  const fetchCount = () => {
+    getIndicatorsGeneralInfo({
+      attributes: ['activo']
+    })
+      .then(({ data }) => {
+        setIndicatorsQuantity(data.total);
+        const inactive = data.data.filter(({ activo }) => activo === 'NO').length;
+        setInactiveIndicators(inactive);
+      })
+  };
+
+  useEffect(() => {
+    fetchCount();
+  }, [indicatorsQuantity])
 
 
-  const [searchIndicator, setSearchIndicator] = useState("");
-  const [paginationCounter, setPaginationCounter] = useState(1);
-  const [perPaginationCounter, setPerPaginationCounter] = useState(perPage);
-
-  const [activeCounter, setActiveCounter] = useState(0);
-  const [inactiveCounter, setInactiveCounter] = useState(0);
-
-  const isMounted = useRef(true);
-  const { IndicatorsList, isLoading, isError } = useIndicators(
-    perPaginationCounter,
-    paginationCounter,
-    searchIndicator
-  );
-
-  const [openModal, setOpenModal] = React.useState(false);
-  const handleOpenModal = () => setOpenModal(true);
+  const [openModal, setOpenModal] = useState(false);
+  const handleOpenModal = (e) => {
+    setOpenModal(true);
+    if (e) {
+      setIsEdit(true);
+      setIndicador(e);
+    } else {
+      setIsEdit(false);
+      setIndicador({});
+    }
+  };
   const handleCloseModal = () => setOpenModal(false);
 
-  const [clickInfo, setClickInfo] = React.useState({
+  const [clickInfo, setClickInfo] = useState({
     row: { temaIndicador: "" },
   });
 
-  if (activeCounter == 0 && inactiveCounter == 0 && IndicatorsList) {
-    setActiveCounter(IndicatorsList.total - IndicatorsList.totalInactivos);
-    setInactiveCounter(IndicatorsList.totalInactivos);
-  }
-  IndicatorsList && (totalPages = IndicatorsList.totalPages);
-  IndicatorsList && (rowsIndicators = IndicatorsList.data);
-
-  let rowsIndicatorsEdited = [];
-  useMemo ( () => {
-    rowsIndicators.map((data) => {
-      rowsIndicatorsEdited = [
-        ...rowsIndicatorsEdited,
-        {
-          ...data,
-          createdAt: data.createdAt.split("T")[0],
-          updatedAt: data.updatedAt.split("T")[0],
-          activo: data.activo == "SI" ? "Activo" : "Inactivo",
-          actions: "Acciones",
-        },
-      ];
-  })
-  });
-
   useEffect(() => {
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
+    if (!indicadores) {
+      return;
+    }
+    setRows(indicadores.data);
+    setTotal(indicadores.total);
+  }, [indicadores]);
 
-  const editable = true,
-    headerClassName = "dt-theme--header",
-    sortable = false,
-    headerAlign = "center",
-    align = "center",
-    filterable = false;
-  const columnsIndicator =  [
+  const editable = true;
+  const headerClassName = "";
+  const sortable = false;
+  const headerAlign = "center";
+  const align = "center";
+  const filterable = false;
+
+  const columns = [
     {
       field: "id",
       headerName: "ID ",
@@ -87,94 +85,50 @@ export const Relationship = () => {
       editable,
       headerClassName,
       sortable,
-      headerAlign,
-      align,
+      headerAlign: 'right',
+      align: 'right',
       hide: true,
     },
-      {
-        field: "usuario",
-        headerName: "Usuario",
-        flex: 1,
-        minWidth: 150,
-        editable,
-        headerClassName,
-        sortable,
-        headerAlign,
-        align,
-        renderCell: (params) => {
-          return (
-            <span className="dt-theme--text">{params.row.nombre}</span>
-          );
-        },
-      },
-      {
-        field: "correo",
-        headerName: "Correo",
-        flex: 1,
-        minWidth: 150,
-        editable,
-        headerClassName,
-        sortable,
-        headerAlign,
-        align,
-        renderCell: (params) => {
-          return (
-            <span className="dt-theme--text">{params.row.nombre}</span>
-          );
-        },
-      },
-      {
-        field: "indicador",
-        headerName: "Indicador",
-        flex: 1,
-        minWidth: 150,
-        editable,
-        headerClassName,
-        sortable,
-        headerAlign,
-        align,
-        renderCell: (params) => {
-          return (
-            <span className="dt-theme--text">{params.row.nombre}</span>
-          );
-        },
-      },
-          
     {
-      field: "createdAt",
-      headerName: "Asignación",
-      flex: 0.5,
-      minWidth: 100,
+      field: "nombre",
+      headerName: "Indicador",
+      flex: 1,
+      minWidth: 150,
       editable,
       headerClassName,
       sortable,
-      headerAlign,
-      align,
     },
+    {
+      field: "count",
+      headerName: "Cantidad de usuarios asignados",
+      flex: 0.5,
+      minWidth: 150,
+      editable,
+      headerClassName,
+      sortable,
+      headerAlign: 'right',
+      align: 'right',
+    },
+    {
+      field: "owner",
+      headerName: "Responsable del indicador",
+      flex: 0.5,
+      minWidth: 150,
+      editable,
+      headerClassName,
+      sortable,
+      renderCell: params => params.row.owner
+    },
+
     {
       field: "updatedAt",
-      headerName: "Expiración",
+      headerName: "Fecha de modificación",
       flex: 0.5,
       minWidth: 100,
       editable,
       headerClassName,
       sortable,
-      headerAlign,
-      align,
-    },
-    {
-      field: "activo",
-      headerName: "Estado",
-      flex: 0.5,
-      editable: true,
-      minWidth: 100,
-      headerClassName,
-      sortable,
-      headerAlign,
-      align,
-      renderCell: (params) => {
-        return (<Status status={params.row.activo} />);
-      },
+      renderCell: params => parseDate(params.row.updatedAt)
     },
     {
       field: "actions",
@@ -187,77 +141,60 @@ export const Relationship = () => {
       headerAlign,
       align,
       filterable,
-      renderCell: (params) => {
-        return (
-          <div className="dt-btn-container">
-            <span className="dt-action-delete">
-              {" "}
-              <DeleteOutlineIcon />{" "}
-            </span>
-            <span
-              className="dt-action-edit"
-              onClick={() => {
-                setOpenModal((prev) => !prev);
-                setClickInfo(params.row);
-              }}
+      renderCell: params => (
+        <Stack direction='row'>
+          <Tooltip title={`Agregar usuarios responsables a ${params.row.nombre}`}>
+            <IconButton onClick={() => handleOpenModal(params.row)}>
+              <GroupAddIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={`Ver usuarios asignados a ${params.row.nombre}`}>
+            <IconButton
+              sx={{ border: 1, borderColor: 'divider' }}
+              onClick={() => navigate(`/autorizacion/indicador/${params.id}`, [navigate])}
             >
-              {" "}
-              <ModeEditIcon />{" "}
-            </span>
-          </div>
-        );
-      },
+              <NavigateNextIcon />
+            </IconButton>
+          </Tooltip>
+        </Stack>
+      )
     },
   ];
-  const dataTable = [columnsIndicator, rowsIndicatorsEdited,''];
+
   const dataIndicator = {
     topic: "registro",
-    // countEnable: activeCounter,
-    // countDisable: inactiveCounter,
-    countEnable: 100,
-    countDisable: 10,
+    countEnable: indicatorsQuantity || 0,
+    countDisable: inactiveIndicators || 0,
     setSearch: setSearchIndicator,
     searchValue: searchIndicator
   };
-  return (
-    <>
 
+  return (
+    <Box display='flex' flexDirection='column' p={2} height='100%'>
       <DataHeader
         data={dataIndicator}
-        handleOpenModal={handleOpenModal}
+        handleOpenModal={() => handleOpenModal()}
       />
-      <Box className="dt-table">
-        {isLoading ? (
-          <Box className="dt-loading">
-            <BeatLoader size={15} color="#1976D2" />
-          </Box>
-        ) : (
-          <>
-            <DatagridTable data={dataTable} />
-            <DataPagination
-              data={{
-                dataIndicator,
-                paginationCounter,
-                setPaginationCounter,
-                perPaginationCounter,
-                setPerPaginationCounter,
-                totalPages,
-                perPage,
-              }}
-            />
-          </>
-        )}
-      </Box>
+      <div className='datagrid-container'>
+        <DatagridTable
+          rows={rows}
+          columns={columns}
+          isLoading={isLoading}
+          page={page}
+          total={total}
+          perPage={perPage}
+          handlePageChange={newPage => setPage(newPage + 1)}
+          handlePageSizeChange={size => setPerPage(size)}
+        />
+      </div>
 
       <FormDialog
         open={openModal}
-        setOpenModal={setOpenModal}
-        title={`Editar módulo ${clickInfo.temaIndicador}`}
+        handleClose={handleCloseModal}
         maxWidth={'lg'}
       >
-        <FormRelationship data={clickInfo} handleCloseModal={handleCloseModal} />
+        <FormRelationship data={clickInfo} handleCloseModal={handleCloseModal} mutate={mutate} isEdit={isEdit} indicador={indicador} />
       </FormDialog>
-
-    </>
+    </Box>
   );
 };

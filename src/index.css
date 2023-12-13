@@ -1,14 +1,99 @@
+html {
+  box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+:root {
+  --blue: #2043db;
+  --blue-500: #2043db;
+  --blue-50: #e8e9fb;
+  --blue-100: #c4c7f5;
+  --blue-200: #9ca2ee;
+  --blue-300: #707ee8;
+  --blue-400: #4d60e2;
+  --blue-600: #1a3ad0;
+  --blue-700: #062fc4;
+  --blue-800: #0023b9;
+  --blue-900: #0003a7;
+  --purple: #7b1ee3;
+  --purple-500: #7b1ee3;
+  --purple-50: #f1e6fc;
+  --purple-100: #d9c3f6;
+  --purple-200: #bf9af2;
+  --purple-300: #a56eed;
+  --purple-400: #904ae9;
+  --purple-600: #6f18dd;
+  --purple-700: #5f09d4;
+  --purple-800: #4f00cf;
+  --purple-900: #3100c7;
+  --pink: #ee59e9;
+  --pink-300: #ee59e9;
+  --pink-50: #fde5fb;
+  --pink-100: #f8bef5;
+  --pink-200: #f490ef;
+  --pink-400: #e80ce3;
+  --pink-500: #dc00d8;
+  --pink-600: #cb00d3;
+  --pink-700: #cb00d3;
+  --pink-800: #a100c8;
+  --pink-900: #a100c8;
+  --primary-main: #263044;
+  --primary-on-main: #e3f6fa;
+  --secondary: #d1a961;
+  --soft-black: #1f2d3d;
+  --green: #88c000;
+  --darker-green: #053d13;
+  --pink-gradient: linear-gradient(90deg, #ee59e9 0%, #7b1ee3 100%);
+  --gray-gradient: linear-gradient(90deg, #d1d1d1 0%, #a6a6a6 100%);
+  --gradient: linear-gradient(
+      90deg,
+      hsla(219, 60%, 49%, 1) 0%,
+      rgb(9, 7, 45) 100%
+    )
+    border-box;
+  --darker-gradient: linear-gradient(45deg, #1e165a, #95a9ff, #60225e);
+  --really-darker-gradient: linear-gradient(45deg, #251a75, #4c138e, #60225e);
+  --sidebar-width: 200px;
+  --sidebar-min-width: 65px;
+  --navbar-height: 70px;
+  --light-blue: #edf2fb;
+  --light-purple: #c8b6ff;
+  --gray-95: var(--blue-50);
+  --danger-main: #d32f2f;
+}
 
 body {
+  height: 100%;
+  width: 100%;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+.datagrid-container {
+  min-height: 300px;
+  flex: 1 1 auto;
+}
+
+.semibold {
+  font-weight: 500;
+}
+
+.fill-remaining-space {
+  flex: 1 1 auto;
+  overflow-y: scroll;
 }

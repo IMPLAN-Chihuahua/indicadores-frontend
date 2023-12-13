@@ -1,8 +1,9 @@
 .navbar {
-    background-color: #263044;
+    background: var(--really-darker-gradient);
     color: white;
-    height: 60px;
+    height: var(--navbar-height);
     width: 100%;
+    position: -webkit-sticky;
     position: sticky;
     top: 0;
     z-index: 999;
@@ -14,6 +15,12 @@
     justify-content: space-between;
     padding: 0px 20px;
     height: 100%;
+    background-color: rgba(0,0,0,0.2);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0
 }
 
 .navbar-rigth-options {
@@ -28,18 +35,41 @@
     align-items: center;
 }
 
+.navbar-option {
+    margin: 0px 10px;
+    padding: 10px 10px;
+}
 
+.element {
+    padding: 0;
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    font-size: 15px;
+}
+
+.element-caption {
+    font-size: 0.7rem !important;
+    color: rgba(224, 224, 224, 0.744);
+    margin: 0;
+    padding: 0;
+    font-style: italic;
+    font-family: 'Roboto', sans-serif;
+}
+
+
+.navbar-user-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+}
 
 .navbar-option-close {
     cursor: pointer;
 }
 
-.navbar-option-close:hover {
-    text-decoration: underline;
-}
-
 .navbar-option-icon {
-    margin-right: 5px;
+    margin-right: 10px;
 }
 
 .navbar-option-text {
@@ -54,9 +84,20 @@
     margin-right: 10px;
     padding: 10px;
     border-radius: 10px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
 }
 
-.link-to-profile:hover {
-    background-color: #1d2534;
-    transition: 1s;
+@media (max-width: 650px) {
+    .navbar-user-info {
+        display: none;
+    }
+
+    .navbar-option-text {
+        display: none;
+    }
+
+    .navbar-option-icon {
+        margin-right: 0px;
+    }
 }

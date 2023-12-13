@@ -1,22 +1,20 @@
-# pull official base image
-FROM node:16.15-alpine
+# build application
+FROM node:lts-alpine3.15 as build-stage
 
-# set working directory
 WORKDIR /app
 
-# add `/app/node_modules/.bin` to $PATH
-ENV PATH /app/node_modules/.bin:$PATH
+COPY ./nginx.conf /nginx.conf
+COPY package*.json /app/
 
-# install app dependencies
-COPY package.json ./
-COPY package-lock.json ./
-RUN npm install --silent
-RUN npm install react-scripts@5.0.1 -g --silent
+RUN npm ci --ommit=dev --legacy-peer-deps
 
-# add app
-COPY . ./
+COPY ./ /app/
 
-EXPOSE 3000
+RUN npm run build
 
-# start app
-CMD ["npm", "start"]
+# serve only compiled app with nginx
+FROM nginx:1.22
+
+COPY --from=build-stage /app/build/ /usr/share/nginx/html
+
+COPY --from=build-stage /nginx.conf /etc/nginx/conf.d/default.conf

@@ -1,122 +1,233 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { getCatalogos, getCatalogosDetails, getCatalogosFromIndicador, useCatalogos } from '../../../services/cataloguesService';
-import OdsPicker from './OdsPicker';
 import { Controller } from 'react-hook-form';
 import { Grid } from '@mui/material';
-import { BeatLoader } from 'react-spinners';
+import { Button, IconButton, Input, InputAdornment, OutlinedInput } from '@mui/material';
+import ImageList from '@mui/material/ImageList';
+import ImageListItem from '@mui/material/ImageListItem';
+import ImageListItemBar from '@mui/material/ImageListItemBar';
+import ListSubheader from '@mui/material/ListSubheader';
+import Popover from '@mui/material/Popover';
+import MenuIcon from '@mui/icons-material/Menu';
+import { getCatalog } from '../../../utils/getCatalog';
+import useIsMounted from '../../../hooks/useIsMounted';
 
-const CatalogPicker = ({ idIndicatorCatalog = 0, control, xs = 12, md = 4, catalogs = [] }) => {
-    const [catalogos, setCatalogos] = useState([]);
-    // const { catalogos, loading } = useCatalogos();
+const itemData = [
+    {
+        id: 1,
+        img: 'http://www.un.org/sustainabledevelopment/es/wp-content/uploads/sites/3/2016/01/S_SDG_Icons-01-01.jpg',
+        title: 'Fin de la pobreza',
+    },
+    {
+        id: 2,
+        img: 'http://www.un.org/sustainabledevelopment/es/wp-content/uploads/sites/3/2016/01/S_SDG_Icons-01-02.jpg',
+        title: 'Hambre cero',
+    },
+    {
+        id: 3,
+        img: 'http://www.un.org/sustainabledevelopment/es/wp-content/uploads/sites/3/2016/01/S_SDG_Icons-01-03.jpg',
+        title: 'Salud y bienestar',
+    },
+    {
+        id: 4,
+        img: 'http://www.un.org/sustainabledevelopment/es/wp-content/uploads/sites/3/2016/01/S_SDG_Icons-01-04.jpg',
+        title: 'Educación de calidad',
+    },
+    {
+        id: 5,
+        img: 'http://www.un.org/sustainabledevelopment/es/wp-content/uploads/sites/3/2016/01/S_SDG_Icons-01-05.jpg',
+        title: 'Igualdad de género',
+    },
+    {
+        id: 6,
+        img: 'http://www.un.org/sustainabledevelopment/es/wp-content/uploads/sites/3/2016/01/S_SDG_Icons-01-06.jpg',
+        title: 'Agua limpia y saneamiento',
+    },
+    {
+        id: 7,
+        img: 'http://www.un.org/sustainabledevelopment/es/wp-content/uploads/sites/3/2016/01/S_SDG_Icons-01-07.jpg',
+        title: 'Energía asequible y no contaminante',
+    },
+    {
+        id: 8,
+        img: 'http://www.un.org/sustainabledevelopment/es/wp-content/uploads/sites/3/2016/01/S_SDG_Icons-01-08.jpg',
+        title: 'Trabajo decente y crecimiento económico',
+    },
+    {
+        id: 9,
+        img: 'https://www.un.org/sustainabledevelopment/wp-content/uploads/sites/3/2015/09/S_SDG_Icons-01-09.jpg',
+        title: 'Industria, innovación e infraestructura',
+    },
+    {
+        id: 10,
+        img: 'https://www.un.org/sustainabledevelopment/es/wp-content/uploads/sites/3/2015/09/S_SDG_Icons-01-10-1.jpg',
+        title: 'Reducción de las desigualdades',
+    },
+    {
+        id: 11,
+        img: 'http://www.un.org/sustainabledevelopment/es/wp-content/uploads/sites/3/2016/01/S_SDG_Icons-01-11.jpg',
+        title: 'Ciudades y comunidades sostenibles',
+    },
+    {
+        id: 12,
+        img: 'https://www.un.org/sustainabledevelopment/wp-content/uploads/sites/3/2015/09/S_SDG_Icons-01-12.jpg',
+        title: 'Producción y consumo responsables',
+    },
+    {
+        id: 13,
+        img: 'http://www.un.org/sustainabledevelopment/es/wp-content/uploads/sites/3/2016/01/S_SDG_Icons-01-13.jpg',
+        title: 'Acción por el clima',
+    },
+    {
+        id: 14,
+        img: 'http://www.un.org/sustainabledevelopment/es/wp-content/uploads/sites/3/2016/01/S_SDG_Icons-01-14.jpg',
+        title: 'Vida submarina',
+    },
+    {
+        id: 15,
+        img: 'https://www.un.org/sustainabledevelopment/es/wp-content/uploads/sites/3/2016/01/S_SDG_Icons-01-15.jpg',
+        title: 'Vida de ecosistemas terrestres',
+    },
+    {
+        id: 16,
+        img: 'https://www.un.org/sustainabledevelopment/es/wp-content/uploads/sites/3/2016/01/S_SDG_Icons-01-16.jpg',
+        title: 'Paz, justicia e instituciones sólidas',
+    },
+    {
+        id: 17,
+        img: 'https://www.un.org/sustainabledevelopment/es/wp-content/uploads/sites/3/2016/01/S_SDG_Icons-01-17.jpg',
+        title: 'Alianzas para lograr los objetivos',
+    }
+
+];
+
+export const OdsPicker = ({ odsId = 0 }) => {
+    const [anchor, setAnchor] = useState(null);
+    const [image, setImage] = useState({ id: '', img: '', title: '' });
+
     useEffect(() => {
-        getCatalogos()
-            .then(res => {
-                setCatalogos(res);
-            })
-            .catch(err => {
-                console.log(err);
-            });
+        const item = itemData.find(item => item.id === odsId);
+        if (item) {
+            setImage(item);
+        }
     }, []);
 
-    return (
-        <>
-            {
-                catalogos.map(catalog => {
-                    if (catalog.nombre !== 'ODS') {
-                        return (
-                            <Grid item xs={xs} md={md} key={catalog.id}>
-                                <RegularCatalogs idCatalog={catalog.id} Catalog={catalog.nombre} idIndicatorCatalog={idIndicatorCatalog} control={control} catalogs={catalogs} />
-                            </Grid>
-                        )
-                    } else {
-                        return (
-                            <Grid item xs={xs} md={md} key={catalog.id}>
-                                <OdsCatalog odsId={1} />
-                            </Grid>
-                        )
-                    }
-                })
-            }
-        </>
-    )
-};
-
-const OdsCatalog = (odsId = 1) => {
-    //TODO: Receive ods id from DB
-    return <OdsPicker odsId={odsId} />
-};
-
-const RegularCatalogs = ({ idCatalog, Catalog, idIndicatorCatalog, control, catalogs }) => {
-    const [value, setValue] = useState('');
-    const [options, setOptions] = useState([{ id: 0, nombre: 'Seleccione una opción', idCatalogo: 0 }]);
-    const [indicatorCatalogues, setIndicatorCatalogues] = useState([{ id: 0, nombre: 'Seleccione una opción', idCatalogo: 0 }]);
-
-    const catalogFromIndicador = catalogs.filter(catalog => catalog.id === idCatalog);
-
-    useEffect(() => {
-        getCatalogosDetails(idCatalog).
-            then(res => {
-                setOptions(res);
-            })
-            .catch(err => {
-                console.log(err);
-            })
-    }, [0]);
-    useEffect(() => {
-        getCatalogosFromIndicador(idIndicatorCatalog)
-            // find in array js
-            //RHF Provider
-            .then(res => {
-                const test = res.find(
-                    element => element.idCatalogoDetail === idCatalog
-                )
-                setIndicatorCatalogues({
-                    id: test.idCatalogoDetail,
-                    nombre: test.nombreAtributo,
-                    idCatalogo: idCatalog
-                });
-            })
-            .catch(err => {
-                console.log(err);
-            })
-    }, [0]);
-    const handleChange = (event, newValue) => {
-        setValue(newValue);
+    const handleClick = (e) => {
+        setAnchor(e.currentTarget);
     };
 
+    const handleClose = () => {
+        setAnchor(null);
+    };
+
+    const handleImageSelected = (image) => {
+        setImage(image);
+        handleClose();
+    };
+    const open = Boolean(anchor);
+    const id = open ? 'image-selector' : undefined;
+
     return (
         <>
-            <Controller
-                name={`${Catalog}`}
-                control={control}
-                render={({
-                    field: { onChange, value },
-                    fieldState: { error }
-                }) => (
-                    <Autocomplete
-                        id="combo-box-demo"
-                        options={options}
-                        getOptionLabel={option => option.nombre}
-                        onChange={handleChange}
-                        style={{ width: '90%' }}
-                        renderInput={params => (
-                            <TextField
-                                {...params}
-                                label={`${Catalog}`}
-                                variant="outlined"
-                                size='small'
-                                fullWidth
-                                value={'a'}
-                            />
-                        )}
-                    />
-                )}
-                defaultValue={[{ id: 0, nombre: 'Seleccione una opción', idCatalogo: 0 }]}
-            />
+            <OutlinedInput
+                size='small'
+                style={{ width: '90%' }}
+                value={image.title}
+                placeholder='Seleccione un ODS'
+                endAdornment={
+                    <InputAdornment position='end'>
+                        <IconButton aria-describedby={id} onClick={handleClick} edge='end'>
+                            <MenuIcon />
+                        </IconButton>
+                    </InputAdornment>
+                }
+            >
+            </OutlinedInput>
 
+            <Popover
+                id={id}
+                open={open}
+                anchorEl={anchor}
+                onClose={handleClose}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                }}
+                disableScrollLock
+            >
+                <ImageList sx={{ width: 350, height: 350 }}>
+                    <ImageListItem key="Subheader" cols={2}>
+                        <ListSubheader component="div">Objetivos de Desarrollo Sostenible</ListSubheader>
+                    </ImageListItem>
+                    {itemData.map((item) => (
+                        <ImageListItem key={item.img} sx={{
+                            cursor: 'pointer',
+                        }}
+                            onClick={() => handleImageSelected(item)}
+                        >
+                            <img
+                                src={`${item.img}?w=248&fit=crop&auto=format`}
+                                srcSet={`${item.img}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                                alt={item.title}
+                                loading="lazy"
+
+                            />
+                            <ImageListItemBar
+                                title={item.title}
+                                subtitle={item.author}
+                            />
+                        </ImageListItem>
+                    ))}
+                </ImageList>
+            </Popover>
         </>
     );
 }
-export default CatalogPicker;
+
+export const CatalogoAutocomplete = (props) => {
+    const { value, onChange, label, id,
+        error, required, opts = [], type, catalog } = props;
+
+    const isMounted = useIsMounted();
+    const [options, setOptions] = useState([]);
+
+    const fetchCatalogDetails = useCallback(async () => {
+        let items = [];
+        if (type === 2) {
+            items = await getCatalogosDetails(catalog);
+        } else {
+            items = await getCatalogosDetails(id);
+        }
+        if (isMounted()) {
+            setOptions(items)
+        }
+    }, [id, isMounted]);
+
+    useEffect(() => {
+        if (opts.length === 0) {
+            fetchCatalogDetails();
+        }
+    }, []);
+
+    return (
+        <Autocomplete
+            value={type === 2 ? getCatalog(value, catalog) : value}
+            autoHighlight
+            options={opts.length === 0 ? options : opts}
+            getOptionLabel={option => option.nombre ? option.nombre : ''}
+            isOptionEqualToValue={(option, value) => option.id === value.id}
+            onChange={(_, data) => onChange(data)}
+            renderInput={(params) => (
+                <TextField
+                    {...params}
+                    label={label}
+                    error={!!error}
+                    helperText={error?.message}
+                    required={required}
+                />
+            )}
+        />
+    );
+}

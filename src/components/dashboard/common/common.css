@@ -1,19 +1,15 @@
-.dh-container {
-    position: sticky;
-    top: 60px;
-    display: flex;
-    justify-content: center;
-    padding: 20px;
-    background-color: white;
-    z-index: 777;
+.cell-overflow {
+    overflow: visible !important;
 }
 
-/* .dh-counters{
+.dh-container {
+    position: sticky;
+    top: var(--navbar-height);
     display: flex;
-    justify-content: left;
-    align-items: center;
-    align-content: center;
-} */
+    justify-content: center;
+    z-index: 999;
+    background-color: white;
+}
 
 .dh-search,
 .dh-counters,
@@ -97,7 +93,6 @@ align-content: center;
     justify-content: left;
     align-items: center;
     align-content: center;
-    margin-top: 1%;
 }
 
 .dt-perPage-options--text {
@@ -111,7 +106,6 @@ align-content: center;
     align-items: center;
     align-content: center;
     margin-top: 7px;
-    z-index: 777;
 
 }
 
@@ -120,11 +114,8 @@ align-content: center;
     justify-content: left;
     align-items: center;
     align-content: center;
-    right: 1;
-    bottom: 1;
     padding-top: 15px;
     padding-right: 20px;
-    z-index: 777;
     min-width: 150px;
 }
 
@@ -155,12 +146,11 @@ align-content: center;
     align-items: center;
     align-content: center;
     text-align: center;
+    flex: 1 1 auto;
     height: 200px;
 }
 
 .dt-theme--header {
-    background-color: #3d5a80;
-    color: white;
     font-weight: 600;
     font-size: 18px;
 }
@@ -274,13 +264,16 @@ align-content: center;
     justify-content: space-between;
     width: 86px;
 }
-.dt-btn-container-tri{
+
+.dt-btn-container-tri {
     display: flex;
     gap: 7px;
-    width: 120px;
+    width: 80px;
 }
-.dt-action-delete,.dt-action-edit{
-color: white;
+
+.dt-action-delete,
+.dt-action-edit {
+    color: white;
 }
 
 .dt-action-delete,
@@ -299,9 +292,9 @@ color: white;
     cursor: pointer;
 }
 
-.dt-action-delete{
-background-color: #546e7a;
-color: white;
+.dt-action-delete {
+    background-color: #546e7a;
+    color: white;
 }
 
 .dt-action-edit {
@@ -341,6 +334,16 @@ color: white;
 
 .image-selector {
     cursor: pointer;
+}
+
+.profile-picture {
+    margin-bottom: 10px;
+    position: absolute;
+    top: -110px !important;
+}
+
+.my-swal {
+    z-index: 1000000 !important;
 }
 
 @media (max-width: 900px) {

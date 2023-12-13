@@ -1,123 +1,90 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
+import { Link, useMatch } from 'react-router-dom';
+import { Box, IconButton, Paper } from '@mui/material';
+import { Lock } from '@mui/icons-material';
 import HomeIcon from '@mui/icons-material/Home';
 import GroupIcon from '@mui/icons-material/Group';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import BubbleChartIcon from '@mui/icons-material/BubbleChart';
 import MenuIcon from '@mui/icons-material/Menu';
-
 import './sidebar.css'
-import { Link, useLocation } from 'react-router-dom';
-import { Box } from '@mui/material';
-import {Circle, Lock } from '@mui/icons-material';
+import { useAuth } from '../../../../contexts/AuthContext';
+import { isAdmin } from '../../../../utils/userValidator';
+
+export const SIDEBAR_KEY = 'indicadores-sidebar-mode';
 
 export const Sidebar = () => {
 
-    const [show, setShow] = useState(true);
-    const location = useLocation();
+  const [isSidebarOpen, setSidebarOpen] = useState(() => JSON.parse(localStorage.getItem(SIDEBAR_KEY) || 'true'));
+  const toggleSidebar = () => {
+    setSidebarOpen(prevOpen => {
+      const isOpen = !prevOpen;
+      localStorage.setItem(SIDEBAR_KEY, isOpen);
+      return isOpen;
+    })
+  };
 
-    const [activeHome, setActiveHome] = useState('');
-    const [activeUsers, setActiveUsers] = useState('');
-    const [activeModules, setActiveModules] = useState('');
-    const [activeIndicators, setActiveIndicators] = useState('');
-    const [activeIndicator, setActiveIndicator] = useState('');
-    const [activeRelationship, setActiveRelationship] = useState('');
 
-    const handleShow = () => {setShow(!show);}
-    
-    const clearActive = () => {
-        setActiveHome('');
-        setActiveUsers('');
-        setActiveModules('');
-        setActiveIndicators('');
-        setActiveIndicator('');
-        setActiveRelationship('');
-    }
+  const routes = [{
+    to: '/',
+    label: 'Inicio',
+    icon: <HomeIcon className='sidebar-icon' />
+  }, {
+    to: '/usuarios',
+    label: 'Usuarios',
+    icon: <GroupIcon className='sidebar-icon' />
+  }, {
+    to: '/temas',
+    label: 'Temas',
+    icon: <ViewModuleIcon className='sidebar-icon' />
+  },
+  {
+    to: '/indicadores',
+    label: 'Indicadores',
+    icon: <BubbleChartIcon className='sidebar-icon' />
+  },
+  {
+    to: '/autorizacion',
+    label: 'Autorización',
+    icon: <Lock className='sidebar-icon' />
+  }
+  ]
 
-    useEffect(() => {
-      clearActive()
-      switch (location.pathname) {
-          case '/':
-              setActiveHome('active');
-              break;
-        
-          case '/usuarios':
-              setActiveUsers('active');
-              break;
-        
-          case '/modulos':
-              setActiveModules('active');
-              break;
-        
-          case '/indicadores':
-              setActiveIndicators('active');
-              break;
-          case '/indicadores/:id':
-              setActiveIndicator('active');
-              break;
-          case '/autorizacion':
-                setActiveRelationship('active');
-                break;
-          default:
-              break;
-      }
-    }, [location.pathname])
+  return (
+    <Box sx={{ borderRight: 1, borderColor: 'divider' }} className={`sidebar ${isSidebarOpen && 'sidebar-min'}`}>
+      <IconButton aria-label='menu' onClick={toggleSidebar} sx={{ marginLeft: '.5rem' }}>
+        <MenuIcon />
+      </IconButton>
 
-    return (
-        <>
-        <Box className={show ? 'sidebar' : 'sidebar-min'}>
-        <Box className='sidebar-wrapper'>
-                    <Box className='sidebar-menu'>
-                    <h3 className='sidebar-title'>
-                        <button className='sidebar-button' onClick={handleShow}>
-                        <MenuIcon className='sidebar-icon-title' /> 
-                        </button>
-                        <span className={show ? 'sidebar-title-text' : 'sidebar-title-text-min'}>Menu</span>
-                 
-                    </h3>
-                        <ul className={show ?'sidebar-list':'sidebar-list-min'}>
-                        
-                        <Link to='/' className='link'>
-                        <li className={show ?`sidebar-list-item ${activeHome}`:`sidebar-list-item-min ${activeHome}`}>
-                            <HomeIcon className='sidebar-icon'/> 
-                            <span>Inicio</span>
-                        </li>
-                        </Link>
-                          <Link to='usuarios' className='link'>
-                        <li className={show?`sidebar-list-item ${activeUsers}`:`sidebar-list-item-min ${activeUsers}`}>
-                            <GroupIcon className='sidebar-icon'/> 
-                            <span>Usuarios</span>
-                        </li>
-                          </Link>
-                        
-                        <Link to='modulos' className='link'>
-                        <li className={show?`sidebar-list-item ${activeModules}` :`sidebar-list-item-min ${activeModules}`}>
-                            <ViewModuleIcon className='sidebar-icon'/> 
-                            <span>Temas</span>
-                        </li>
-                        </Link>
-
-                        <Link to='indicadores' className='link'>
-                        <li className={show?`sidebar-list-item ${activeIndicators}`:`sidebar-list-item-min ${activeIndicators}`}>
-                            <BubbleChartIcon className='sidebar-icon'/> 
-                            <span>Indicadores</span>
-                        </li>
-                        </Link>
-                        
-                        <Link to='autorizacion' className='link'>
-                        <li className={show?`sidebar-list-item ${activeRelationship}`:`sidebar-list-item-min ${activeRelationship}`}>
-                            <Lock className='sidebar-icon'/> 
-                            <span>Autorizacion</span>
-                        </li>
-                        </Link>
-                        <Link to='myComponents'>
-                        <li>
-                            <span>Miau</span>
-                        </li>
-                        </Link>
-                        </ul>
-                     </Box>
-                </Box>
-        </Box>
-        </>
+      <div className='sidebar-wrapper'>
+        <ul className='sidebar-list'>
+          {
+            routes.map((r, idx) => (
+              <SidebarItem key={idx} {...r} isSidebarOpen={isSidebarOpen} />
+            ))
+          }
+        </ul>
+      </div>
+    </Box>
   )
+};
+
+const SidebarItem = (props) => {
+  const match = useMatch(props.to);
+  const { user } = useAuth();
+  return (
+    <>
+      {
+        ((props.label === 'Autorización' || props.label === 'Usuarios') && !isAdmin(user)) ?
+          <></>
+          :
+          <li className='sidebar-list-item' style={{ marginBottom: '3px' }}>
+            <Link to={props.to} className={`sidebar-link ${match && 'sidebar-link-active'}`}>
+              {props.icon}
+              {!props.isSidebarOpen && <span>{props.label}</span>}
+            </Link>
+          </li>
+      }
+    </>
+  );
 }

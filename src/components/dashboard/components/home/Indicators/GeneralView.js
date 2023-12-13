@@ -1,62 +1,88 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom';
+import { Link as RouterLink, useParams } from 'react-router-dom';
 import './indicator.css'
-
-import { Avatar, Button, Card, CardContent, FormControl, Grid, TextField, Typography, ClickAwayListener } from '@mui/material';
-import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
-import TodayRoundedIcon from '@mui/icons-material/TodayRounded';
+import {
+	Button, Grid, TextField,
+	Typography, Checkbox, FormControlLabel, Paper, Stack, Fab, Link as MUILink
+} from '@mui/material';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { Box } from '@mui/system';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import FmdGoodIcon from '@mui/icons-material/FmdGood';
-import { useAlert } from '../../../../../contexts/AlertContext';
-
+import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
+import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
 import { yupResolver } from '@hookform/resolvers/yup';
-
-
+import Swal from 'sweetalert2';
 import { createIndicatorSchema } from '../../../../../utils/indicatorValidator';
 import { getIndicator, updateIndicator } from '../../../../../services/indicatorService';
+import { getTemas } from '../../../../../services/moduleService';
 
-import CatalogPicker from '../../../common/CatalogPicker';
-import { BeatLoader } from 'react-spinners';
-import MapInput from '../../../../common/mapInput/MapInput';
-import FileInput from '../../../../common/FileInput';
+import { CatalogoAutocomplete, OdsPicker } from '../../../common/CatalogPicker';
+import { parseDate } from '../../../../../utils/dateParser';
+import { displayLabel } from '../../../../../utils/getCatalog';
+import OwnerListDropdown from './Owner/OwnerList';
+import AutoCompleteInput from '../../../../common/AutoCompleteInput';
+import { createHistoricos } from '../../../../../services/historicosService';
+import { useAuth } from '../../../../../contexts/AuthContext';
+import { isNumber } from '../../../../../utils/stringsValidator';
+import { updateOrCreateCatalogo } from '../../../../../services/cataloguesService';
+import PersonalLoader from '../../../../common/PersonalLoader/PersonalLoader';
+import { Save } from '@material-ui/icons';
 
+const ODS_ID = 1;
+const UNIDAD_MEDIDA_ID = 2;
+const COBERTURA_ID = 3;
+const CATALOGOS = [ODS_ID, UNIDAD_MEDIDA_ID, COBERTURA_ID];
 
 export const GeneralView = () => {
-	const [editingUltimoValor, setEditingUltimoValor] = useState(false);
-
-	const alert = useAlert();
+	const [indicador, setIndicador] = useState(null);
+	const [isLoading, setLoading] = useState(true);
 	const { id } = useParams();
+	const { user } = useAuth();
+
+	const temasFetcher = async () => {
+		let temas = await getTemas();
+		temas = temas.map(({ id, temaIndicador }) => ({ id, temaIndicador }))
+		return temas;
+	};
 
 	let defaultValues = {
+		activo: '',
 		anioUltimoValorDisponible: '',
+		catalogos: [{
+			id: 0,
+			nombre: '',
+			idCatalogo: ODS_ID
+		}],
+		codigo: '',
+		createdAt: '',
+		createdBy: '',
 		definicion: '',
 		formula: {},
+		fuente: '',
 		historicos: [],
 		id: '',
-		mapa: {},
+		idModulo: '',
+		modulo: {},
+		next: '',
 		nombre: '',
-		tendenciaActual: '',
-		tendenciaDeseada: '',
-		ultimoValorDisponible: '',
-		urlImagen: '',
 		observaciones: '',
-		codigo: '',
-		codigoObjeto: '',
-		mapa: {
-			url: '',
-		}
+		prev: '',
+		tendenciaActual: '',
+		ultimoValorDisponible: '',
+		updatedAt: '',
+		updatedBy: '',
+		urlImagen: '',
+		periodicidad: 0,
 	}
 
 	useEffect(() => {
 		getIndicator(id).then(res => {
-			defaultValues = res ? res : defaultValues;
+			setIndicador(res);
 			methods.reset({
-				...defaultValues,
+				...res,
 			});
-		})
+		}).finally(_ => setLoading(false))
 	}, [id]);
 
 	const methods = useForm({
@@ -65,356 +91,497 @@ export const GeneralView = () => {
 		mode: 'all',
 	});
 
-	const toggleEditing = () => {
-		setEditingUltimoValor(true);
-	}
-
 	const onSubmit = async (data) => {
-		const { ...indicator } = data;
-		const formData = new FormData();
+		let updatedVals = 0;
 
-		for (const key in indicator) {
-			if (key === 'urlImagen' && indicator[key]) {
-				formData.append(key, indicator[key][0])
-				continue;
-			}
+		const { id: idIndicador, activo, catalogos, definicion, fuente,
+			idModulo, modulo, nombre, observaciones, owner, anioUltimoValorDisponible,
+			ultimoValorDisponible, updatedBy, periodicidad } = data;
 
-			if (indicator[key]) {
-				formData.append(key, indicator[key]);
-			}
+		const status = activo ? 'SI' : 'NO';
+		const indicadorData = {
+			nombre,
+			definicion,
+			observaciones,
+			ultimoValorDisponible,
+			updatedBy: id,
+			activo: status,
+			fuente,
+			owner,
+			periodicidad,
+			anioUltimoValorDisponible,
 		};
 
-		try {
-			await updateIndicator(id, formData);
-			alert.success('Indicador actualizado exitosamente');
-		} catch (error) {
-			alert.error(error);
+		const historicoData = {
+			fuente,
+			valor: ultimoValorDisponible,
+			anio: anioUltimoValorDisponible,
+			idUsuario: user.id,
 		}
+
+		const catalogosData = {
+			catalogos,
+			idIndicador,
+		}
+		updateOrCreateCatalogo(idIndicador, catalogosData);
+
+		Swal.fire({
+			title: '¿Deseas actualizar la información del indicador o sólo guardar los cambios?',
+			text: "Al guardar la información del indicador no se generará un valor histórico. Si lo que quieres es actualizar el último valor disponible y generar un dato histórico, selecciona la segunda opción.",
+			showDenyButton: true,
+			showCancelButton: true,
+			confirmButtonText: `Guardar cambios`,
+			denyButtonText: `Actualizar indicador`,
+		}).then(async (result) => {
+			if (result.isConfirmed || result.isDenied) {
+				if (isNumber(ultimoValorDisponible)) {
+					updateData(result, idIndicador, indicadorData, historicoData, updatedVals);
+				} else {
+					Swal.fire({
+						title: 'El último valor disponible no es un valor numérico válido',
+						text: 'El valor del indicador no es un valor numérico cerrado, esto quiere decir que no es un número entero o decimal. Si estás seguro de guardar el valor de esta forma, por favor, ten en cuenta que es posible que no se pueda gráficar. Recuerda que el indicador ya cuenta con una unidad de medida.',
+						showCancelButton: true,
+						confirmButtonText: `Guardar`,
+						cancelButtonText: `Cancelar`,
+					}).then(async (result) => {
+						if (result.isConfirmed) {
+							updateData(result, idIndicador, indicadorData, historicoData, updatedVals);
+						}
+					})
+				}
+			}
+		});
+
 	};
 
-	const boobp = methods.watch('urlImagen');
-	return (
-		(
-			<FormProvider {...methods}>
-				{
-					methods.watch('nombre').length > 0 ?
-						(
-							<>
-								<Box className='indicator'>
-									<Box>
-										<Grid container className='nav-indicator'>
-											<Grid item xs={12} md={3}>
-												<Card className='information-card'>
-													<CardContent className='information-card-content'>
-														<Box className='information-card-title'>
-															<Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-																Último valor disponible
-															</Typography>
-															<Controller
-																name='ultimoValorDisponible'
-																control={methods.control}
-																render={({
-																	field,
-																	fieldState: { error }
-																}) => (
-																	editingUltimoValor ?
-																		(
-																			<ClickAwayListener
-																				onClickAway={() => {
-																					setEditingUltimoValor(false);
-																				}}
-																			>
-																				<TextField
-																					type='text'
-																					size='small'
-																					required
-																					autoComplete='off'
-																					sx={{ width: '60%' }}
-																					error={!!error}
-																					helperText={error ? error.message : null}
-																					variant='outlined'
-																					{...field}
-																				/>
-																			</ClickAwayListener>
-																		)
-																		:
-																		(
-																			<Typography variant='h5' component='div' onDoubleClick={toggleEditing}>
-																				{field.value}
-																			</Typography>
-																		)
-																)}
-															/>
-														</Box>
-														<Box className='information-card-icon'>
-															<Avatar>
-																<CheckCircleRoundedIcon />
-															</Avatar>
-														</Box>
-													</CardContent>
-												</Card>
-											</Grid>
-											<Grid item xs={12} md={3}>
-												<Card className='information-card'>
-													<CardContent className='information-card-content'>
-
-														<Box className='information-card-title'>
-															<Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-																Año del último valor registrado
-															</Typography>
-															<Controller
-																name='anioUltimoValorDisponible'
-																control={methods.control}
-																render={({
-																	field: { onChange, value },
-																	fieldState: { error }
-																}) => (
-																	<Typography variant='h5' component='div'>
-																		{value}
-																	</Typography>
-																)
-																}
-															/>
-														</Box>
-														<Box className='information-card-icon'>
-															<Avatar>
-																<TodayRoundedIcon />
-															</Avatar>
-														</Box>
-													</CardContent>
-												</Card>
-											</Grid>
-											<Grid item xs={12} md={3}>
-												<Card className='information-card'>
-													<CardContent className='information-card-content'>
-														<Box className='information-card-title'>
-															<Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-																Tendencia actual calculada
-															</Typography>
-															<Controller
-																name='tendenciaActual'
-																control={methods.control}
-																render={({
-																	field: { onChange, value },
-																	fieldState: { error }
-																}) => (
-																	value === 'ASCENDENTE'
-																		? (
-																			<Typography variant='h5' component="div" className='tendencia-actual'>
-																				<ArrowUpwardIcon className='tendencia-ascendente' />
-																				<Typography variant='h6'>¡Ascendente!</Typography>
-																			</Typography>
-																		)
-																		: (
-																			<Typography variant='h5' component="div" className='tendencia-actual'>
-																				<ArrowDownwardIcon className='tendencia-descendente' />
-																				<Typography variant='h6'>¡Descendiente!</Typography>
-																			</Typography>
-																		)
-																)
-																}
-															/>
-														</Box>
-														<Box className='information-card-icon'>
-															<Avatar>
-																<TodayRoundedIcon />
-															</Avatar>
-														</Box>
-													</CardContent>
-												</Card>
-											</Grid>
-										</Grid>
-									</Box>
-									<Box
-										component='form'
-										onSubmit={methods.handleSubmit(onSubmit)}
-										noValidate
-										onReset={methods.reset}
-										className='body-indicator'
-									>
-										<Grid container>
-											<Grid item xs={12} md={4}>
-												<Box className='body-left'>
-													<Typography variant="subtitle1" component="h4">
-														Información	del indicador
-													</Typography>
-													<Controller
-														name="urlImagen"
-														control={methods.control}
-														render={({
-															field: { onChange, value },
-															fieldState: { error }
-														}) => (
-															<FileInput
-																accept='image/png, image/jpg, image/jpeg, image/gif'
-																name='urlImagen'
-																image={value}
-																type={'avatar'}
-															/>
-														)}
-													/>
-													<Controller
-														name="mapa.url"
-														control={methods.control}
-														render={({
-															field: { onChange, value },
-															fieldState: { error }
-														}) => (
-															<>
-																<Box className='indicator-with-map'>
-																	<FmdGoodIcon sx={{ fontSize: '18px' }} />
-																	<a href={value} target='_blank' rel="noreferrer">
-																		Ver mapa
-																	</a>
-																</Box>
-															</>
-														)}
-													/>
-													<Controller
-														name='nombre'
-														control={methods.control}
-														render={({ field: { onChange, value }, fieldState: { error }
-														}) =>
-															<TextField
-																label='Nombre del indicador'
-																type='text'
-																placeholder='Porcentaje de hogares con jefatura femenina.'
-																size='small'
-																required
-																autoComplete='off'
-																sx={{ width: '60%' }}
-																error={!!error}
-																helperText={error ? error.message : null}
-																variant='outlined'
-																onChange={onChange}
-																value={value}
-															/>
-														}
-													/>
-													<Controller
-														name="definicion"
-														control={methods.control}
-														render={({
-															field: { onChange, value },
-															fieldState: { error }
-														}) => (
-															<TextField
-																label='Definicion del indicador'
-																type='text'
-																placeholder='Hogares donde una mujer es reconocida como jefa de familia por los miembros el hogar.'
-																multiline
-																rows={3}
-																size='small'
-																required
-																autoComplete='off'
-																sx={{ width: '60%' }}
-																error={!!error}
-																helperText={error ? error.message : null}
-																onChange={onChange}
-																value={value}
-															/>
-														)}
-													/>
-													<Controller
-														name="observaciones"
-														control={methods.control}
-														render={({
-															field: { onChange, value },
-															fieldState: { error }
-														}) => (
-															<TextField
-																label='Observaciones adicionales'
-																type='text'
-																placeholder='Comentarios del autor'
-																multiline
-																rows={4}
-																size='small'
-																sx={{ width: '60%' }}
-																error={!!error}
-																helperText={error ? error.message : null}
-																onChange={onChange}
-																value={value}
-															/>
-														)}
-													/>
-												</Box>
-											</Grid>
-											<Grid item xs={12} md={8}>
-												<Box className='body-right'>
-													<Box className='body-right-title'>
-														<Box>
-															<Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-																Código del indicador
-															</Typography>
-															<Controller
-																name="codigo"
-																control={methods.control}
-																render={({
-																	field: { onChange, value },
-																	fieldState: { error }
-																}) => (
-																	<Typography variant="h5" component="div">
-																		{value}
-																	</Typography>
-																)}
-															/>
-														</Box>
-														<Box>
-															<Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-																Código del tema de indicador
-															</Typography>
-															<Controller
-																name="codigoObjeto"
-																control={methods.control}
-																render={({
-																	field: { onChange, value },
-																	fieldState: { error }
-																}) => (
-																	<Typography variant="h5" component="div">
-																		{value}
-																	</Typography>
-																)}
-															/>
-														</Box>
-														<Box className='body-right-title-link'>
-															<Button variant='contained'>
-																ver ficha
-															</Button>
-														</Box>
-													</Box>
-													<Box className='body-right-content'>
-														<Box className='body-right-content-title'>
-															<Typography variant="h6" component="div">
-																Componentes del indicador
-															</Typography>
-														</Box>
-														<Box container>
-															<Grid container className='body-right-catalogos'>
-																<CatalogPicker idIndicatorCatalog={1} control={methods.control} />
-															</Grid>
-															<Box item xs={12} md={12} className='body-right-mapa'>
-																<MapInput altInput='mapita' value='ww.google.com' />
-															</Box>
-														</Box>
-													</Box>
-												</Box>
-											</Grid>
-										</Grid>
-										<br />
-										<Box className='indicator-buttons'>
-											<Button variant='contained'>Cancelar</Button>
-											<Button type='submit' variant='contained'>Guardar</Button>
-										</Box>
-									</Box>
-								</Box>
-							</>
-						)
-						:
-						<Box className="dt-loading">
-							<BeatLoader size={15} color="#1976D2" />
-						</Box>
+	const updateData = async (result, idIndicador, indicadorData, historicoData, updatedVals) => {
+		if (result.isConfirmed) {
+			await updateIndicator(idIndicador, indicadorData);
+			Swal.fire('Cambios guardados', '', 'success');
+		} else if (result.isDenied) {
+			try {
+				await updateIndicator(idIndicador, indicadorData);
+				updatedVals++;
+				try {
+					await createHistoricos(idIndicador, historicoData);
+					updatedVals++;
+				} catch (err) {
+					console.log(err);
 				}
-			</FormProvider >
-		)
+			} catch (error) {
+				console.log(error);
+			}
+
+			if (updatedVals === 2) {
+				Swal.fire('Cambios guardados', '', 'success');
+			} else if (updatedVals === 1) {
+				Swal.fire('Algunos cambios no se pudieron guardar', 'Intenta nuevamente', 'error');
+			} else {
+				Swal.fire('No se pudieron guardar los cambios', 'Intenta nuevamente', 'error');
+			}
+		}
+	}
+
+	return (
+		isLoading
+			? (
+				<PersonalLoader />
+			)
+			: (
+				<Box sx={{ flex: '1 1 auto', overflowY: 'scroll', height: '500px' }}>
+					<FormProvider {...methods}>
+						<Box className='general-view-body'
+							component='form'
+							onSubmit={methods.handleSubmit(onSubmit)}
+							noValidate
+							onReset={methods.reset}
+							id='form-indicator'
+						>
+
+							{/* Sección que contiene las tres cartas de "Último valor disponibñe", "Año" y "Estado" */}
+							<Grid container p={3} columnGap={2} rowGap={{ xs: 2, md: 0 }}>
+								<Paper
+									component={Grid}
+									item
+									xs={12}
+									md
+									py={3}
+									px={2}
+								>
+									<Typography variant='h5' mb={1}>
+										Último valor disponible
+									</Typography>
+									<Controller
+										name='ultimoValorDisponible'
+										control={methods.control}
+										render={({
+											field,
+											fieldState: { error }
+										}) => (
+											(
+												<TextField
+													type='text'
+													required
+													autoComplete='off'
+													error={!!error}
+													fullWidth
+													helperText={error ? error.message : null}
+													variant='outlined'
+													{...field}
+												/>
+											)
+										)}
+									/>
+								</Paper>
+								<Paper
+									component={Grid}
+									item
+									xs={12}
+									md
+									py={3}
+									px={2}
+								>
+									<Typography variant='h5' mb={1}>
+										Año del último valor registrado
+									</Typography>
+									<Controller
+										name='anioUltimoValorDisponible'
+										control={methods.control}
+										render={({
+											field,
+											fieldState: { error }
+										}) => (
+											(
+												<TextField
+													type='text'
+													required
+													fullWidth
+													autoComplete='off'
+													error={!!error}
+													helperText={error ? error.message : null}
+													variant='outlined'
+													{...field}
+												/>
+											)
+										)}
+									/>
+								</Paper>
+								<Paper
+									component={Grid}
+									item
+									xs={12}
+									md
+									py={3}
+									px={2}
+								>
+									<Typography variant='h5' mb={1}>
+										Estado
+									</Typography>
+									<Controller
+										name="activo"
+										control={methods.control}
+										render={({
+											field: { onChange, value },
+											fieldState: { error }
+										}) => (
+											<FormControlLabel
+												control={
+													<Checkbox
+														label='Activo'
+														type='checkbox'
+														onChange={onChange}
+														checked={value === 'SI' || value === 'true' ? true : value === 'NO' || value === 'false' ? false : value}
+														className='indicador-info-input-checkbox'
+														icon={<SentimentVeryDissatisfiedIcon color='error' sx={{ fontSize: '30px' }} />}
+														checkedIcon={<EmojiEmotionsIcon color='success' sx={{ fontSize: '30px' }} />}
+													/>
+												}
+												label={value === 'SI' || value === 'true' ? 'Activo' : value === 'NO' || value === 'false' ? 'Inactivo' : value ? 'Activo' : 'Inactivo'}
+											/>
+										)}
+									/>
+								</Paper>
+							</Grid>
+
+							<Grid container p={3} columnGap={3} pt={1}>
+								{/* Sección izquierda que contiene la información del indicador */}
+								<Paper component={Grid} item xs={12} md={4} py={3} px={2} mb={{ xs: 2, md: 0 }}>
+									<Typography variant='h5' mb={2}>Información básica</Typography>
+									<Stack
+										direction={{ xs: 'column', md: 'row' }}
+										flexWrap='wrap'
+										justifyContent='space-between'
+										mb={3}
+										sx={{ borderBottom: 1, borderColor: 'divider', pb: 2 }}
+									>
+										<Box>
+											<Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+												Código
+											</Typography>
+											<Typography>
+												{indicador.codigo}
+											</Typography>
+										</Box>
+										<Box>
+											<Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+												Última actualización
+											</Typography>
+											<Typography>
+												{parseDate(indicador.updatedAt)}
+											</Typography>
+										</Box>
+										<Box className='body-right-title-link'>
+											<Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+												Tendencia
+											</Typography>
+											<Typography variant='h5' component="div" className='tendencia-actual'>
+												{
+													methods.getValues('tendenciaActual') === 'ASCENDENTE'
+														? (
+															<>
+																<ArrowUpwardIcon className='tendencia-ascendente' />
+																<Typography>Ascendente</Typography>
+															</>
+														) : (
+															<>
+																<ArrowDownwardIcon className='tendencia-descendente' />
+																<Typography>Descendente</Typography>
+															</>
+														)
+												}
+											</Typography>
+										</Box>
+										<Box className='body-right-title-link'>
+											<a href={`//www.chihuahuametrica.online/chihuahua-en-datos/indicadores/${id}`} target='_blank' rel='noreferrer' className='indicador-metrica-url'>
+												<Button variant='text'>
+													Ver ficha
+												</Button>
+											</a>
+										</Box>
+									</Stack>
+									<Controller
+										control={methods.control}
+										name='modulo'
+										defaultValue={null}
+										render={({ field: { value, onChange }, fieldState: { error } }) => (
+											<AutoCompleteInput
+												value={value}
+												onChange={onChange}
+												error={error}
+												label='Tema de interes'
+												helperText='Tema al que pertenece el indicador'
+												getOptionLabel={(item) => item.temaIndicador}
+												fetcher={temasFetcher}
+												fullWidth
+												required
+											/>
+										)}
+									/>
+									<Controller
+										name='nombre'
+										control={methods.control}
+										render={({ field: { onChange, value }, fieldState: { error }
+										}) => (
+											<TextField
+												label='Nombre'
+												type='text'
+												placeholder='Porcentaje de hogares con jefatura femenina.'
+												required
+												autoComplete='off'
+												error={!!error}
+												helperText={error ? error.message : null}
+												variant='outlined'
+												onChange={onChange}
+												value={value}
+												fullWidth
+												sx={{ mb: 3, mt: 3 }}
+											/>
+										)
+										}
+									/>
+									<Controller
+										name="definicion"
+										control={methods.control}
+										render={({
+											field: { onChange, value },
+											fieldState: { error }
+										}) => (
+											<TextField
+												label='Definición'
+												type='text'
+												placeholder='Hogares donde una mujer es reconocida como jefa de familia por los miembros el hogar.'
+												multiline
+												rows={5}
+												size='small'
+												required
+												autoComplete='off'
+												error={!!error}
+												helperText={error ? error.message : null}
+												onChange={onChange}
+												value={value}
+												fullWidth
+												className='indicador-info-input'
+											/>
+										)}
+									/>
+									<Controller
+										name="periodicidad"
+										control={methods.control}
+										render={({
+											field: { onChange, value },
+											fieldState: { error }
+										}) => (
+											<TextField
+												label='Periodicidad en meses'
+												type='number'
+												placeholder='Tiempo entre actualizaciones'
+												error={!!error}
+												helperText={error ? error.message : null}
+												onChange={onChange}
+												value={value}
+												fullWidth
+												className='indicador-info-input'
+											/>
+										)}
+									/>
+								</Paper>
+								{/* Sección derecha que contiene información específica del indicador, sú código, fecha de actualización, ficha.. */}
+								<Grid item xs>
+									<Stack height='100%' overflow='hidden'>
+										<Paper sx={{ py: 3, px: 2, mb: 2 }}>
+											<Stack>
+												<Typography variant='h5' mb={2}>Más</Typography>
+
+												{/* Sección que contiene los catálogos del indicador */}
+												<Grid container justifyContent='space-between' mb={2}>
+													{
+														CATALOGOS.map((catalogo, index) => {
+															return (
+																<Grid item xs={12} md={index == 0 || index == 1 ? 4 : 3} key={index}>
+																	<Controller
+																		name={`catalogos[${index}]`}
+																		control={methods.control}
+																		defaultValue={`default`}
+																		render={({
+																			field: { value, onChange },
+																			fieldState: { error }
+																		}) => (
+																			<CatalogoAutocomplete
+																				id={catalogo}
+																				value={value === 'default' ? null : value}
+																				onChange={onChange}
+																				label={displayLabel(catalogo)}
+																				error={error}
+																				required={true}
+																				type={1}
+																				catalog={catalogo}
+																			/>
+																		)}
+																	/>
+																</Grid>
+															)
+														})
+													}
+												</Grid>
+												<Controller
+													name='fuente'
+													control={methods.control}
+													render={({ field: { onChange, value }, fieldState: { error }
+													}) =>
+													(
+														<TextField
+															label='Fuente de información'
+															type='text'
+															placeholder='Fuente: DDUE (2020). Vuelo aéreo de la Dirección de Desarrollo Urbano y Ecología 2020 en SADRE.'
+															required
+															autoComplete='off'
+															sx={{ width: '100%' }}
+															error={!!error}
+															helperText={error ? error.message : null}
+															variant='outlined'
+															onChange={onChange}
+															value={value}
+															className='indicador-info-input'
+														/>
+													)
+													}
+												/>
+												<Controller
+													name="observaciones"
+													control={methods.control}
+													render={({
+														field: { onChange, value },
+														fieldState: { error }
+													}) => (
+														<TextField
+															label='Observaciones adicionales'
+															type='text'
+															placeholder='Comentarios del autor'
+															multiline
+															rows={4}
+															size='small'
+															fullWidth
+															error={!!error}
+															helperText={error ? error.message : null}
+															onChange={onChange}
+															value={value}
+														/>
+													)}
+												/>
+											</Stack>
+										</Paper>
+										{
+											user.roles === 'ADMIN' && (
+												<Paper sx={{ py: 3, px: 2, height: '100%' }}>
+													<Typography variant='h5' mb={2}>Autorización</Typography>
+													<Box width='fit-content' mb={1}>
+														<Controller
+															name="owner"
+															control={methods.control}
+															defaultValue={1}
+															render={({
+																field: { value, onChange },
+																fieldState: { error }
+															}) => {
+																return (
+																	<OwnerListDropdown
+																		id={id}
+																		type={2}
+																		actualOwner={value}
+																		onChange={onChange}
+																		error={error}
+																	/>
+																)
+															}}
+														/>
+													</Box>
+													<MUILink
+														component={RouterLink}
+														to={`/autorizacion/indicador/${id}`}
+													>Administrar usuarios</MUILink>
+												</Paper>
+											)
+										}
+									</Stack>
+								</Grid>
+							</Grid>
+							<Fab
+								size='large'
+								color='primary'
+								type='submit'
+								form='form-indicator'
+								sx={{
+									position: 'absolute',
+									mb: 2,
+									mr: 2,
+									bottom: 0,
+									right: 0,
+								}}>
+								<Save sx={{ m: 1 }} />
+							</Fab>
+						</Box>
+					</FormProvider >
+				</Box>
+			)
 	)
 }

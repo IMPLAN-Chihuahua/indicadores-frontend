@@ -1,14 +1,15 @@
-import React from 'react';
+import React, { createContext, useState, useEffect, useContext, useCallback } from 'react';
 import { login, logout } from '../services/authService';
+import { getCurrentUser } from '../services/userService';
 
-const AuthContext = React.createContext();
+const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
-  const [user, setUser] = React.useState();
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [hasError, setHasError] = React.useState(false);
+  const [user, setUser] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const currentUser = JSON.parse(localStorage.getItem('indicadores-user'));
     if (currentUser) {
       setUser(currentUser)
@@ -21,7 +22,6 @@ const AuthProvider = ({ children }) => {
     setIsLoading(true);
     try {
       const currentUser = await login(payload.correo, payload.clave);
-      localStorage.setItem('indicadores-user', JSON.stringify(currentUser));
       setUser(currentUser);
       if (onSuccess && typeof onSuccess === 'function') {
         onSuccess();
@@ -46,8 +46,25 @@ const AuthProvider = ({ children }) => {
     }
   };
 
+  const reloadCurrentUser = useCallback(async () => {
+    const curr = await getCurrentUser();
+    setUser(prev => ({ ...prev, ...curr }));
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem('indicadores-user', JSON.stringify(user));
+  }, [user])
+
   return (
-    <AuthContext.Provider value={{ user, handleLogin, handleLogOut, isLoading, hasError }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        handleLogin,
+        handleLogOut,
+        isLoading,
+        hasError,
+        reloadCurrentUser
+      }}>
       {children}
     </AuthContext.Provider>
   );

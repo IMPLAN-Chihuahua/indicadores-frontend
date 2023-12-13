@@ -10,7 +10,7 @@ const createIndicatorSchema = yup.object({
 			.required('Por favor, ingrese la definición del indicador'),
 
 	ultimoValorDisponible:
-		yup.number()
+		yup.string()
 			.required('Por favor, ingrese el último valor disponible del indicador'),
 	observaciones:
 		yup.string()
@@ -20,5 +20,11 @@ const createIndicatorSchema = yup.object({
 		yup.number()
 			.optional(),
 
+	periodicidad:
+		yup.number()
+			.integer()
+			.typeError('Periodicidad debe ser un número')
+			.min(1)
+			.nullable(),
 });
 export { createIndicatorSchema };

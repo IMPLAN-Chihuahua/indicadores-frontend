@@ -1,170 +1,238 @@
-import {
-  Autocomplete, Box,
-  Grid, TextField, Button, DialogContent, DialogActions
-} from "@mui/material";
-import { Controller, useForm } from "react-hook-form";
-import { useDispatch, useSelector } from "react-redux";
-import * as yup from 'yup';
-import { yupResolver } from "@hookform/resolvers/yup";
-import { useEffect } from "react";
-import { addBasicData } from "../../../../features/indicador/indicadorSlice";
+import { Button, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import { useCallback, useReducer, useState } from "react";
+import { useAlert } from "../../../../contexts/AlertContext";
+import { IndicadorProvider } from "../../../../contexts/IndicadorContext";
+import useIsMounted from "../../../../hooks/useIsMounted";
+import { createIndicador } from "../../../../services/indicatorService";
+import { defaultVariable } from "../../components/home/Indicators/Formula/FormVariable";
+import { FormFormula } from "../formula/FormFormula";
+import { defaultMapa, FormMapa } from "../mapa/FormMapa";
+import ErrorContent from "./ErrorContent";
+import { FormBasic } from "./FormBasic";
+import { FormExtra } from "./FormExtra";
+import { HorizontalStepper } from "./HorizontalStepper";
+import { Summary } from "./Summary";
 
-const indicadorBasicSchema = yup.object({
-  nombre: yup.string().required('Por favor, ingrese el nombre'),
-  codigo: yup.string().required('Por favor, ingrese el código'),
-  definicion: yup.string().required('Por favor, ingrese la definición'),
-  medida: yup.object({
-    id: yup.number(),
-    unidad: yup.string()
-  }).nullable().required('Por favor, seleccione una unidad')
-})
-
-export const FormIndicador = ({ handleNext }) => {
-  const basicFormData = useSelector((state) => state.indicadores.basic)
-  const methods = useForm();
-  let dummyOptions = [{ id: 1, unidad: 'u-1' }, { id: 2, unidad: 'u-2' }];
-  const { control, reset, handleSubmit } = methods;
-  const dispatch = useDispatch();
-
-  const onSubmit = (data) => {
-    dispatch(addBasicData(data));
-    handleNext();
+const STEPS = [
+  {
+    idx: 0,
+    label: 'Información Básica',
+    form: 'form-basic'
+  }, {
+    idx: 1,
+    label: 'Formula',
+    form: 'form-formula'
+  }, {
+    idx: 2,
+    label: 'Mapa',
+    form: 'form-mapa'
+  }, {
+    idx: 3,
+    label: 'Extra',
+    form: 'form-extra'
+  }, {
+    idx: 4,
+    label: 'Resumen',
+    form: ''
   }
+];
 
-  useEffect(() => {
-    if (Object.keys(basicFormData).length > 0) {
-      reset(basicFormData);
+const getStepContent = (step) => {
+  switch (step) {
+    case 0:
+      return <FormBasic />
+    case 1:
+      return <FormFormula defaultTitle />
+    case 2:
+      return <FormMapa defaultTitle />
+    case 3:
+      return <FormExtra />
+    case 4:
+      return <Summary />;
+    default:
+      return <ErrorContent error='Invalid Step' />
+  }
+}
+
+const initialState = {
+  nombre: '',
+  codigo: '',
+  definicion: '',
+  ultimoValorDisponible: 0,
+  anioUltimoValorDisponible: new Date().getFullYear(),
+  periodicidad: 0,
+  tema: null,
+  medida: null,
+  cobertura: null,
+  ods: null,
+  formula: {
+    ecuacion: '',
+    descripcion: '',
+    hasEcuacion: true,
+    variables: [defaultVariable]
+  },
+  mapa: defaultMapa,
+  observaciones: '',
+  fuente: '',
+  image: ''
+};
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'update-form-basic':
+    case 'update-form-extra':
+      return { ...state, ...action.payload };
+    case 'update-form-mapa':
+      return { ...state, mapa: { ...action.payload } }
+    case 'update-form-formula':
+      return { ...state, formula: { ...action.payload } }
+    case 'clear':
+      return initialState;
+    default:
+      throw new Error('Invalid action type');
+  }
+}
+
+const createIndicadorFormData = (indicador) => {
+  const formData = new FormData();
+  for (const field in indicador) {
+    if (!indicador[field]) {
+      continue;
     }
-  }, [])
+    if (field === 'tema') {
+      formData.append('idModulo', indicador[field].id);
+      continue;
+    }
+    if (field === 'medida' || field === 'ods' || field === 'cobertura') {
+      formData.append('catalogos[]', indicador[field].id);
+      continue;
+    }
+    if (field === 'formula') {
+      if (!indicador[field].ecuacion) {
+        continue;
+      }
+      formData.append('formula[ecuacion]', encodeURIComponent(indicador[field].ecuacion));
+      formData.append('formula[descripcion]', indicador[field].descripcion);
+      formData.append('formula[isFormula]', indicador[field].hasEcuacion ? 'SI' : 'NO');
+      for (const variable of indicador[field].variables) {
+        const { nombre, dato, anio, medida, variableDesc } = variable;
+        formData.append('formula[variables][]',
+          JSON.stringify({
+            nombre,
+            dato: Number(dato),
+            anio: Number(anio),
+            idUnidad: medida.id,
+            descripcion: variableDesc
+          }));
+      }
+
+      continue;
+    }
+    if (field === 'mapa') {
+      if (indicador[field].url) {
+        formData.append('mapa[url]', indicador[field].url);
+      }
+      if (indicador[field].ubicacion) {
+        formData.append('mapa[ubicacion]', indicador[field].ubicacion)
+      }
+      if (indicador[field]?.urlImagen && indicador[field].urlImagen.length > 0) {
+        formData.append('urlImagen', indicador[field].urlImagen[0]);
+      }
+      continue;
+    }
+    if (field === 'periodicidad') {
+      formData.append('periodicidad', typeof indicador[field] === 'number' ? indicador[field] : null)
+    }
+    formData.append(field, indicador[field])
+  }
+  return formData;
+}
+
+const formStateInitial = {
+  error: null,
+  uploading: false,
+}
+
+export const FormIndicador = (props) => {
+  const alert = useAlert();
+  const isMounted = useIsMounted();
+  const [indicador, dispatch] = useReducer(reducer, initialState);
+  const [currentStep, setCurrentStep] = useState(0)
+  const [formState, setFormState] = useState(formStateInitial);
+  const handleBack = useCallback(() => {
+    setFormState(formStateInitial)
+    setCurrentStep(prev => prev === 0 ? 0 : prev - 1)
+  }, [setCurrentStep]);
+
+  const handleNext = useCallback(() => {
+    setCurrentStep(prev => {
+      const lastValue = (STEPS.length - 1)
+      return prev === lastValue ? lastValue : prev + 1
+    })
+  }, [setCurrentStep]);
+
+  const onSubmit = useCallback((data) => {
+    const currentForm = STEPS[currentStep].form;
+    dispatch({ type: `update-${currentForm}`, payload: { ...data } });
+    handleNext();
+  }, [currentStep]);
+
+  const handleSubmit = async () => {
+    const payload = createIndicadorFormData(indicador);
+    setFormState(prev => ({ ...prev, uploading: true }))
+    try {
+      const created = await createIndicador(payload);
+      alert.success(`Indicador ${created.nombre} creado exitosamente`)
+      props.close();
+    } catch (error) {
+      setFormState(prev => ({ ...prev, error }))
+    } finally {
+      if (isMounted()) {
+        setFormState(prev => ({ ...prev, uploading: false }))
+      }
+    }
+  };
 
   return (
-    <>
-      <DialogContent style={{ height: '60vh' }}>
-        <Box
-          component='form'
-          noValidate
-        >
-          <Grid
-            container
-            columnSpacing={2}
-            rowSpacing={2}
-            direction="row"
-          >
-            <Grid item xs={8}>
-              <Controller
-                name="nombre"
-                control={control}
-                defaultValue=''
-                render={({
-                  field: { onChange, value },
-                  fieldState: { error }
-                }) => (
-                  <TextField
-                    label='Nombre'
-                    type='text'
-                    required
-                    placeholder='Almacen de carbono'
-                    error={!!error}
-                    helperText={error?.message}
-                    onChange={onChange}
-                    value={value}
-                    fullWidth
-                  />
-                )}
-              />
-            </Grid>
-            <Grid item xs={4}>
-              <Controller
-                name="codigo"
-                control={control}
-                defaultValue=''
-                render={({
-                  field: { onChange, value },
-                  fieldState: { error }
-                }) => (
-                  <TextField
-                    label='Codigo'
-                    type='text'
-                    required
-                    placeholder='123'
-                    error={!!error}
-                    helperText={error ? error.message : null}
-                    onChange={onChange}
-                    value={value}
-                    fullWidth
-                  />
-                )}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Controller
-                name="medida"
-                control={control}
-                defaultValue={null}
-                render={({ field: props, fieldState: { error } }) => (
-                  <Autocomplete
-                    {...props}
-                    autoHighlight
-                    options={dummyOptions}
-                    getOptionLabel={option => option.unidad}
-                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                    onChange={(_, data) => props.onChange(data)}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Unidad Medida"
-                        error={!!error}
-                        helperText={error?.message}
-                        required
-                      />
-                    )}
-                  />
-                )}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Autocomplete
-                options={['dummyOptions']}
-                renderInput={(params) => <TextField {...params} required label="Cobertura Geografica" />}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Autocomplete
-                options={['something']}
-                renderInput={(params) => <TextField {...params} label="Objetivo de Desarrollo Sostenible" />}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Controller
-                name="definicion"
-                defaultValue=''
-                control={control}
-                render={({
-                  field: { onChange, value },
-                  fieldState: { error }
-                }) => (
-                  <TextField
-                    label='Definicion'
-                    type='text'
-                    multiline
-                    required
-                    rows={3}
-                    onChange={onChange}
-                    value={value}
-                    error={!!error}
-                    helperText={error ? error.message : null}
-                    fullWidth
-                  />
-                )}
-              />
-            </Grid>
-          </Grid>
-        </Box>
+    <IndicadorProvider
+      indicador={indicador}
+      dispatch={dispatch}
+      onSubmit={onSubmit}
+      formState={formState}
+      setFormState={setFormState}
+    >
+      <DialogTitle>
+        Nuevo Indicador
+        <HorizontalStepper
+          activeStep={currentStep}
+          stepLabels={STEPS}
+        />
+      </DialogTitle>
+      <DialogContent sx={{ height: '60vh' }}>
+        {getStepContent(currentStep)}
       </DialogContent>
       <DialogActions>
-        <Button disabled>Atras</Button>
-        <Button variant='contained' onClick={handleSubmit(onSubmit)}>Siguiente</Button>
+        <Button
+          sx={{ mr: 'auto' }}
+          onClick={props.close}
+        >Cancelar</Button>
+        <Button
+          onClick={handleBack}
+          disabled={currentStep === 0}>Atras</Button>
+        {
+          (currentStep === STEPS.length - 1)
+            ? (
+              <Button
+                variant='contained'
+                onClick={handleSubmit}>
+                {formState.error ? 'Intentar de nuevo' : 'Terminar'}
+              </Button>)
+            : (<Button
+              type='submit'
+              form={STEPS[currentStep].form}
+              variant='contained'>Siguiente</Button>)
+        }
       </DialogActions>
-    </>
+    </IndicadorProvider>
   );
 };
