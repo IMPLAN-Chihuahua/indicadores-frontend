@@ -8,9 +8,12 @@ export default function AutoCompleteInput(props) {
   const [options, setOptions] = useState([]);
   const isMounted = useIsMounted();
   const fetchOptions = async () => {
-    const items = await fetcher();
-    if (isMounted()) {
+    try {
+      const items = await fetcher();
+      if (!isMounted()) return
       setOptions(items)
+    } catch (err) {
+      setOptions([])
     }
   }
 
