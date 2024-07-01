@@ -1,10 +1,10 @@
-import { Avatar, Box, Grid, Paper, Skeleton, Stack, Typography } from '@mui/material'
+import { Avatar, Box, CircularProgress, Grid, Paper, Skeleton, Stack, Typography } from '@mui/material'
 import { useState, useEffect } from 'react'
 import useIsMounted from '../../../../../hooks/useIsMounted'
 import { getlatestIndicators, getlatestModules, getlatestUsers } from '../../../../../services/userService'
 import './latestRecords.css'
 import useSWR from 'swr'
-import { fetcher } from '../../../../../services/indicatorService'
+import { protectedApi } from '../../../../../services'
 
 
 function stringToColor(string) {
@@ -34,64 +34,16 @@ function stringAvatar(name) {
   };
 }
 
+const fetcher = (url) => protectedApi.get(url).then(res => res.data.data)
 
 export const LatestRecords = () => {
-  const skeletonArray = [1, 2, 3, 4, 5];
-  const fetchedTemas = useSWR('/modulos', fetcher)
-  const fetchedUsuarios = useSWR('/usuarios', fetcher)
-  const fetchedIndicadores = useSWR('/indicadores?sortBy=updatedAt&order=DESC', fetcher)
-  const [users, setUsers] = useState([])
-  const [temas, setTemas] = useState([])
-  const [indicadores, setIndicadores] = useState([])
-
   return (
     <Box mt={3}>
       <Grid container spacing={4}>
         <Grid item xs={12} md={6} lg={5}>
           <Paper variant='outlined' sx={{ p: 2 }}>
             <Typography variant='h6'>Usuarios Recientes</Typography>
-            {
-              users.length > 0 ?
-                users.slice((users.length - 7), users.length).reverse().map((user, i) => {
-                  return (
-                    <Box key={user.id}>
-                      <Paper className='latest-all-item' variant='outlined' style={{ borderRadius: '15px' }}>
-                        <Box className='latest-all-left'>
-                          <Box className='latest-picture'>
-                            <Box className='latest-picture-item'>
-                              <Avatar alt={user.nombres} src={user.urlImagen} sx={{ height: 45, width: 45 }} className="latest-picture-hoverable main-avatar" />
-                            </Box>
-                          </Box>
-                          <Box className='latest-all-info'>
-                            <span className='latest-all-name'>{user.nombres}</span>
-                          </Box>
-                        </Box>
-                        <Box className='latest-status'>
-                          <span className={`latest-status-text ${(user.activo == 'SI' ? 'active' : '')}`}>{`${(user.activo == 'SI' ? 'Activo' : 'Inactivo')}`}</span>
-                        </Box>
-                      </Paper>
-                    </Box>
-                  )
-                })
-                :
-                skeletonArray.map((item, i) => {
-                  return (
-                    <Box key={item}>
-                      <Box>
-                        <Box className='latest-all-left'>
-                          <Skeleton variant="circular" width={45} height={45} />
-                          <Box className='latest-all-info'>
-                            <Skeleton variant="text" width={100} height={20} className='latest-all-name' />
-                          </Box>
-                        </Box>
-                        <Box className='latest-status'>
-                          <Skeleton variant="text" width='100%' height={20} className='latest-status-text' />
-                        </Box>
-                      </Box>
-                    </Box>
-                  )
-                })
-            }
+            <LatestUsuarios />
           </Paper>
         </Grid>
 
@@ -99,59 +51,136 @@ export const LatestRecords = () => {
           <Stack direction='column' spacing={3}>
             <Paper sx={{ p: 2 }} variant='outlined'>
               <Typography variant='h6'>Temas de Interés</Typography>
-              {
-                temas.slice((temas.length - 3), temas.length).reverse().map((modules, i) => {
-                  return (
-                    <Box key={modules.id}>
-                      <Paper className='latest-all-item' variant='outlined' style={{ borderRadius: '15px' }}>
-                        <Box className='latest-all-left'>
-                          <Box className='latest-picture'>
-                            <Box className='latest-picture-item-modules'>
-                              <Avatar alt={modules.temaIndicador} src={modules.urlImagen} sx={{ height: 45, width: 45 }} className="latest-picture-hoverable" />
-                            </Box>
-                          </Box>
-                          <Box className='latest-all-info'>
-                            <span className='latest-all-name'>{modules.temaIndicador}</span>
-                          </Box>
-                        </Box>
-                        <Box className='latest-status'>
-                          <span className={`latest-code-text`}>{modules.codigo}</span>
-                        </Box>
-                      </Paper>
-                    </Box>
-                  )
-                })
-
-              }
+              <LatestTemas />
             </Paper>
 
             <Paper sx={{ p: 2 }} variant='outlined'>
               <Typography variant='h6'>Indicadores</Typography>
-              {
-                indicadores.slice((indicadores.length - 3), indicadores.length).reverse().map((indicator, i) => {
-                  return (
-                    <Box key={indicator.id}>
-                      <Paper className='latest-all-item' variant='outlined' style={{ borderRadius: '15px' }}>
-                        <Box className='latest-all-left'>
-                          <Box className='latest-picture'>
-                            <Avatar src={indicator.nombre} alt={indicator.nombre} {...stringAvatar(indicator.nombre)} />
-                          </Box>
-                          <Box className='latest-all-info'>
-                            <span className='latest-all-name'>{indicator.nombre}</span>
-                          </Box>
-                        </Box>
-                        <Box className='latest-status'>
-                          <span className={`latest-code-text`} title="FID">{indicator.id}</span>
-                        </Box>
-                      </Paper>
-                    </Box>
-                  )
-                })
-              }
+              <LatestIndicadores />
             </Paper>
           </Stack>
         </Grid>
       </Grid>
     </Box>
   )
+}
+
+
+const LatestUsuarios = () => {
+  const skeletonArray = [1, 2, 3, 4, 5];
+  const { data: usuarios, loading } = useSWR('/usuarios', fetcher)
+  if (loading) {
+    return (
+      skeletonArray.map((item, i) => (
+        <Box key={item}>
+          <Box>
+            <Box className='latest-all-left'>
+              <Skeleton variant="circular" width={45} height={45} />
+              <Box className='latest-all-info'>
+                <Skeleton variant="text" width={100} height={20} className='latest-all-name' />
+              </Box>
+            </Box>
+            <Box className='latest-status'>
+              <Skeleton variant="text" width='100%' height={20} className='latest-status-text' />
+            </Box>
+          </Box>
+        </Box>
+      ))
+    )
+  }
+  return (
+    <>
+      {
+        usuarios?.slice((usuarios.length - 7), usuarios.length).reverse().map((user, i) => {
+          return (
+            <Box key={user.id}>
+              <Paper className='latest-all-item' variant='outlined' style={{ borderRadius: '15px' }}>
+                <Box className='latest-all-left'>
+                  <Box className='latest-picture'>
+                    <Box className='latest-picture-item'>
+                      <Avatar alt={user.nombres} src={user.urlImagen} sx={{ height: 45, width: 45 }} className="latest-picture-hoverable main-avatar" />
+                    </Box>
+                  </Box>
+                  <Box className='latest-all-info'>
+                    <span className='latest-all-name'>{user.nombres}</span>
+                  </Box>
+                </Box>
+                <Box className='latest-status'>
+                  <span className={`latest-status-text ${(user.activo == 'SI' ? 'active' : '')}`}>{`${(user.activo == 'SI' ? 'Activo' : 'Inactivo')}`}</span>
+                </Box>
+              </Paper>
+            </Box>
+          )
+        })
+      }
+    </>
+  );
+}
+
+
+const LatestTemas = () => {
+  const { data: temas, loading } = useSWR('/modulos', fetcher)
+  if (loading) {
+    return <CircularProgress />
+  }
+
+  return (
+    <>
+      {
+        temas?.slice((temas.length - 3), temas.length).reverse().map((modules, i) => {
+          return (
+            <Box key={modules.id}>
+              <Paper className='latest-all-item' variant='outlined' style={{ borderRadius: '15px' }}>
+                <Box className='latest-all-left'>
+                  <Box className='latest-picture'>
+                    <Box className='latest-picture-item-modules'>
+                      <Avatar alt={modules.temaIndicador} src={modules.urlImagen} sx={{ height: 45, width: 45 }} className="latest-picture-hoverable" />
+                    </Box>
+                  </Box>
+                  <Box className='latest-all-info'>
+                    <span className='latest-all-name'>{modules.temaIndicador}</span>
+                  </Box>
+                </Box>
+                <Box className='latest-status'>
+                  <span className={`latest-code-text`}>{modules.codigo}</span>
+                </Box>
+              </Paper>
+            </Box>
+          )
+        })
+
+      }
+    </>
+  )
+}
+
+const LatestIndicadores = () => {
+  const { data: indicadores, loading } = useSWR('/indicadores?sortBy=updatedAt&order=DESC&perPage=10', fetcher)
+  if (loading) {
+    return <CircularProgress />
+  }
+  return (
+    <>
+      {
+        indicadores?.slice((indicadores.length - 3), indicadores.length).reverse().map((indicator, i) => {
+          return (
+            <Box key={indicator.id}>
+              <Paper className='latest-all-item' variant='outlined' style={{ borderRadius: '15px' }}>
+                <Box className='latest-all-left'>
+                  <Box className='latest-picture'>
+                    <Avatar src={indicator.nombre} alt={indicator.nombre} {...stringAvatar(indicator.nombre)} />
+                  </Box>
+                  <Box className='latest-all-info'>
+                    <span className='latest-all-name'>{indicator.nombre}</span>
+                  </Box>
+                </Box>
+                <Box className='latest-status'>
+                  <span className={`latest-code-text`} title="FID">{indicator.id}</span>
+                </Box>
+              </Paper>
+            </Box>
+          )
+        })
+      }</>
+  );
 }

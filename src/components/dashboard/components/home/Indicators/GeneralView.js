@@ -338,14 +338,13 @@ export const GeneralView = () => {
 								{/* Sección izquierda que contiene la información del indicador */}
 								<Paper component={Grid} container item xs={12} md={4} py={3} px={2} mb={{ xs: 2, md: 0 }} gap={1}>
 									<Grid item xs={12}>
-										<Typography variant='h5' mb={2}>Información básica</Typography>
+										<Typography variant='h5'>Información básica</Typography>
 									</Grid>
 									<Grid item xs={12}>
 										<Stack
 											direction={{ xs: 'column', md: 'row' }}
 											flexWrap='wrap'
 											justifyContent='space-between'
-											mb={3}
 											sx={{ borderBottom: 1, borderColor: 'divider', pb: 2 }}
 										>
 											<Box>
