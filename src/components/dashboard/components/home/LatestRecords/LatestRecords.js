@@ -71,7 +71,7 @@ export const LatestRecords = () => {
             <Typography variant='h6'>Usuarios Recientes</Typography>
             {
               users.length > 0 ?
-                users.slice((users.length - 7), users.length).reverse().map((user, i) => {
+                users.slice((users.length - 7), users.length).map((user, i) => {
                   return (
                     <Box key={user.id}>
                       <Paper className='latest-all-item' variant='outlined' style={{ borderRadius: '15px' }}>
