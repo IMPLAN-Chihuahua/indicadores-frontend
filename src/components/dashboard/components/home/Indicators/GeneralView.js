@@ -28,6 +28,9 @@ import { isNumber } from '../../../../../utils/stringsValidator';
 import { updateOrCreateCatalogo } from '../../../../../services/cataloguesService';
 import PersonalLoader from '../../../../common/PersonalLoader/PersonalLoader';
 import { Save } from '@material-ui/icons';
+import { getDimensionsGeneralInfo } from '../../../../../services/dimensionService';
+import ArchiveIcon from '@mui/icons-material/Archive';
+import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
 
 const ODS_ID = 1;
 const UNIDAD_MEDIDA_ID = 2;
@@ -54,6 +57,8 @@ export const GeneralView = () => {
 			nombre: '',
 			idCatalogo: ODS_ID
 		}],
+		archive: false,
+		dimension: {},
 		codigo: '',
 		createdAt: '',
 		createdBy: '',
@@ -96,7 +101,7 @@ export const GeneralView = () => {
 
 		const { id: idIndicador, activo, catalogos, definicion, fuente,
 			idModulo, modulo, nombre, observaciones, owner, anioUltimoValorDisponible,
-			ultimoValorDisponible, updatedBy, periodicidad } = data;
+			ultimoValorDisponible, updatedBy, periodicidad, archive, dimension } = data;
 
 		const status = activo ? 'SI' : 'NO';
 		const indicadorData = {
@@ -110,6 +115,9 @@ export const GeneralView = () => {
 			owner,
 			periodicidad,
 			anioUltimoValorDisponible,
+			archive,
+			idModulo: modulo?.id,
+			idDimension: dimension?.id
 		};
 
 		const historicoData = {
@@ -300,83 +308,127 @@ export const GeneralView = () => {
 											/>
 										)}
 									/>
-								</Paper>
-							</Grid>
-
-							<Grid container p={3} columnGap={3} pt={1}>
-								{/* Sección izquierda que contiene la información del indicador */}
-								<Paper component={Grid} item xs={12} md={4} py={3} px={2} mb={{ xs: 2, md: 0 }}>
-									<Typography variant='h5' mb={2}>Información básica</Typography>
-									<Stack
-										direction={{ xs: 'column', md: 'row' }}
-										flexWrap='wrap'
-										justifyContent='space-between'
-										mb={3}
-										sx={{ borderBottom: 1, borderColor: 'divider', pb: 2 }}
-									>
-										<Box>
-											<Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-												Código
-											</Typography>
-											<Typography>
-												{indicador.codigo}
-											</Typography>
-										</Box>
-										<Box>
-											<Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-												Última actualización
-											</Typography>
-											<Typography>
-												{parseDate(indicador.updatedAt)}
-											</Typography>
-										</Box>
-										<Box className='body-right-title-link'>
-											<Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-												Tendencia
-											</Typography>
-											<Typography variant='h5' component="div" className='tendencia-actual'>
-												{
-													methods.getValues('tendenciaActual') === 'ASCENDENTE'
-														? (
-															<>
-																<ArrowUpwardIcon className='tendencia-ascendente' />
-																<Typography>Ascendente</Typography>
-															</>
-														) : (
-															<>
-																<ArrowDownwardIcon className='tendencia-descendente' />
-																<Typography>Descendente</Typography>
-															</>
-														)
-												}
-											</Typography>
-										</Box>
-										<Box className='body-right-title-link'>
-											<a href={`//www.chihuahuametrica.online/chihuahua-en-datos/indicadores/${id}`} target='_blank' rel='noreferrer' className='indicador-metrica-url'>
-												<Button variant='text'>
-													Ver ficha
-												</Button>
-											</a>
-										</Box>
-									</Stack>
 									<Controller
+										name='archive'
 										control={methods.control}
-										name='modulo'
-										defaultValue={null}
-										render={({ field: { value, onChange }, fieldState: { error } }) => (
-											<AutoCompleteInput
-												value={value}
-												onChange={onChange}
-												error={error}
-												label='Tema de interes'
-												helperText='Tema al que pertenece el indicador'
-												getOptionLabel={(item) => item.temaIndicador}
-												fetcher={temasFetcher}
-												fullWidth
-												required
+										render={({
+											field: { onChange, value },
+											fieldState: { error }
+										}) => (
+											<FormControlLabel
+												control={
+													<Checkbox
+														onChange={onChange}
+														checked={value}
+														aria-label='Checkbox para marcar indicador como archivo'
+														icon={<ArchiveOutlinedIcon />}
+														checkedIcon={<ArchiveIcon />}
+														color='default'
+													/>
+												}
+												label={value ? 'Archivado' : 'Archivar'}
 											/>
 										)}
 									/>
+
+								</Paper>
+							</Grid>
+
+							<Grid container p={3} gap={3} pt={1}>
+								{/* Sección izquierda que contiene la información del indicador */}
+								<Paper component={Grid} container item xs={12} md={4} py={3} px={2} mb={{ xs: 2, md: 0 }} gap={1}>
+									<Grid item xs={12}>
+										<Typography variant='h5' mb={2}>Información básica</Typography>
+									</Grid>
+									<Grid item xs={12}>
+										<Stack
+											direction={{ xs: 'column', md: 'row' }}
+											flexWrap='wrap'
+											justifyContent='space-between'
+											mb={3}
+											sx={{ borderBottom: 1, borderColor: 'divider', pb: 2 }}
+										>
+											<Box>
+												<Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+													Código
+												</Typography>
+												<Typography>
+													{indicador.codigo}
+												</Typography>
+											</Box>
+											<Box>
+												<Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+													Última actualización
+												</Typography>
+												<Typography>
+													{parseDate(indicador.updatedAt)}
+												</Typography>
+											</Box>
+											<Box className='body-right-title-link'>
+												<Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+													Tendencia
+												</Typography>
+												<Typography variant='h5' component="div" className='tendencia-actual'>
+													{
+														methods.getValues('tendenciaActual') === 'ASCENDENTE'
+															? (
+																<>
+																	<ArrowUpwardIcon className='tendencia-ascendente' />
+																	<Typography>Ascendente</Typography>
+																</>
+															) : (
+																<>
+																	<ArrowDownwardIcon className='tendencia-descendente' />
+																	<Typography>Descendente</Typography>
+																</>
+															)
+													}
+												</Typography>
+											</Box>
+										</Stack>
+									</Grid>
+									<Grid item xs>
+										<Controller
+											name='dimension'
+											control={methods.control}
+											defaultValue={null}
+											render={({ field: { value, onChange }, fieldState: { error } }) => (
+												<AutoCompleteInput
+													value={value}
+													onChange={onChange}
+													error={error}
+													label='Dimensión'
+													helperText='Objetivo de PDU'
+													getOptionLabel={(item) => item.titulo}
+													fetcher={async () => {
+														const res = await getDimensionsGeneralInfo()
+														return res.data.data;
+													}}
+													fullWidth
+													required
+												/>
+											)}
+										/>
+									</Grid>
+									<Grid item xs>
+										<Controller
+											name='modulo'
+											control={methods.control}
+											defaultValue={null}
+											render={({ field: { value, onChange }, fieldState: { error } }) => (
+												<AutoCompleteInput
+													value={value}
+													onChange={onChange}
+													error={error}
+													label='Tema de interes'
+													getOptionLabel={(item) => item.temaIndicador}
+													fetcher={temasFetcher}
+													fullWidth
+													required
+												/>
+											)}
+										/>
+									</Grid>
 									<Controller
 										name='nombre'
 										control={methods.control}
@@ -394,7 +446,6 @@ export const GeneralView = () => {
 												onChange={onChange}
 												value={value}
 												fullWidth
-												sx={{ mb: 3, mt: 3 }}
 											/>
 										)
 										}
@@ -420,7 +471,7 @@ export const GeneralView = () => {
 												onChange={onChange}
 												value={value}
 												fullWidth
-												className='indicador-info-input'
+												
 											/>
 										)}
 									/>
@@ -440,7 +491,6 @@ export const GeneralView = () => {
 												onChange={onChange}
 												value={value}
 												fullWidth
-												className='indicador-info-input'
 											/>
 										)}
 									/>

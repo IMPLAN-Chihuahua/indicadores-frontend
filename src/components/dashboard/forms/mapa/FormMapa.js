@@ -78,7 +78,7 @@ export const FormMapa = (props) => {
                   error={!!error}
                   helperText={error?.message}
                   label='Ubicación'
-                  placeholder="\\10.218.108.49\Geomatica\Activo\IMPLAN2022\GM2201_Datos_para_todos\Octubre\octubre_rosa.shp"
+                  placeholder="G:\datos\PDU_2040\zonificacion_primaria"
                 />
               )}
             />

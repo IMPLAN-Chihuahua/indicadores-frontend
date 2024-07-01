@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react'
 import useIsMounted from '../../../../../hooks/useIsMounted'
 import { getlatestIndicators, getlatestModules, getlatestUsers } from '../../../../../services/userService'
 import './latestRecords.css'
+import useSWR from 'swr'
+import { fetcher } from '../../../../../services/indicatorService'
 
 
 function stringToColor(string) {
@@ -32,36 +34,15 @@ function stringAvatar(name) {
   };
 }
 
+
 export const LatestRecords = () => {
   const skeletonArray = [1, 2, 3, 4, 5];
-  const isMounted = useIsMounted();
+  const fetchedTemas = useSWR('/modulos', fetcher)
+  const fetchedUsuarios = useSWR('/usuarios', fetcher)
+  const fetchedIndicadores = useSWR('/indicadores?sortBy=updatedAt&order=DESC', fetcher)
   const [users, setUsers] = useState([])
-  const [modules, setModules] = useState([])
-  const [indicators, setIndicators] = useState([])
-
-  useEffect(() => {
-    getlatestUsers()
-      .then(res => {
-        if (isMounted()) {
-          setUsers(res)
-        }
-      })
-
-    getlatestModules()
-      .then(res => {
-        if (isMounted()) {
-          setModules(res)
-        }
-      })
-
-    getlatestIndicators()
-      .then(res => {
-        if (isMounted()) {
-          setIndicators(res)
-          console.log(res);
-        }
-      })
-  }, [isMounted])
+  const [temas, setTemas] = useState([])
+  const [indicadores, setIndicadores] = useState([])
 
   return (
     <Box mt={3}>
@@ -119,7 +100,7 @@ export const LatestRecords = () => {
             <Paper sx={{ p: 2 }} variant='outlined'>
               <Typography variant='h6'>Temas de Interés</Typography>
               {
-                modules.slice((modules.length - 3), modules.length).reverse().map((modules, i) => {
+                temas.slice((temas.length - 3), temas.length).reverse().map((modules, i) => {
                   return (
                     <Box key={modules.id}>
                       <Paper className='latest-all-item' variant='outlined' style={{ borderRadius: '15px' }}>
@@ -147,7 +128,7 @@ export const LatestRecords = () => {
             <Paper sx={{ p: 2 }} variant='outlined'>
               <Typography variant='h6'>Indicadores</Typography>
               {
-                indicators.slice((indicators.length - 3), indicators.length).reverse().map((indicator, i) => {
+                indicadores.slice((indicadores.length - 3), indicadores.length).reverse().map((indicator, i) => {
                   return (
                     <Box key={indicator.id}>
                       <Paper className='latest-all-item' variant='outlined' style={{ borderRadius: '15px' }}>

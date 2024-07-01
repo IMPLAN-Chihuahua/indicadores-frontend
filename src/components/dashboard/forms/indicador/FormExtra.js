@@ -5,6 +5,8 @@ import {
 import { useEffect } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { useIndicadorContext } from "../../../../contexts/IndicadorContext";
+import { COBERTURA_GEOGRAFICA_ID, ODS_ID, UNIDAD_MEDIDA_ID } from "../../../../utils/getCatalog";
+import { CatalogoAutocomplete } from "../../common/CatalogPicker";
 
 export const FormExtra = () => {
   const { indicador, onSubmit } = useIndicadorContext();
@@ -32,6 +34,69 @@ export const FormExtra = () => {
           columnSpacing={2}
           rowSpacing={2}
         >
+          <Grid item xs={12}>
+            <Typography variant='h5' component='h3'>Características</Typography>
+          </Grid>
+          <Grid item xs={4}>
+            <Controller
+              name="medida"
+              control={control}
+              defaultValue={null}
+              render={({
+                field: { value, onChange },
+                fieldState: { error }
+              }) => (
+                <CatalogoAutocomplete
+                  id={UNIDAD_MEDIDA_ID}
+                  value={value}
+                  onChange={onChange}
+                  label="Unidad Medida"
+                  error={error}
+                  required={false}
+                />
+              )}
+            />
+          </Grid>
+          <Grid item xs={4}>
+            <Controller
+              name="cobertura"
+              control={control}
+              defaultValue={null}
+              render={({
+                field: { value, onChange },
+                fieldState: { error }
+              }) => (
+                <CatalogoAutocomplete
+                  id={COBERTURA_GEOGRAFICA_ID}
+                  value={value}
+                  onChange={onChange}
+                  label="Cobertura Geográfica"
+                  error={error}
+                  required={false}
+                />
+              )}
+            />
+          </Grid>
+          <Grid item xs={4}>
+            <Controller
+              name="ods"
+              control={control}
+              defaultValue={null}
+              render={({
+                field: { value, onChange },
+                fieldState: { error }
+              }) => (
+                <CatalogoAutocomplete
+                  id={ODS_ID}
+                  value={value}
+                  onChange={onChange}
+                  label="Objetivo de Desarrollo Sostenible"
+                  error={error}
+                  required={false}
+                />
+              )}
+            />
+          </Grid>
           <Grid item xs={12}>
             <Typography variant='h5' component='h3'>Más Información</Typography>
           </Grid>

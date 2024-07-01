@@ -1,7 +1,7 @@
 import { protectedApi } from '.';
 
-export const getDimensionsGeneralInfo = async ({ page, perPage, attributes, id, sortBy, order }) => {
-
+export const getDimensionsGeneralInfo = async (params) => {
+  const { page, perPage, attributes, id, sortBy, order } = params | {}
   const attributesQuery = attributes ? attributes.map(attribute => `attributes[]=${attribute}`).join('&') : '';
 
   const sortByQuery = sortBy ? `&sortBy=${sortBy}` : '';

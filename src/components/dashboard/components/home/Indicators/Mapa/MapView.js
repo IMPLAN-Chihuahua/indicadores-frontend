@@ -123,7 +123,7 @@ const MapView = () => {
   useEffect(() => {
     fetchMapa();
   }, [fetchMapa])
-  
+
   return (
     <>
       <Box
@@ -135,8 +135,9 @@ const MapView = () => {
           isLoading ? (<PersonalLoader />)
             : Object.keys(mapa).length > 0
               ? (
-                <Stack direction='column' gap={1} height='100%'>
+                <Grid container gap={1} height='100%' alignItems='flex-start'>
                   <Paper
+                    xs={5}
                     component={Grid}
                     item
                     padding={3}
@@ -153,10 +154,10 @@ const MapView = () => {
                     </IndicadorProvider>
                   </Paper>
                   <Paper
-                    component={Stack}
-                    direction='column'
+                    component={Grid}
+                    item
                     padding={3}
-                    height='100%'
+                    xs
                   >
                     <Typography variant='h5' mb={2}>Vista del dashboard</Typography>
                     <iframe
@@ -166,7 +167,7 @@ const MapView = () => {
                       style={{ border: '1px solid #d2d2d2', borderRadius: '5px' }}>
                     </iframe>
                   </Paper>
-                </Stack>
+                </Grid>
               )
               : (
                 <Paper
