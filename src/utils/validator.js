@@ -79,4 +79,23 @@ const createTemaSchema = yup.object({
 
 });
 
-export { loginSchema, createTemaSchema, emailSchema, confirmPasswordSchema, createAuthSchema, updateAuthSchema }
+const createDimensionSChema = yup.object({
+  titulo:
+    yup.string()
+      .optional('Por favor, ingrese el titulo de la dimensión')
+      .min(5, 'El titulo de la dimensión debe contener al menos 5 caracteres'),
+
+  descripcion:
+    yup.string()
+      .max(255, 'La descripcion debe contener máximo 255 caracteres'),
+
+  urlImagen:
+    yup.string()
+      .url('Por favor, ingrese una URL valida'),
+
+  color:
+    yup.string()
+      .optional('Por favor, seleccione un color')
+});
+
+export { loginSchema, createTemaSchema, emailSchema, confirmPasswordSchema, createAuthSchema, updateAuthSchema, createDimensionSChema }
