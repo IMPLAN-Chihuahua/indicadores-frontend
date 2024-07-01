@@ -37,8 +37,8 @@ const STEPS = [
   }
 ];
 
-const getStepContent = (step) => {
-  switch (step) {
+const Content = (props) => {
+  switch (props.step) {
     case 0:
       return <FormBasic />
     case 1:
@@ -182,7 +182,7 @@ export const FormIndicador = (props) => {
     setFormState(prev => ({ ...prev, uploading: true }))
     try {
       const created = await createIndicador(payload);
-      alert.success(`Indicador ${created.nombre} creado exitosamente`)
+      alert.success(`Indicador '${created.nombre}' creado exitosamente`)
       props.close();
     } catch (error) {
       setFormState(prev => ({ ...prev, error }))
@@ -209,7 +209,7 @@ export const FormIndicador = (props) => {
         />
       </DialogTitle>
       <DialogContent sx={{ height: '60vh' }}>
-        {getStepContent(currentStep)}
+        <Content step={currentStep} />
       </DialogContent>
       <DialogActions>
         <Button

@@ -10,6 +10,7 @@ import { useIndicadorContext } from "../../../../contexts/IndicadorContext";
 import { CatalogoAutocomplete } from "../../common/CatalogPicker";
 import AutoCompleteInput from "../../../common/AutoCompleteInput";
 import { getTemas } from "../../../../services/moduleService";
+import { getDimensionsGeneralInfo } from "../../../../services/dimensionService";
 
 const indicadorBasicSchema = yup.object({
   nombre: yup.string().required('Ingresa el nombre'),
@@ -23,18 +24,6 @@ const indicadorBasicSchema = yup.object({
     .integer('El año debe ser un número entero')
     .max(new Date().getFullYear(), 'El año no puede ser mayor que el actual')
   ,
-  medida: yup.object({
-    id: yup.number(),
-    unidad: yup.string()
-  }).nullable(),
-  ods: yup.object({
-    id: yup.number(),
-    unidad: yup.string()
-  }).nullable(),
-  cobertura: yup.object({
-    id: yup.number(),
-    unidad: yup.string()
-  }).nullable(),
   periodicidad: yup.number()
     .integer()
     .typeError('Periodicidad debe ser un número')
@@ -43,12 +32,12 @@ const indicadorBasicSchema = yup.object({
   tema: yup.object({
     id: yup.number(),
     temaIndicador: yup.string()
-  }).nullable().required('Selecciona un tema')
+  }).nullable().required('Selecciona un tema'),
+  dimension: yup.object({
+    id: yup.number(),
+    titulo: yup.string()
+  }).nullable().required('Selecciona una dimensión')
 })
-
-const ODS_ID = 1;
-const UNIDAD_MEDIDA_ID = 2;
-const COBERTURA_ID = 3;
 
 export const FormBasic = () => {
   const { indicador, onSubmit } = useIndicadorContext();
@@ -65,7 +54,7 @@ export const FormBasic = () => {
     }
     const { codigo, indicadoresCount } = selectedTema;
     const count = (parseInt(indicadoresCount) + 1).toString();
-    setValue('codigo', `${codigo}${count.padStart(3, '0')}`);
+    setValue('codigo', `${codigo}${count.padStart(3, '0')}`, { shouldValidate: true });
   }, [selectedTema]);
 
   const initForm = useCallback(() => {
@@ -95,7 +84,29 @@ export const FormBasic = () => {
         <Grid item xs={12}>
           <Typography variant='h6'>General</Typography>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={6}>
+          <Controller
+            control={control}
+            name='dimension'
+            defaultValue={null}
+            render={({ field: { value, onChange }, fieldState: { error } }) => (
+              <AutoCompleteInput
+                value={value}
+                onChange={onChange}
+                error={error}
+                label='Dimensión'
+                helperText='Objetivo de PDU'
+                getOptionLabel={item => item.titulo}
+                fetcher={async () => {
+                  const res = await getDimensionsGeneralInfo()
+                  return res.data.data
+                }}
+                required
+              />
+            )}
+          />
+        </Grid>
+        <Grid item xs={6}>
           <Controller
             control={control}
             name='tema'
@@ -247,70 +258,6 @@ export const FormBasic = () => {
                 error={!!error}
                 helperText={error ? error.message : null}
                 fullWidth
-              />
-            )}
-          />
-        </Grid>
-
-        <Grid item xs={12}>
-          <Typography variant='h6'>Características</Typography>
-        </Grid>
-        <Grid item xs={4}>
-          <Controller
-            name="medida"
-            control={control}
-            defaultValue={null}
-            render={({
-              field: { value, onChange },
-              fieldState: { error }
-            }) => (
-              <CatalogoAutocomplete
-                id={UNIDAD_MEDIDA_ID}
-                value={value}
-                onChange={onChange}
-                label="Unidad Medida"
-                error={error}
-                required={false}
-              />
-            )}
-          />
-        </Grid>
-        <Grid item xs={4}>
-          <Controller
-            name="cobertura"
-            control={control}
-            defaultValue={null}
-            render={({
-              field: { value, onChange },
-              fieldState: { error }
-            }) => (
-              <CatalogoAutocomplete
-                id={COBERTURA_ID}
-                value={value}
-                onChange={onChange}
-                label="Cobertura Geográfica"
-                error={error}
-                required={false}
-              />
-            )}
-          />
-        </Grid>
-        <Grid item xs={4}>
-          <Controller
-            name="ods"
-            control={control}
-            defaultValue={null}
-            render={({
-              field: { value, onChange },
-              fieldState: { error }
-            }) => (
-              <CatalogoAutocomplete
-                id={ODS_ID}
-                value={value}
-                onChange={onChange}
-                label="Objetivo de Desarrollo Sostenible"
-                error={error}
-                required={false}
               />
             )}
           />
