@@ -81,7 +81,7 @@ const SidebarItem = (props) => {
   return (
     <>
       {
-        ((props.label === 'Autorización' || props.label === 'Usuarios') && !isAdmin(user)) ?
+        ((props.label === 'Autorización' || props.label === 'Usuarios' || props.label === 'Dimensiones') && !isAdmin(user)) ?
           <></>
           :
           <li className='sidebar-list-item' style={{ marginBottom: '3px' }}>

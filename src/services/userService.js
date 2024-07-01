@@ -18,7 +18,8 @@ export const getCurrentUser = async () => {
 
 export const getlatestUsers = async () => {
   try {
-    const response = await protectedApi.get('/usuarios');
+    const response = await protectedApi.get(`/usuarios?sortBy=updatedAt&order=DESC`);
+
     const { data: users } = response.data;
     if (users) {
       return [...users];

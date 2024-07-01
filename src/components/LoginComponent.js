@@ -126,7 +126,7 @@ const LoginComponent = () => {
 						sx={{ mt: 2, mb: 3 }}>
 						Iniciar Sesion
 					</Button>
-					<Link component={RouterLink} to="/recuperacion-de-cuenta" underline="hover" variant="body2" >¿Olvidaste tu contraseña?</Link>
+					{/* <Link component={RouterLink} to="/recuperacion-de-cuenta" underline="hover" variant="body2" >¿Olvidaste tu contraseña?</Link> */}
 				</Box>
 			</Box>
 		</Container>
