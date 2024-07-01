@@ -10,6 +10,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import './sidebar.css'
 import { useAuth } from '../../../../contexts/AuthContext';
 import { isAdmin } from '../../../../utils/userValidator';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 
 export const SIDEBAR_KEY = 'indicadores-sidebar-mode';
 
@@ -47,6 +48,11 @@ export const Sidebar = () => {
     to: '/autorizacion',
     label: 'Autorización',
     icon: <Lock className='sidebar-icon' />
+  },
+  {
+    to: '/dimensiones',
+    label: "Dimensiones",
+    icon: <DashboardIcon className='sidebar-icon' />
   }
   ]
 
