@@ -2,7 +2,7 @@ import { protectedApi, publicApi } from '.';
 import useSWRImmutable from 'swr/immutable';
 import useSWR from 'swr';
 
-const fetcher = (url) => protectedApi.get(url).then(res => res.data);
+export const fetcher = (url) => protectedApi.get(url).then(res => res.data);
 
 export const getIndicator = async (id) => {
   try {
