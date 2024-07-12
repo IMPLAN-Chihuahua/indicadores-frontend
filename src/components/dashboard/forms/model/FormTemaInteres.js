@@ -34,7 +34,7 @@ const parseToFormData = (tema) => {
   return formData;
 }
 
-const FormModel = (props) => {
+const FormTemaInteres = (props) => {
   const { selectedTema, handleCloseModal, action } = props;
   const [isSubmitting, setSubmitting] = useState(false);
   const methods = useForm({
@@ -131,7 +131,7 @@ const FormModel = (props) => {
                     error={!!error}
                     helperText={error ? error.message : null}
                     variant='outlined'
-                    label='Tema indicador'
+                    label='Tema de interés'
                     {...field}
                   />}
               />
@@ -215,4 +215,4 @@ const FormModel = (props) => {
     </FormProvider>
   )
 }
-export default FormModel;
+export default FormTemaInteres;
