@@ -4,7 +4,7 @@ import { DataHeader } from "../components/dashboard/common/DataHeader";
 import { useModules } from "../services/userService";
 import { Status } from "../components/dashboard/common/Status";
 import FormDialog from "../components/dashboard/common/FormDialog";
-import FormModel, { FORM_TEMA_ACTIONS } from "../components/dashboard/forms/model/FormModel";
+import FormTemaInteres, { FORM_TEMA_ACTIONS } from "../components/dashboard/forms/model/FormTemaInteres";
 import { getModulesGeneralInfo, toggleTemaStatus } from "../services/moduleService";
 import { getGlobalPerPage } from "../utils/objects";
 import { Avatar, Box, DialogTitle, IconButton, Stack, Typography } from "@mui/material";
@@ -293,7 +293,7 @@ export const Modules = () => {
         handleClose={handleCloseModal}
       >
         <DialogTitle>{formTemaAction} Tema de Interés</DialogTitle>
-        <FormModel action={formTemaAction} selectedTema={selectedTema} handleCloseModal={handleCloseModal} />
+        <FormTemaInteres action={formTemaAction} selectedTema={selectedTema} handleCloseModal={handleCloseModal} />
       </FormDialog>
     </Box>
   );
