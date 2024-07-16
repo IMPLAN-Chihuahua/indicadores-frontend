@@ -52,8 +52,17 @@ export const useModules = (perPage, page, search) => {
     mutate
   }
 };
-export const useIndicators = (perPage, page, search) => {
-  const { data, error, mutate } = useSWR(`indicadores?perPage=${perPage}&page=${page}&searchQuery=${search}`, fetcher)
+export const useIndicators = (perPage, page, search, idDimensions, owner) => {
+  const searchQueries = new URLSearchParams({
+    perPage,
+    page,
+    ...(search.length > 0 && { searchQuery: search.trim() }),
+    ...(owner > 0 && { owner }),
+    ...(idDimensions?.length > 0 && { idDimensions: idDimensions }),
+  });
+
+  const { data, error, mutate } = useSWR(`indicadores?${searchQueries.toString()}`, fetcher)
+
   return {
     indicadores: data,
     isLoading: !error && !data,
@@ -66,7 +75,7 @@ export const useUsers = (perPage, page, search) => {
   const endpoint = new URLSearchParams({
     perPage,
     page,
-    searchQuery: search
+    ...(search.length > 0 && { searchQuery: search.trim() }),
   })
   const { data, error, mutate } = useSWR(`usuarios?${endpoint.toString()}`, fetcher)
   return {
@@ -162,6 +171,7 @@ export const getUsersFromIndicador = async (id) => {
 }
 
 export const getUsersGeneralInfo = async ({ page, perPage, attributes, id, sortBy, order }) => {
+
   const attributesQuery = attributes
     ? attributes.map(attribute => `attributes[]=${attribute}`).join('&')
     : '';
