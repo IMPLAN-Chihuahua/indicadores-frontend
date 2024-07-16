@@ -12,7 +12,7 @@ import debounce from 'lodash.debounce';
 import ClearIcon from '@mui/icons-material/Clear';
 import SearchIcon from '@mui/icons-material/Search';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
-import { useIndicators, useSelector } from '../../../services/userService';
+import { useSelector } from '../../../services/userService';
 import { DataContext } from './DataContext';
 import { useAlert } from '../../../contexts/AlertContext';
 import PersonalLoader from '../PersonalLoader/PersonalLoader';

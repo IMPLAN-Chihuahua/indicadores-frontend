@@ -12,7 +12,6 @@ const Dimensions = () => {
   const getDimensions = () => {
     getDimensionsGeneralInfo({})
       .then(({ data }) => {
-        console.log(data)
         setDimensions(data.data)
       })
   }
@@ -29,7 +28,6 @@ const Dimensions = () => {
       alignItems: 'start',
       justifyContent: 'start',
     }}>
-      <Button variant='contained' sx={{ m: 1 }}>Crear nueva dimensión</Button>
       {
         dimensions.map((dimension) => (
           <Cardie
@@ -58,7 +56,6 @@ const Cardie = (dimension) => {
     count
   } = dimension
   console.log('%c ' + dimension, 'background: #222; color: #26A783; font-weight: bold;');
-  console.log(dimension);
 
   const [openModal, setOpenModal] = useState(false);
   const [selectedDimension, setSelectedDimension] = useState(null);

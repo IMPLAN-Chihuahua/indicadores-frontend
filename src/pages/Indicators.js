@@ -16,10 +16,12 @@ import { getIndicatorsGeneralInfo, toggleIndicadorStatus } from "../services/ind
 export const Indicators = () => {
   const navigate = useNavigate();
   const [searchIndicator, setSearchIndicator] = useState("");
+  const [dimension, setDimension] = useState();
+  const [owner, setOwner] = useState("");
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(getGlobalPerPage);
   const [total, setTotal] = useState(0)
-  const { indicadores, isLoading, mutate } = useIndicators(perPage, page, searchIndicator);
+  const { indicadores, isLoading, mutate } = useIndicators(perPage, page, searchIndicator, dimension, owner);
   const [isFormVisible, setFormVisible] = useState(false);
   const [indicatorsQuantity, setIndicatorsQuantity] = useState(0);
   const [inactiveIndicators, setInactiveIndicators] = useState(0);
@@ -206,8 +208,11 @@ export const Indicators = () => {
     topic: "indicador",
     countEnable: indicatorsQuantity || 0,
     countDisable: inactiveIndicators || 0,
+    searchIndicator,
     setSearch: setSearchIndicator,
-    searchValue: searchIndicator
+    searchValue: searchIndicator,
+    setDimension,
+    setOwner
   };
 
   return (

@@ -1,22 +1,36 @@
-import { Box, Button, Grid, InputAdornment, Paper, TextField, Typography } from '@mui/material'
+import { Badge, Box, Button, Dialog, Grid, IconButton, InputAdornment, Paper, TextField, Typography } from '@mui/material'
 import React, { useState, useEffect, useMemo, useRef } from 'react'
 import ClearIcon from '@mui/icons-material/Clear';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import debounce from 'lodash.debounce';
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import './common.css'
+import FormFiltro from '../forms/indicador/FormFiltro';
 
 export const DataHeader = ({ data, handleOpenModal }) => {
-  const { topic, countEnable, countDisable, setSearch, searchValue } = data;
+  const { countEnable, countDisable, setSearch, setDimension, setOwner, searchIndicator } = data;
+
   const textRef = useRef(null)
   const [showClear, setShowClear] = useState(false)
+  const [searching, setSearching] = useState(false)
+  const [filter, setFilter] = useState(false)
+
+  const [openAdvancedSearch, setOpenAdvancedSearch] = useState(false)
+
+  const handleClose = () => {
+    setOpenAdvancedSearch(false)
+  }
 
   const handleInputClear = () => {
     textRef.current.value = '';
-    setSearch("")
+    setSearch("");
+    setSearching(false);
+    setFilter(false);
   }
   const handleInputChange = (e) => {
-    setSearch(e.target.value)
+    setSearch(e.target.value);
+    setSearching(true);
   }
   const debounceInputChange = useMemo(() =>
     debounce(handleInputChange, 300)
@@ -69,16 +83,25 @@ export const DataHeader = ({ data, handleOpenModal }) => {
             InputProps={{
               startAdornment:
                 <InputAdornment position='start'><SearchIcon /></InputAdornment>,
-              endAdornment: (
-                <span style={{
-                  color: 'gray',
-                  cursor: 'pointer',
-                  opacity: showClear ? 1 : 0
-                }}
-                  onClick={handleInputClear}>
-                  <ClearIcon />
-                </span>
-              ),
+              endAdornment:
+                <>
+                  {searching &&
+                    (
+                      <IconButton onClick={handleInputClear} >
+                        <ClearIcon />
+                      </IconButton>
+                    )}
+                  <IconButton
+                    onClick={() => {
+                      setOpenAdvancedSearch(!openAdvancedSearch)
+                    }}
+                    title='Búsqueda avanzada'
+                  >
+                    <FilterAltIcon sx={{
+                      color: filter ? 'secondary.main' : 'inherit'
+                    }} />
+                  </IconButton>
+                </>
             }}
           />
         </Grid>
@@ -93,6 +116,21 @@ export const DataHeader = ({ data, handleOpenModal }) => {
           </Button>
         </Grid>
       </Paper>
+
+      <Dialog
+        open={openAdvancedSearch}
+        sx={{ maxWidth: '1000px', margin: 'auto' }}
+        disableScrollLock
+        keepMounted>
+        <FormFiltro
+          handleClose={handleClose}
+          searchIndicator={searchIndicator}
+          setDimension={setDimension}
+          setSearch={setSearch}
+          setOwner={setOwner}
+          setFilter={setFilter}
+        />
+      </Dialog>
     </Box>
   )
 }

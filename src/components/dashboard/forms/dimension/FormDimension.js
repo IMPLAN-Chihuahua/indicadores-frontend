@@ -37,8 +37,7 @@ export const FormDimension = (props) => {
   const { control, reset, handleSubmit } = methods;
 
   const onSubmit = (data) => {
-    console.log('aksas')
-    console.log(data);
+    console.count(data);
   }
 
   useEffect(() => {
