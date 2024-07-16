@@ -4,7 +4,7 @@ import useIsMounted from "../../hooks/useIsMounted";
 
 export default function AutoCompleteInput(props) {
   const { value, onChange, label, error, required = false,
-    opts = [], fetcher, getOptionLabel, helperText = '' } = props;
+    opts = [], fetcher, getOptionLabel, helperText = '', disabled = false } = props;
   const [options, setOptions] = useState([]);
   const isMounted = useIsMounted();
   const fetchOptions = async () => {
@@ -33,6 +33,7 @@ export default function AutoCompleteInput(props) {
 
   return (
     <Autocomplete
+      disabled={disabled}
       value={value}
       autoHighlight
       options={options}
