@@ -103,6 +103,12 @@ const createIndicadorFormData = (indicador) => {
       formData.append('idModulo', indicador[field].id);
       continue;
     }
+
+    if (field === 'dimension') {
+      formData.append('idDimension', indicador[field].id);
+      continue;
+    }
+    
     if (field === 'medida' || field === 'ods' || field === 'cobertura') {
       formData.append('catalogos[]', indicador[field].id);
       continue;
