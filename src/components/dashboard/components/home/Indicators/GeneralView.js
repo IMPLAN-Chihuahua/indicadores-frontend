@@ -25,7 +25,6 @@ import AutoCompleteInput from '../../../../common/AutoCompleteInput';
 import { createHistoricos } from '../../../../../services/historicosService';
 import { useAuth } from '../../../../../contexts/AuthContext';
 import { isNumber } from '../../../../../utils/stringsValidator';
-import { updateOrCreateCatalogo } from '../../../../../services/cataloguesService';
 import PersonalLoader from '../../../../common/PersonalLoader/PersonalLoader';
 import { Save } from '@material-ui/icons';
 import { getDimensionsGeneralInfo } from '../../../../../services/dimensionService';
@@ -37,17 +36,17 @@ const UNIDAD_MEDIDA_ID = 2;
 const COBERTURA_ID = 3;
 const CATALOGOS = [ODS_ID, UNIDAD_MEDIDA_ID, COBERTURA_ID];
 
+const temasFetcher = async () => {
+	let temas = await getTemas();
+	temas = temas.map(({ id, temaIndicador }) => ({ id, temaIndicador }))
+	return temas;
+};
+
 export const GeneralView = () => {
 	const [indicador, setIndicador] = useState(null);
 	const [isLoading, setLoading] = useState(true);
 	const { id } = useParams();
 	const { user } = useAuth();
-
-	const temasFetcher = async () => {
-		let temas = await getTemas();
-		temas = temas.map(({ id, temaIndicador }) => ({ id, temaIndicador }))
-		return temas;
-	};
 
 	let defaultValues = {
 		activo: '',
@@ -80,21 +79,23 @@ export const GeneralView = () => {
 		urlImagen: '',
 		periodicidad: 0,
 	}
+	
+	const methods = useForm({
+		defaultValues,
+		resolver: yupResolver(createIndicatorSchema),
+		mode: 'all',
+	});
 
 	useEffect(() => {
 		getIndicator(id).then(res => {
+			const sortedCatalogos = res.catalogos.sort((a, b) => a.idCatalogo - b.idCatalogo)
+			res.catalogos = sortedCatalogos;
 			setIndicador(res);
 			methods.reset({
 				...res,
 			});
 		}).finally(_ => setLoading(false))
 	}, [id]);
-
-	const methods = useForm({
-		defaultValues,
-		resolver: yupResolver(createIndicatorSchema),
-		mode: 'all',
-	});
 
 	const onSubmit = async (data) => {
 		let updatedVals = 0;
@@ -117,7 +118,8 @@ export const GeneralView = () => {
 			anioUltimoValorDisponible,
 			archive,
 			idModulo: modulo?.id,
-			idDimension: dimension?.id
+			idDimension: dimension?.id,
+			catalogos
 		};
 
 		const historicoData = {
@@ -126,12 +128,6 @@ export const GeneralView = () => {
 			anio: anioUltimoValorDisponible,
 			idUsuario: user.id,
 		}
-
-		const catalogosData = {
-			catalogos,
-			idIndicador,
-		}
-		updateOrCreateCatalogo(idIndicador, catalogosData);
 
 		Swal.fire({
 			title: '¿Deseas actualizar la información del indicador o sólo guardar los cambios?',
@@ -470,7 +466,7 @@ export const GeneralView = () => {
 												onChange={onChange}
 												value={value}
 												fullWidth
-												
+
 											/>
 										)}
 									/>
@@ -500,36 +496,32 @@ export const GeneralView = () => {
 										<Paper sx={{ py: 3, px: 2, mb: 2 }}>
 											<Stack>
 												<Typography variant='h5' mb={2}>Más</Typography>
-
 												{/* Sección que contiene los catálogos del indicador */}
 												<Grid container justifyContent='space-between' mb={2}>
 													{
-														CATALOGOS.map((catalogo, index) => {
-															return (
-																<Grid item xs={12} md={index == 0 || index == 1 ? 4 : 3} key={index}>
-																	<Controller
-																		name={`catalogos[${index}]`}
-																		control={methods.control}
-																		defaultValue={`default`}
-																		render={({
-																			field: { value, onChange },
-																			fieldState: { error }
-																		}) => (
-																			<CatalogoAutocomplete
-																				id={catalogo}
-																				value={value === 'default' ? null : value}
-																				onChange={onChange}
-																				label={displayLabel(catalogo)}
-																				error={error}
-																				required={true}
-																				type={1}
-																				catalog={catalogo}
-																			/>
-																		)}
-																	/>
-																</Grid>
-															)
-														})
+														CATALOGOS.map((c, idx) => (
+															<Grid item xs={12} md={3} key={c}>
+																<Controller
+																	name={`catalogos[${idx}]`}
+																	control={methods.control}
+																	defaultValue={`default`}
+																	render={({
+																		field: { value, onChange },
+																		fieldState: { error }
+																	}) => (
+																		<CatalogoAutocomplete
+																			id={c}
+																			value={value === 'default' ? null : value}
+																			onChange={onChange}
+																			label={displayLabel(c)}
+																			error={error}
+																			required={true}
+																			catalog={c}
+																		/>
+																	)}
+																/>
+															</Grid>
+														))
 													}
 												</Grid>
 												<Controller
@@ -629,8 +621,9 @@ export const GeneralView = () => {
 								<Save sx={{ m: 1 }} />
 							</Fab>
 						</Box>
-					</FormProvider >
+					</FormProvider>
 				</Box>
+
 			)
 	)
 }
