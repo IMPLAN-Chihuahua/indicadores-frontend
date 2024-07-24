@@ -1,20 +1,30 @@
 # build application
-FROM node:lts-alpine3.15 as build-stage
+FROM node:lts-alpine3.15 AS base
+WORKDIR /home/node
 
-WORKDIR /app
+FROM base AS dev
+RUN --mount=type=bind,source=package.json,target=package.json \
+    --mount=type=bind,source=package-lock.json,target=package-lock.json \
+    --mount=type=cache,target=/root/.npm \
+    npm ci --include=dev --legacy-peer-deps
+ENV NODE_ENV=development
+COPY --chown=node:node . .
+USER node
+CMD npm run start
 
-COPY ./nginx.conf /nginx.conf
-COPY package*.json /app/
 
-RUN npm ci --ommit=dev --legacy-peer-deps
-
-COPY ./ /app/
-
+FROM base AS builder
+RUN --mount=type=bind,source=package.json,target=package.json \
+    --mount=type=bind,source=package-lock.json,target=package-lock.json \
+    --mount=type=cache,target=/root/.npm \
+    npm ci --omit=dev --legacy-peer-deps
+ENV NODE_ENV=production
+USER node
+COPY --chown=node:node . .
 RUN npm run build
 
 # serve only compiled app with nginx
-FROM nginx:1.22
-
-COPY --from=build-stage /app/build/ /usr/share/nginx/html
-
-COPY --from=build-stage /nginx.conf /etc/nginx/conf.d/default.conf
+FROM nginx:1.22 AS prod
+EXPOSE 80
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /home/node/build/ /usr/share/nginx/html
