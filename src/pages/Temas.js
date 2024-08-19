@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import DatagridTable from "../components/dashboard/common/DatagridTable";
 import { DataHeader } from "../components/dashboard/common/DataHeader";
-import { useModules } from "../services/userService";
+import { useTemas } from "../services/userService";
 import { Status } from "../components/dashboard/common/Status";
 import FormDialog from "../components/dashboard/common/FormDialog";
 import FormTemaInteres, { FORM_TEMA_ACTIONS } from "../components/dashboard/forms/model/FormTemaInteres";
@@ -14,13 +14,14 @@ import { showAlert } from "../utils/alert";
 import { useAuth } from "../contexts/AuthContext";
 import { isAdmin } from "../utils/userValidator";
 
-export const Modules = () => {
+export const Temas = () => {
   const [searchModule, setSearchModule] = useState("");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState();
   const [perPage, setPerPage] = useState(getGlobalPerPage);
 
-  const { temas, isLoading, hasError, mutate } = useModules(perPage, page, searchModule);
+
+  const { temas, isLoading, hasError, mutate } = useTemas(perPage, page, searchModule);
 
   const [selectedTema, setSelectedTema] = useState(null);
   const [openModal, setOpenModal] = useState(false);
@@ -38,7 +39,7 @@ export const Modules = () => {
     })
       .then(({ data }) => {
         setModulesQuantity(data.total);
-        const inactive = data.data.filter(({ activo }) => activo === 'NO').length;
+        const inactive = data.data.filter(({ activo }) => activo === false).length;
         setInactiveModules(inactive);
       })
   };
@@ -54,9 +55,10 @@ export const Modules = () => {
       es decir, si se encuentra ACTIVO pasará a estar INACTIVO y viceversa.`,
       icon: 'warning',
       showCancelButton: true
-    }).then(option => {
+    }).then(async option => {
       if (option.isConfirmed) {
-        return toggleTemaStatus(tema.id)
+        const toggled = await toggleTemaStatus(tema.id)
+        return toggled
       }
     })
       .then(res => {
@@ -264,7 +266,7 @@ export const Modules = () => {
   ];
 
   const dataModule = {
-    topic: "modulo",
+    topic: "tema",
     countEnable: moduleQuantity || 0,
     countDisable: inactiveModules || 0,
     setSearch: setSearchModule,
