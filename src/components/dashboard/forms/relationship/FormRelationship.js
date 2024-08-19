@@ -76,7 +76,7 @@ const FormRelationship = ({ handleCloseModal, mutate, isEdit, indicador }) => {
           .catch(err => alert.error(err))
       }
     } else if (mode === TEMAS_TO_USERS) {
-      createRelation(one.id, payload, 'modulos')
+      createRelation(one.id, payload, 'temas')
         .then(_ => {
           alert.success('Tema (s) asignado (s) exitosamente')
           mutate();

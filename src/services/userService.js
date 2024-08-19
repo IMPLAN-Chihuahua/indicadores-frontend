@@ -32,7 +32,7 @@ export const getlatestUsers = async () => {
 
 export const getlatestModules = async () => {
   try {
-    const response = await protectedApi.get('/modulos');
+    const response = await protectedApi.get('/temas');
     const { data: latestModules } = response.data;
     if (latestModules) {
       return [...latestModules];
@@ -43,8 +43,8 @@ export const getlatestModules = async () => {
   }
 };
 
-export const useModules = (perPage, page, search) => {
-  const { data, error, mutate } = useSWR(`me/modulos?perPage=${perPage}&page=${page}&searchQuery=${search}&sortBy=updatedAt&order=DESC`, fetcher)
+export const useTemas = (perPage, page, search) => {
+  const { data, error, mutate } = useSWR(`me/temas?perPage=${perPage}&page=${page}&searchQuery=${search}&sortBy=updatedAt&order=DESC`, fetcher)
   return {
     temas: data,
     isLoading: !error && !data,
@@ -113,7 +113,7 @@ export const useAutocompleteInput = (key) => {
 
 export const getModules = async (page) => {
   try {
-    const response = await protectedApi.get(`/me/modulos?per_page=10&page=${page}`);
+    const response = await protectedApi.get(`/me/temas?per_page=10&page=${page}`);
     if (response.data) {
       return response.data;
     }
@@ -125,7 +125,7 @@ export const getModules = async (page) => {
 
 export const getlatestIndicators = async () => {
   try {
-    const response = await protectedApi.get('/modulos/1/indicadores');
+    const response = await protectedApi.get('/temas/1/indicadores');
     const { data: indicadors } = response.data;
     if (indicadors) {
       return [...indicadors];

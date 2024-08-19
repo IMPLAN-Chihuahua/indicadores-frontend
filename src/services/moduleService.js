@@ -1,25 +1,25 @@
 import { protectedApi } from '.';
 
-export const createModule = async (modulo) => {
+export const createModule = async (tema) => {
   try {
-    const response = await protectedApi.post('/modulos', modulo);
+    const response = await protectedApi.post('/temas', tema);
     return response.data;
   } catch (error) {
     throw error;
   };
 }
 
-export const updateModule = (id, modulo) => {
-  return protectedApi.put(`/modulos/${id}`, modulo);
+export const updateModule = (id, tema) => {
+  return protectedApi.put(`/temas/${id}`, tema);
 }
 
 export const toggleTemaStatus = (id) => {
-  return protectedApi.post(`/modulos/${id}/toggle-status`);
+  return protectedApi.post(`/temas/${id}/toggle-status`);
 }
 
 export const getTemas = async () => {
   try {
-    const res = await protectedApi.get('/modulos?sortBy=updatedAt&order=DESC');
+    const res = await protectedApi.get('/temas?sortBy=updatedAt&order=DESC');
     const { data: temas } = res.data;
     return temas;
   } catch (error) {
@@ -37,5 +37,5 @@ export const getModulesGeneralInfo = async ({ page, perPage, attributes, id, sor
   const perPageQuery = perPage ? `&perPage=${perPage}` : '';
   const query = `${attributesQuery}${sortByQuery}${orderQuery}${pageQuery}${perPageQuery}`;
 
-  return protectedApi.get(`/modulos/info/general?b=0&${query}`);
+  return protectedApi.get(`/temas/info/general?b=0&${query}`);
 }

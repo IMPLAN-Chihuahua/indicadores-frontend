@@ -100,7 +100,7 @@ const createIndicadorFormData = (indicador) => {
       continue;
     }
     if (field === 'tema') {
-      formData.append('idModulo', indicador[field].id);
+      formData.append('idTema', indicador[field].id);
       continue;
     }
     if (field === 'medida' || field === 'ods' || field === 'cobertura') {

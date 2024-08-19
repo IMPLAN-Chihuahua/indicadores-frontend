@@ -119,7 +119,7 @@ const LatestUsuarios = () => {
 
 
 const LatestTemas = () => {
-  const { data: temas, loading } = useSWR('/modulos', fetcher)
+  const { data: temas, loading } = useSWR('/temas', fetcher)
   if (loading) {
     return <CircularProgress />
   }

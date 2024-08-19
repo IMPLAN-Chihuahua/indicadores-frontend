@@ -67,8 +67,8 @@ export const GeneralView = () => {
 		fuente: '',
 		historicos: [],
 		id: '',
-		idModulo: '',
-		modulo: {},
+		idTema: '',
+		tema: {},
 		next: '',
 		nombre: '',
 		observaciones: '',
@@ -100,7 +100,7 @@ export const GeneralView = () => {
 		let updatedVals = 0;
 
 		const { id: idIndicador, activo, catalogos, definicion, fuente,
-			idModulo, modulo, nombre, observaciones, owner, anioUltimoValorDisponible,
+			idTema, tema, nombre, observaciones, owner, anioUltimoValorDisponible,
 			ultimoValorDisponible, updatedBy, periodicidad, archive, dimension } = data;
 
 		const status = activo ? 'SI' : 'NO';
@@ -116,7 +116,7 @@ export const GeneralView = () => {
 			periodicidad,
 			anioUltimoValorDisponible,
 			archive,
-			idModulo: modulo?.id,
+			idTema: tema?.id,
 			idDimension: dimension?.id
 		};
 
@@ -411,7 +411,7 @@ export const GeneralView = () => {
 									</Grid>
 									<Grid item xs>
 										<Controller
-											name='modulo'
+											name='tema'
 											control={methods.control}
 											defaultValue={null}
 											render={({ field: { value, onChange }, fieldState: { error } }) => (
@@ -470,7 +470,7 @@ export const GeneralView = () => {
 												onChange={onChange}
 												value={value}
 												fullWidth
-												
+
 											/>
 										)}
 									/>

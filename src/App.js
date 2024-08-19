@@ -1,7 +1,7 @@
 import "./App.css";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 import { Indicator } from './components/dashboard/components/home/Indicators/Indicator'
-import { Modules } from './pages/Modules'
+import { Temas } from './pages/Temas'
 import { AuthProvider } from "./contexts/AuthContext";
 import { PrivateRoute, PublicRoute, AdminRoute } from "./components/RequireAuth";
 import { Dashboard } from "./components/dashboard/Dashboard";
@@ -41,7 +41,7 @@ function App() {
                   </PrivateRoute>} >
                 <Route index element={<Home />} />
                 <Route path='*' element={<>Not found</>} />
-                <Route path='/temas' element={<Modules />} />
+                <Route path='/temas' element={<Temas />} />
                 <Route path='/unauthorized' element={<Unauthorized />} />
                 <Route path='/indicadores' element={<Indicators />} />
                 <Route path='/indicadores/:id' element={<Indicator />} />
