@@ -30,12 +30,12 @@ export const getlatestUsers = async () => {
   }
 };
 
-export const getlatestModules = async () => {
+export const getLatestTemas = async () => {
   try {
     const response = await protectedApi.get('/temas');
-    const { data: latestModules } = response.data;
-    if (latestModules) {
-      return [...latestModules];
+    const { data: latestTemas } = response.data;
+    if (latestTemas) {
+      return [...latestTemas];
     }
     return {};
   } catch (error) {
@@ -111,7 +111,7 @@ export const useAutocompleteInput = (key) => {
   }
 };
 
-export const getModules = async (page) => {
+export const getTemas = async (page) => {
   try {
     const response = await protectedApi.get(`/me/temas?per_page=10&page=${page}`);
     if (response.data) {

@@ -15,7 +15,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import Swal from 'sweetalert2';
 import { createIndicatorSchema } from '../../../../../utils/indicatorValidator';
 import { getIndicator, updateIndicator } from '../../../../../services/indicatorService';
-import { getTemas } from '../../../../../services/moduleService';
+import { getTemas } from '../../../../../services/temaService';
 
 import { CatalogoAutocomplete, OdsPicker } from '../../../common/CatalogPicker';
 import { parseDate } from '../../../../../utils/dateParser';

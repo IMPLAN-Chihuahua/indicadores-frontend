@@ -1,6 +1,6 @@
 import { protectedApi } from '.';
 
-export const createModule = async (tema) => {
+export const createTema = async (tema) => {
   try {
     const response = await protectedApi.post('/temas', tema);
     return response.data;
@@ -9,7 +9,7 @@ export const createModule = async (tema) => {
   };
 }
 
-export const updateModule = (id, tema) => {
+export const updateTema = (id, tema) => {
   return protectedApi.put(`/temas/${id}`, tema);
 }
 
@@ -26,7 +26,7 @@ export const getTemas = async () => {
     throw error;
   }
 }
-export const getModulesGeneralInfo = async ({ page, perPage, attributes, id, sortBy, order }) => {
+export const getTemasGeneralInfo = async ({ page, perPage, attributes, id, sortBy, order }) => {
   const attributesQuery = attributes
     ? attributes.map(attribute => `attributes[]=${attribute}`).join('&')
     : '';

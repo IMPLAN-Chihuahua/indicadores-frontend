@@ -9,7 +9,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { createTemaSchema } from '../../../../utils/validator';
 import { ImageInput } from '../../../common/FileInput';
 import { showAlert } from '../../../../utils/alert';
-import { createModule, updateModule } from '../../../../services/moduleService';
+import { createTema, updateTema } from '../../../../services/temaService';
 
 export const FORM_TEMA_ACTIONS = {
   NEW: 'Nuevo',
@@ -54,9 +54,9 @@ const FormTemaInteres = (props) => {
     const formData = parseToFormData(tema);
     switch (action) {
       case NEW:
-        return createModule(formData);
+        return createTema(formData);
       case EDIT:
-        return updateModule(tema.id, formData);
+        return updateTema(tema.id, formData);
       default:
         Promise.reject(new Error('Invalid action'));
     }

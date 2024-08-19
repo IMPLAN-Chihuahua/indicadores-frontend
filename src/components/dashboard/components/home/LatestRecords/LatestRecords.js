@@ -1,7 +1,7 @@
 import { Avatar, Box, CircularProgress, Grid, Paper, Skeleton, Stack, Typography } from '@mui/material'
 import { useState, useEffect } from 'react'
 import useIsMounted from '../../../../../hooks/useIsMounted'
-import { getlatestIndicators, getlatestModules, getlatestUsers } from '../../../../../services/userService'
+import { getlatestIndicators, getLatestTemas, getlatestUsers } from '../../../../../services/userService'
 import './latestRecords.css'
 import useSWR from 'swr'
 import { protectedApi } from '../../../../../services'
@@ -127,22 +127,22 @@ const LatestTemas = () => {
   return (
     <>
       {
-        temas?.slice((temas.length - 3), temas.length).reverse().map((modules, i) => {
+        temas?.slice((temas.length - 3), temas.length).reverse().map((temas, i) => {
           return (
-            <Box key={modules.id}>
+            <Box key={temas.id}>
               <Paper className='latest-all-item' variant='outlined' style={{ borderRadius: '15px' }}>
                 <Box className='latest-all-left'>
                   <Box className='latest-picture'>
-                    <Box className='latest-picture-item-modules'>
-                      <Avatar alt={modules.temaIndicador} src={modules.urlImagen} sx={{ height: 45, width: 45 }} className="latest-picture-hoverable" />
+                    <Box className='latest-picture-item-temas'>
+                      <Avatar alt={temas.temaIndicador} src={temas.urlImagen} sx={{ height: 45, width: 45 }} className="latest-picture-hoverable" />
                     </Box>
                   </Box>
                   <Box className='latest-all-info'>
-                    <span className='latest-all-name'>{modules.temaIndicador}</span>
+                    <span className='latest-all-name'>{temas.temaIndicador}</span>
                   </Box>
                 </Box>
                 <Box className='latest-status'>
-                  <span className={`latest-code-text`}>{modules.codigo}</span>
+                  <span className={`latest-code-text`}>{temas.codigo}</span>
                 </Box>
               </Paper>
             </Box>

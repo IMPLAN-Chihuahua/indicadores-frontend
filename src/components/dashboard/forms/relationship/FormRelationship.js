@@ -11,7 +11,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import './FormRelationship.css'
 import { useAlert } from '../../../../contexts/AlertContext';
 import { getIndicatorsGeneralInfo } from '../../../../services/indicatorService';
-import { getModulesGeneralInfo } from '../../../../services/moduleService';
+import { getTemasGeneralInfo } from '../../../../services/temaService';
 
 const USER_TO_INDICADORES = 'INDICADORES_TO_USER';
 const INDICADOR_TO_USERS = 'USERS_TO_INDICADOR';
@@ -118,7 +118,7 @@ const FormRelationship = ({ handleCloseModal, mutate, isEdit, indicador }) => {
       });
       return data;
     } else if (mode === TEMAS_TO_USERS) {
-      const { data } = await getModulesGeneralInfo({
+      const { data } = await getTemasGeneralInfo({
         attributes: ['id', 'temaIndicador'],
       });
       return data;

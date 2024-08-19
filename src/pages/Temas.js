@@ -5,7 +5,7 @@ import { useTemas } from "../services/userService";
 import { Status } from "../components/dashboard/common/Status";
 import FormDialog from "../components/dashboard/common/FormDialog";
 import FormTemaInteres, { FORM_TEMA_ACTIONS } from "../components/dashboard/forms/model/FormTemaInteres";
-import { getModulesGeneralInfo, toggleTemaStatus } from "../services/moduleService";
+import { getTemasGeneralInfo, toggleTemaStatus } from "../services/temaService";
 import { getGlobalPerPage } from "../utils/objects";
 import { Avatar, Box, DialogTitle, IconButton, Stack, Typography } from "@mui/material";
 import { parseDate } from "../utils/dateParser";
@@ -15,38 +15,38 @@ import { useAuth } from "../contexts/AuthContext";
 import { isAdmin } from "../utils/userValidator";
 
 export const Temas = () => {
-  const [searchModule, setSearchModule] = useState("");
+  const [searchTema, setSearchTema] = useState("");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState();
   const [perPage, setPerPage] = useState(getGlobalPerPage);
 
 
-  const { temas, isLoading, hasError, mutate } = useTemas(perPage, page, searchModule);
+  const { temas, isLoading, hasError, mutate } = useTemas(perPage, page, searchTema);
 
   const [selectedTema, setSelectedTema] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [formTemaAction, setFormTemaAction] = useState('');
-  const [moduleQuantity, setModulesQuantity] = useState(0);
-  const [inactiveModules, setInactiveModules] = useState(0);
+  const [temaQuantity, setTemasQuantity] = useState(0);
+  const [inactiveTemas, setInactiveTemas] = useState(0);
 
   const [rows, setRows] = useState([]);
   const { user } = useAuth();
 
 
   const fetchCount = () => {
-    getModulesGeneralInfo({
+    getTemasGeneralInfo({
       attributes: ['activo']
     })
       .then(({ data }) => {
-        setModulesQuantity(data.total);
+        setTemasQuantity(data.total);
         const inactive = data.data.filter(({ activo }) => activo === false).length;
-        setInactiveModules(inactive);
+        setInactiveTemas(inactive);
       })
   };
 
   useEffect(() => {
     fetchCount();
-  }, [moduleQuantity])
+  }, [temaQuantity])
 
   const toggleStatus = (tema) => {
     showAlert({
@@ -265,17 +265,17 @@ export const Temas = () => {
     },
   ];
 
-  const dataModule = {
+  const dataTema = {
     topic: "tema",
-    countEnable: moduleQuantity || 0,
-    countDisable: inactiveModules || 0,
-    setSearch: setSearchModule,
-    searchValue: searchModule
+    countEnable: temaQuantity || 0,
+    countDisable: inactiveTemas || 0,
+    setSearch: setSearchTema,
+    searchValue: searchTema
   };
   return (
     <Box display='flex' flexDirection='column' p={2} height='100%'>
       <DataHeader
-        data={dataModule}
+        data={dataTema}
         handleOpenModal={handleNew}
       />
       <div className='datagrid-container'>

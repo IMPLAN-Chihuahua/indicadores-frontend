@@ -9,7 +9,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useIndicadorContext } from "../../../../contexts/IndicadorContext";
 import { CatalogoAutocomplete } from "../../common/CatalogPicker";
 import AutoCompleteInput from "../../../common/AutoCompleteInput";
-import { getTemas } from "../../../../services/moduleService";
+import { getTemas } from "../../../../services/temaService";
 import { getDimensionsGeneralInfo } from "../../../../services/dimensionService";
 
 const indicadorBasicSchema = yup.object({
