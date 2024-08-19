@@ -71,7 +71,7 @@ const createTemaSchema = yup.object({
   codigo:
     yup.string()
       .required('Por favor, ingrese el código del indicador')
-      .min(3, 'El código debe contener al menos 3 caracteres'),
+      .min(2, 'El código debe contener al menos 2 caracteres'),
 
   descripcion:
     yup.string()

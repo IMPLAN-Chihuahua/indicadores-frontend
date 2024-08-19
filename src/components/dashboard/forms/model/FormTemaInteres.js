@@ -24,7 +24,7 @@ const parseToFormData = (tema) => {
       continue;
     }
     if (key === 'activo') {
-      formData.append(key, tema[key] ? 'SI' : 'NO');
+      formData.append(key, tema[key] ? true : false);
       continue;
     }
     if (tema[key]) {
@@ -91,7 +91,7 @@ const FormTemaInteres = (props) => {
     }
     reset({
       ...selectedTema,
-      activo: selectedTema.activo === 'SI',
+      activo: selectedTema.activo,
       image: [selectedTema.urlImagen]
     })
   }, [selectedTema])

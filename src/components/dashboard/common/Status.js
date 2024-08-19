@@ -6,19 +6,19 @@ import GppGoodIcon from '@mui/icons-material/GppGood';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 
 export const Status = ({ status, type, handleClick }) => {
-  const formattedStatus = status?.toLowerCase();
+  const formattedStatus = status;
   if (type === 'expires') {
     switch (formattedStatus) {
-      case 'si':
+      case true:
         return <b><Chip label='SÍ' variant='outlined' color='primary' /></b>
       case 'inactivo':
-      case 'no':
+      case false:
         return <b><Chip label='NO' variant='outlined' color='secondary' /></b>
     }
   } else
     switch (formattedStatus) {
       case 'activo':
-      case 'si':
+      case true:
         return (
           <Chip
             label='Activo'
@@ -28,7 +28,7 @@ export const Status = ({ status, type, handleClick }) => {
             icon={<CheckCircleIcon />}
             sx={{ width: '95px', justifyContent: 'flex-start' }} />)
       case 'inactivo':
-      case 'no':
+      case false:
         return (
           <Chip
             label='Inactivo'
