@@ -50,14 +50,11 @@ html {
   --darker-green: #053d13;
   --pink-gradient: linear-gradient(90deg, #ee59e9 0%, #7b1ee3 100%);
   --gray-gradient: linear-gradient(90deg, #d1d1d1 0%, #a6a6a6 100%);
-  --gradient: linear-gradient(
-      90deg,
+  --gradient: linear-gradient(90deg,
       hsla(219, 60%, 49%, 1) 0%,
-      rgb(9, 7, 45) 100%
-    )
-    border-box;
-  --darker-gradient: linear-gradient(45deg, #1e165a, #95a9ff, #60225e);
-  --really-darker-gradient: linear-gradient(45deg, #251a75, #4c138e, #60225e);
+      rgb(9, 7, 45) 100%) border-box;
+  --darker-gradient: linear-gradient(45deg, #0E3F7B, #396B98, #6497B5);
+  --really-darker-gradient: linear-gradient(45deg, #08203E, #2F4E69, #557C93);
   --sidebar-width: 200px;
   --sidebar-min-width: 65px;
   --navbar-height: 70px;
