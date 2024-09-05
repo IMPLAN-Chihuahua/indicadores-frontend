@@ -10,14 +10,14 @@ import FaceRetouchingNaturalIcon from '@mui/icons-material/FaceRetouchingNatural
 import Wave from 'react-wavify'
 import useIsMounted from '../../../../../hooks/useIsMounted';
 
-const handleResponse = ({ indicadoresCount, usuarios, modulosCount }) => {
+const handleResponse = ({ indicadoresCount, usuarios, temasCount }) => {
   let pie = [];
   pie.push(
     {
       id: '1',
       title: 'Temas de interés',
-      enable: modulosCount[0].modulos,
-      disable: modulosCount[0].modulosInactivos,
+      enable: temasCount[0].temas,
+      disable: temasCount[0].temasInactivos,
       color: '#011638',
       icon: <StackedLineChartIcon className="featured-icon" />
     },
@@ -50,7 +50,7 @@ export const Featured = () => {
   useEffect(() => {
     getUserStats(user.id)
       .then((res) => {
-        if(isMounted()) {
+        if (isMounted()) {
           setStats(handleResponse(res.data));
         }
       })
@@ -67,7 +67,7 @@ export const Featured = () => {
             stats.map(({ id, title, enable, color, icon }) => {
               return (
                 <Grid item xs={12} md={4} key={id}>
-                  <Paper variant='outlined' sx={{height: '120px', position: 'relative'}}>
+                  <Paper variant='outlined' sx={{ height: '120px', position: 'relative' }}>
                     <Box className="featured-item-values featured-item-values-top">
                       <Typography align="left" variant="subtitle1" p={1}>{title}</Typography>
                       <div className="featured-circle-icon" style={{ backgroundColor: color }}>

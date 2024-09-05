@@ -31,12 +31,12 @@ const Dimensions = () => {
       {
         dimensions.map((dimension) => (
           <Cardie
-            key={dimension.id}
-            id={dimension.id}
-            titulo={dimension.titulo}
-            descripcion={dimension.descripcion}
-            color={dimension.color}
-            urlImagen={dimension.urlImagen}
+            key={dimension.dimension.id}
+            id={dimension.dimension.id}
+            titulo={dimension.dimension.titulo}
+            descripcion={dimension.dimension.descripcion}
+            color={dimension.dimension.color}
+            urlImagen={dimension.dimension.urlImagen}
             count={dimension.indicadoresCount}
           />
 
@@ -47,6 +47,7 @@ const Dimensions = () => {
 };
 
 const Cardie = (dimension) => {
+
   const {
     id,
     titulo,
@@ -94,7 +95,7 @@ const Cardie = (dimension) => {
         src={urlImagen}
       />
 
-      <IconButton
+      {/* <IconButton
         sx={{
           position: 'absolute',
           top: 0,
@@ -107,7 +108,7 @@ const Cardie = (dimension) => {
         }}
       >
         <EditIcon />
-      </IconButton>
+      </IconButton> */}
 
       <Box sx={{ p: 1 }}>
         <Typography gutterBottom variant="h5" component="div" sx={{
