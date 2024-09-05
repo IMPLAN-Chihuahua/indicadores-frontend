@@ -2,40 +2,26 @@ import React, { useEffect, useState } from 'react'
 import { Link as RouterLink, useParams } from 'react-router-dom';
 import './indicator.css'
 import {
-	Button, Grid, TextField,
-	Typography, Checkbox, FormControlLabel, Paper, Stack, Fab, Link as MUILink
+	Grid,
+	Button,
+	Typography
 } from '@mui/material';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { Box } from '@mui/system';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
-import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
+
 import { yupResolver } from '@hookform/resolvers/yup';
 import Swal from 'sweetalert2';
 import { createIndicatorSchema } from '../../../../../utils/indicatorValidator';
 import { getIndicator, updateIndicator } from '../../../../../services/indicatorService';
-import { getTemas } from '../../../../../services/temaService';
-
-import { CatalogoAutocomplete, OdsPicker } from '../../../common/CatalogPicker';
-import { parseDate } from '../../../../../utils/dateParser';
-import { displayLabel } from '../../../../../utils/getCatalog';
-import OwnerListDropdown from './Owner/OwnerList';
-import AutoCompleteInput from '../../../../common/AutoCompleteInput';
 import { createHistoricos } from '../../../../../services/historicosService';
 import { useAuth } from '../../../../../contexts/AuthContext';
 import { isNumber } from '../../../../../utils/stringsValidator';
 import { updateOrCreateCatalogo } from '../../../../../services/cataloguesService';
 import PersonalLoader from '../../../../common/PersonalLoader/PersonalLoader';
-import { Save } from '@material-ui/icons';
-import { getDimensionsGeneralInfo } from '../../../../../services/dimensionService';
-import ArchiveIcon from '@mui/icons-material/Archive';
-import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
-
-const ODS_ID = 1;
-const UNIDAD_MEDIDA_ID = 2;
-const COBERTURA_ID = 3;
-const CATALOGOS = [ODS_ID, UNIDAD_MEDIDA_ID, COBERTURA_ID];
+import IndicatorValues from './GeneralViewComponents/IndicatorValues';
+import GeneralInformation from './GeneralViewComponents/GeneralInformation';
+import MoreInformation from './GeneralViewComponents/MoreInformation';
+import Header from './GeneralViewComponents/Header';
 
 export const GeneralView = () => {
 	const [indicador, setIndicador] = useState(null);
@@ -43,19 +29,13 @@ export const GeneralView = () => {
 	const { id } = useParams();
 	const { user } = useAuth();
 
-	const temasFetcher = async () => {
-		let temas = await getTemas();
-		temas = temas.map(({ id, temaIndicador }) => ({ id, temaIndicador }))
-		return temas;
-	};
-
 	let defaultValues = {
 		activo: '',
 		anioUltimoValorDisponible: '',
 		catalogos: [{
 			id: 0,
 			nombre: '',
-			idCatalogo: ODS_ID
+			idCatalogo: 1
 		}],
 		archive: false,
 		dimension: {},
@@ -66,6 +46,8 @@ export const GeneralView = () => {
 		formula: {},
 		fuente: '',
 		historicos: [],
+		adornment: '',
+		unidadMedida: '',
 		id: '',
 		idTema: '',
 		tema: {},
@@ -101,9 +83,9 @@ export const GeneralView = () => {
 
 		const { id: idIndicador, activo, catalogos, definicion, fuente,
 			idTema, tema, nombre, observaciones, owner, anioUltimoValorDisponible,
-			ultimoValorDisponible, updatedBy, periodicidad, archive, dimension } = data;
+			ultimoValorDisponible, updatedBy, periodicidad, archive, dimension, adornment, unidadMedida } = data;
 
-		const status = activo ? 'SI' : 'NO';
+		const status = activo;
 		const indicadorData = {
 			nombre,
 			definicion,
@@ -114,6 +96,8 @@ export const GeneralView = () => {
 			fuente,
 			owner,
 			periodicidad,
+			adornment,
+			unidadMedida,
 			anioUltimoValorDisponible,
 			archive,
 			idTema: tema?.id,
@@ -196,441 +180,41 @@ export const GeneralView = () => {
 				<PersonalLoader />
 			)
 			: (
-				<Box sx={{ flex: '1 1 auto', overflowY: 'scroll', height: '500px' }}>
-					<FormProvider {...methods}>
-						<Box className='general-view-body'
-							component='form'
-							onSubmit={methods.handleSubmit(onSubmit)}
-							noValidate
-							onReset={methods.reset}
-							id='form-indicator'
-						>
-
-							{/* Sección que contiene las tres cartas de "Último valor disponibñe", "Año" y "Estado" */}
-							<Grid container p={3} columnGap={2} rowGap={{ xs: 2, md: 0 }}>
-								<Paper
-									component={Grid}
-									item
-									xs={12}
-									md
-									py={3}
-									px={2}
-								>
-									<Typography variant='h5' mb={1}>
-										Último valor disponible
-									</Typography>
-									<Controller
-										name='ultimoValorDisponible'
-										control={methods.control}
-										render={({
-											field,
-											fieldState: { error }
-										}) => (
-											(
-												<TextField
-													type='text'
-													required
-													autoComplete='off'
-													error={!!error}
-													fullWidth
-													helperText={error ? error.message : null}
-													variant='outlined'
-													{...field}
-												/>
-											)
-										)}
-									/>
-								</Paper>
-								<Paper
-									component={Grid}
-									item
-									xs={12}
-									md
-									py={3}
-									px={2}
-								>
-									<Typography variant='h5' mb={1}>
-										Año del último valor registrado
-									</Typography>
-									<Controller
-										name='anioUltimoValorDisponible'
-										control={methods.control}
-										render={({
-											field,
-											fieldState: { error }
-										}) => (
-											(
-												<TextField
-													type='text'
-													required
-													fullWidth
-													autoComplete='off'
-													error={!!error}
-													helperText={error ? error.message : null}
-													variant='outlined'
-													{...field}
-												/>
-											)
-										)}
-									/>
-								</Paper>
-								<Paper
-									component={Grid}
-									item
-									xs={12}
-									md
-									py={3}
-									px={2}
-								>
-									<Typography variant='h5' mb={1}>
-										Estado
-									</Typography>
-									<Controller
-										name="activo"
-										control={methods.control}
-										render={({
-											field: { onChange, value },
-											fieldState: { error }
-										}) => (
-											<FormControlLabel
-												control={
-													<Checkbox
-														label='Activo'
-														type='checkbox'
-														onChange={onChange}
-														checked={value === 'SI' || value === 'true' ? true : value === 'NO' || value === 'false' ? false : value}
-														className='indicador-info-input-checkbox'
-														icon={<SentimentVeryDissatisfiedIcon color='error' sx={{ fontSize: '30px' }} />}
-														checkedIcon={<EmojiEmotionsIcon color='success' sx={{ fontSize: '30px' }} />}
-													/>
-												}
-												label={value === 'SI' || value === 'true' ? 'Activo' : value === 'NO' || value === 'false' ? 'Inactivo' : value ? 'Activo' : 'Inactivo'}
-											/>
-										)}
-									/>
-									<Controller
-										name='archive'
-										control={methods.control}
-										render={({
-											field: { onChange, value },
-											fieldState: { error }
-										}) => (
-											<FormControlLabel
-												control={
-													<Checkbox
-														onChange={onChange}
-														checked={value}
-														aria-label='Checkbox para marcar indicador como archivo'
-														icon={<ArchiveOutlinedIcon />}
-														checkedIcon={<ArchiveIcon />}
-														color='default'
-													/>
-												}
-												label={value ? 'Archivado' : 'Archivar'}
-											/>
-										)}
-									/>
-
-								</Paper>
+				<FormProvider {...methods}>
+					<Grid
+						container
+						component='form'
+						onSubmit={methods.handleSubmit(onSubmit)}
+						noValidate
+						onReset={methods.reset}
+						id='form-indicator'
+						sx={{
+							p: 2
+						}}
+					>
+						<Header methods={methods} />
+						<IndicatorValues methods={methods} updatedAt={indicador.updatedAt} />
+						<Grid container xs={12} md={12}>
+							<GeneralInformation methods={methods} indicador={indicador} />
+							<MoreInformation methods={methods} id={id} />
+							<Grid item xs={12} md={6} sx={{ backgroundColor: 'lightblue' }}>
+								ss
 							</Grid>
-
-							<Grid container p={3} gap={3} pt={1}>
-								{/* Sección izquierda que contiene la información del indicador */}
-								<Paper component={Grid} container item xs={12} md={4} py={3} px={2} mb={{ xs: 2, md: 0 }} gap={1}>
-									<Grid item xs={12}>
-										<Typography variant='h5'>Información básica</Typography>
-									</Grid>
-									<Grid item xs={12}>
-										<Stack
-											direction={{ xs: 'column', md: 'row' }}
-											flexWrap='wrap'
-											justifyContent='space-between'
-											sx={{ borderBottom: 1, borderColor: 'divider', pb: 2 }}
-										>
-											<Box>
-												<Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-													Código
-												</Typography>
-												<Typography>
-													{indicador.codigo}
-												</Typography>
-											</Box>
-											<Box>
-												<Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-													Última actualización
-												</Typography>
-												<Typography>
-													{parseDate(indicador.updatedAt)}
-												</Typography>
-											</Box>
-											<Box className='body-right-title-link'>
-												<Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-													Tendencia
-												</Typography>
-												<Typography variant='h5' component="div" className='tendencia-actual'>
-													{
-														methods.getValues('tendenciaActual') === 'ASCENDENTE'
-															? (
-																<>
-																	<ArrowUpwardIcon className='tendencia-ascendente' />
-																	<Typography>Ascendente</Typography>
-																</>
-															) : (
-																<>
-																	<ArrowDownwardIcon className='tendencia-descendente' />
-																	<Typography>Descendente</Typography>
-																</>
-															)
-													}
-												</Typography>
-											</Box>
-										</Stack>
-									</Grid>
-									<Grid item xs>
-										<Controller
-											name='dimension'
-											control={methods.control}
-											defaultValue={null}
-											render={({ field: { value, onChange }, fieldState: { error } }) => (
-												<AutoCompleteInput
-													value={value}
-													onChange={onChange}
-													error={error}
-													label='Dimensión'
-													helperText='Objetivo de PDU'
-													getOptionLabel={(item) => item.titulo}
-													fetcher={async () => {
-														const res = await getDimensionsGeneralInfo()
-														return res.data.data;
-													}}
-													fullWidth
-													required
-												/>
-											)}
-										/>
-									</Grid>
-									<Grid item xs>
-										<Controller
-											name='tema'
-											control={methods.control}
-											defaultValue={null}
-											render={({ field: { value, onChange }, fieldState: { error } }) => (
-												<AutoCompleteInput
-													value={value}
-													onChange={onChange}
-													error={error}
-													label='Tema de interes'
-													getOptionLabel={(item) => item.temaIndicador}
-													fetcher={temasFetcher}
-													fullWidth
-													required
-												/>
-											)}
-										/>
-									</Grid>
-									<Controller
-										name='nombre'
-										control={methods.control}
-										render={({ field: { onChange, value }, fieldState: { error }
-										}) => (
-											<TextField
-												label='Nombre'
-												type='text'
-												placeholder='Porcentaje de hogares con jefatura femenina.'
-												required
-												autoComplete='off'
-												error={!!error}
-												helperText={error ? error.message : null}
-												variant='outlined'
-												onChange={onChange}
-												value={value}
-												fullWidth
-											/>
-										)
-										}
-									/>
-									<Controller
-										name="definicion"
-										control={methods.control}
-										render={({
-											field: { onChange, value },
-											fieldState: { error }
-										}) => (
-											<TextField
-												label='Definición'
-												type='text'
-												placeholder='Hogares donde una mujer es reconocida como jefa de familia por los miembros el hogar.'
-												multiline
-												rows={5}
-												size='small'
-												required
-												autoComplete='off'
-												error={!!error}
-												helperText={error ? error.message : null}
-												onChange={onChange}
-												value={value}
-												fullWidth
-
-											/>
-										)}
-									/>
-									<Controller
-										name="periodicidad"
-										control={methods.control}
-										render={({
-											field: { onChange, value },
-											fieldState: { error }
-										}) => (
-											<TextField
-												label='Periodicidad en meses'
-												type='number'
-												placeholder='Tiempo entre actualizaciones'
-												error={!!error}
-												helperText={error ? error.message : null}
-												onChange={onChange}
-												value={value}
-												fullWidth
-											/>
-										)}
-									/>
-								</Paper>
-								{/* Sección derecha que contiene información específica del indicador, sú código, fecha de actualización, ficha.. */}
-								<Grid item xs>
-									<Stack height='100%' overflow='hidden'>
-										<Paper sx={{ py: 3, px: 2, mb: 2 }}>
-											<Stack>
-												<Typography variant='h5' mb={2}>Más</Typography>
-
-												{/* Sección que contiene los catálogos del indicador */}
-												<Grid container justifyContent='space-between' mb={2}>
-													{
-														CATALOGOS.map((catalogo, index) => {
-															return (
-																<Grid item xs={12} md={index == 0 || index == 1 ? 4 : 3} key={index}>
-																	<Controller
-																		name={`catalogos[${index}]`}
-																		control={methods.control}
-																		defaultValue={`default`}
-																		render={({
-																			field: { value, onChange },
-																			fieldState: { error }
-																		}) => (
-																			<CatalogoAutocomplete
-																				id={catalogo}
-																				value={value === 'default' ? null : value}
-																				onChange={onChange}
-																				label={displayLabel(catalogo)}
-																				error={error}
-																				required={true}
-																				type={1}
-																				catalog={catalogo}
-																			/>
-																		)}
-																	/>
-																</Grid>
-															)
-														})
-													}
-												</Grid>
-												<Controller
-													name='fuente'
-													control={methods.control}
-													render={({ field: { onChange, value }, fieldState: { error }
-													}) =>
-													(
-														<TextField
-															label='Fuente de información'
-															type='text'
-															placeholder='Fuente: DDUE (2020). Vuelo aéreo de la Dirección de Desarrollo Urbano y Ecología 2020 en SADRE.'
-															required
-															autoComplete='off'
-															sx={{ width: '100%' }}
-															error={!!error}
-															helperText={error ? error.message : null}
-															variant='outlined'
-															onChange={onChange}
-															value={value}
-															className='indicador-info-input'
-														/>
-													)
-													}
-												/>
-												<Controller
-													name="observaciones"
-													control={methods.control}
-													render={({
-														field: { onChange, value },
-														fieldState: { error }
-													}) => (
-														<TextField
-															label='Observaciones adicionales'
-															type='text'
-															placeholder='Comentarios del autor'
-															multiline
-															rows={4}
-															size='small'
-															fullWidth
-															error={!!error}
-															helperText={error ? error.message : null}
-															onChange={onChange}
-															value={value}
-														/>
-													)}
-												/>
-											</Stack>
-										</Paper>
-										{
-											user.roles === 'ADMIN' && (
-												<Paper sx={{ py: 3, px: 2, height: '100%' }}>
-													<Typography variant='h5' mb={2}>Autorización</Typography>
-													<Box width='fit-content' mb={1}>
-														<Controller
-															name="owner"
-															control={methods.control}
-															defaultValue={1}
-															render={({
-																field: { value, onChange },
-																fieldState: { error }
-															}) => {
-																return (
-																	<OwnerListDropdown
-																		id={id}
-																		type={2}
-																		actualOwner={value}
-																		onChange={onChange}
-																		error={error}
-																	/>
-																)
-															}}
-														/>
-													</Box>
-													<MUILink
-														component={RouterLink}
-														to={`/autorizacion/indicador/${id}`}
-													>Administrar usuarios</MUILink>
-												</Paper>
-											)
-										}
-									</Stack>
-								</Grid>
+							<Grid item xs={12} md={6} sx={{ backgroundColor: 'lightgoldenrodyellow' }}>
+								ss
 							</Grid>
-							<Fab
-								size='large'
-								color='primary'
-								type='submit'
-								form='form-indicator'
-								sx={{
-									position: 'absolute',
-									mb: 2,
-									mr: 2,
-									bottom: 0,
-									right: 0,
-								}}>
-								<Save sx={{ m: 1 }} />
-							</Fab>
-						</Box>
-					</FormProvider >
-				</Box>
+						</Grid>
+					</Grid>
+
+					<Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 2, gap: 3 }}>
+						<Button variant='contained'>
+							Cancelar
+						</Button>
+						<Button variant='contained' type='submit' form='form-indicator'>
+							Guardar cambios
+						</Button>
+					</Box>
+				</FormProvider >
 			)
 	)
 }
