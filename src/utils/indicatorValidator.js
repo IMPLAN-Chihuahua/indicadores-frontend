@@ -24,7 +24,7 @@ const createIndicatorSchema = yup.object({
 		yup.number()
 			.integer()
 			.typeError('Periodicidad debe ser un número')
-			.min(1)
+			.min(0)
 			.nullable(),
 });
 export { createIndicatorSchema };
