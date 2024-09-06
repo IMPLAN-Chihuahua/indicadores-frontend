@@ -10,7 +10,7 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import AutoCompleteInput from '../../../../../common/AutoCompleteInput';
 import { parseDate } from '../../../../../../utils/dateParser';
-import { getDimensionsGeneralInfo } from '../../../../../../services/dimensionService';
+import { getObjetivosGeneralInfo } from '../../../../../../services/dimensionService';
 import { getTemas } from '../../../../../../services/temaService';
 
 const temasFetcher = async () => {
@@ -30,7 +30,8 @@ const GeneralInformation = ({ methods, indicador }) => {
         gap={2}
         sx={{
           backgroundColor: 'white',
-          p: 2
+          p: 2,
+          height: '100%'
         }}>
         <Typography variant='h5'>Información básica</Typography>
         <Divider sx={{ lineHeight: 0 }} />

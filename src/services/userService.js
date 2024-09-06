@@ -52,13 +52,13 @@ export const useTemas = (perPage, page, search) => {
     mutate
   }
 };
-export const useIndicators = (perPage, page, search, idDimensions, owner) => {
+export const useIndicators = (perPage, page, search, idObjetivos, owner) => {
   const searchQueries = new URLSearchParams({
     perPage,
     page,
     ...(search.length > 0 && { searchQuery: search.trim() }),
     ...(owner > 0 && { owner }),
-    ...(idDimensions?.length > 0 && { idDimensions: idDimensions }),
+    ...(idObjetivos?.length > 0 && { idObjetivos: idObjetivos }),
   });
 
   const { data, error, mutate } = useSWR(`indicadores?${searchQueries.toString()}`, fetcher)

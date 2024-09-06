@@ -1,6 +1,6 @@
 import { protectedApi } from '.';
 
-export const getDimensionsGeneralInfo = async (params) => {
+export const getObjetivosGeneralInfo = async (params) => {
   const { page, perPage, attributes, id, sortBy, order } = params | {}
   const attributesQuery = attributes ? attributes.map(attribute => `attributes[]=${attribute}`).join('&') : '';
 
@@ -10,5 +10,5 @@ export const getDimensionsGeneralInfo = async (params) => {
   const perPageQuery = perPage ? `&perPage=${perPage}` : '';
   const query = `${attributesQuery}${sortByQuery}${orderQuery}${pageQuery}${perPageQuery}`;
 
-  return protectedApi.get(`/dimensiones/info/general?b=0&${query}`);
+  return protectedApi.get(`/objetivos/info/general?b=0&${query}`);
 };

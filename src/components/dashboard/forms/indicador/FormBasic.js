@@ -10,7 +10,7 @@ import { useIndicadorContext } from "../../../../contexts/IndicadorContext";
 import { CatalogoAutocomplete } from "../../common/CatalogPicker";
 import AutoCompleteInput from "../../../common/AutoCompleteInput";
 import { getTemas } from "../../../../services/temaService";
-import { getDimensionsGeneralInfo } from "../../../../services/dimensionService";
+import { getObjetivosGeneralInfo } from "../../../../services/dimensionService";
 
 const indicadorBasicSchema = yup.object({
   nombre: yup.string().required('Ingresa el nombre'),
@@ -33,7 +33,7 @@ const indicadorBasicSchema = yup.object({
     id: yup.number(),
     temaIndicador: yup.string()
   }).nullable().required('Selecciona un tema'),
-  dimension: yup.object({
+  objetivo: yup.object({
     id: yup.number(),
     titulo: yup.string()
   }).nullable().required('Selecciona una dimensión')
@@ -87,7 +87,7 @@ export const FormBasic = () => {
         <Grid item xs={6}>
           <Controller
             control={control}
-            name='dimension'
+            name='objetivo'
             defaultValue={null}
             render={({ field: { value, onChange }, fieldState: { error } }) => (
               <AutoCompleteInput
@@ -98,7 +98,7 @@ export const FormBasic = () => {
                 helperText='Objetivo de PDU'
                 getOptionLabel={item => item.titulo}
                 fetcher={async () => {
-                  const res = await getDimensionsGeneralInfo()
+                  const res = await getObjetivosGeneralInfo()
                   return res.data.data
                 }}
                 required

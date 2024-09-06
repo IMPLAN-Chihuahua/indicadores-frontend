@@ -1,28 +1,28 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import React, { useEffect } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form';
-import { createDimensionSChema } from '../../../../utils/validator';
+import { createObjetivoSChema } from '../../../../utils/validator';
 import { Box, Button, DialogActions, DialogContent, Grid, TextField } from '@mui/material';
 import { ImageInput } from '../../../common/FileInput';
 import ColorPicker from '../../common/ColorPicker';
 
 export const FormDimension = (props) => {
-  const parseToFormData = (dimension) => {
+  const parseToFormData = (objetivo) => {
     const formData = new FormData();
-    for (const key in dimension) {
+    for (const key in objetivo) {
       if (key === 'urlImagen') {
-        formData.append('urlImagen', dimension[key][0] || null);
+        formData.append('urlImagen', objetivo[key][0] || null);
         continue;
       }
-      if (dimension[key]) {
-        formData.append(key, dimension[key]);
+      if (objetivo[key]) {
+        formData.append(key, objetivo[key]);
       }
     }
     return formData;
   }
 
 
-  const { selectedDimension, handleCloseModal, action } = props;
+  const { selectedObjetivo, handleCloseModal, action } = props;
 
   const methods = useForm({
     defaultValues: {
@@ -31,7 +31,7 @@ export const FormDimension = (props) => {
       urlImagen: '',
       color: '',
     },
-    // resolver: yupResolver(createDimensionSChema),
+    // resolver: yupResolver(createObjetivoSChema),
   });
 
   const { control, reset, handleSubmit } = methods;
@@ -41,10 +41,10 @@ export const FormDimension = (props) => {
   }
 
   useEffect(() => {
-    if (!selectedDimension) return;
+    if (!selectedObjetivo) return;
     reset({
-      ...selectedDimension,
-      urlImagen: [selectedDimension.urlImagen]
+      ...selectedObjetivo,
+      urlImagen: [selectedObjetivo.urlImagen]
     });
   }, [])
 
@@ -53,7 +53,7 @@ export const FormDimension = (props) => {
       <Box
         component={'form'}
         noValidate
-        id='formDimension'
+        id='formObjetivo'
       >
         <DialogContent>
           <Grid container spacing={2}>
@@ -115,7 +115,7 @@ export const FormDimension = (props) => {
           <Button
             type='submit'
             variant='contained'
-            form='formDimension'
+            form='formObjetivo'
             onClick={handleSubmit(onSubmit)}
           >Guardar</Button>
         </DialogActions>

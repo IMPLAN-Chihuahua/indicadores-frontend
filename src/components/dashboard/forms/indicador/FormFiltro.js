@@ -4,17 +4,17 @@ import React, { useEffect, useState } from 'react'
 import { Controller, FormProvider, set, useFieldArray, useForm } from 'react-hook-form';
 import AutoCompleteInput from '../../../common/AutoCompleteInput';
 import { getUsersGeneralInfo } from '../../../../services/userService';
-import { getDimensionsGeneralInfo } from '../../../../services/dimensionService';
+import { getObjetivosGeneralInfo } from '../../../../services/dimensionService';
 import { useAuth } from '../../../../contexts/AuthContext';
 
 const FormFiltro = (props) => {
-  const { handleClose, setSearch, searchIndicator, setDimension, setOwner, setFilter } = props;
-  const [dimensiones, setDimensiones] = useState([]);
+  const { handleClose, setSearch, searchIndicator, setObjetivo, setOwner, setFilter } = props;
+  const [objetivos, setObjetivos] = useState([]);
   const { user } = useAuth();
 
   const methods = useForm({
     defaultValues: {
-      dimensiones: undefined,
+      objetivos: undefined,
       searchQuery: searchIndicator,
       usuario: null,
       me: false
@@ -22,8 +22,8 @@ const FormFiltro = (props) => {
   });
 
   useEffect(() => {
-    fetchDimensiones().then(data => {
-      setDimensiones(data);
+    fetchObjetivos().then(data => {
+      setObjetivos(data);
     });
   }, [0])
 
@@ -36,8 +36,8 @@ const FormFiltro = (props) => {
     return data.data;
   };
 
-  const fetchDimensiones = async () => {
-    const { data } = await getDimensionsGeneralInfo();
+  const fetchObjetivos = async () => {
+    const { data } = await getObjetivosGeneralInfo();
     return data.data
   }
 
@@ -45,7 +45,7 @@ const FormFiltro = (props) => {
     const owner = watch('me') ? user.id : data.usuario?.id;
     setSearch(data.searchQuery);
     setOwner(owner);
-    setDimension(data.dimensiones);
+    setObjetivo(data.objetivos);
     setFilter(true);
     handleClose();
   };
@@ -54,13 +54,13 @@ const FormFiltro = (props) => {
     setFilter(false);
     setSearch('');
     setOwner(null);
-    setDimension([]);
+    setObjetivo([]);
 
     reset({
       searchQuery: '',
       usuario: null,
       me: false,
-      dimensiones: []
+      objetivos: []
     })
 
   }
@@ -99,7 +99,7 @@ const FormFiltro = (props) => {
                 <Grid container>
                   <Grid item xs={12} sx={{ mt: 1, mb: 1 }}>
                     {
-                      dimensiones?.map((chip) => (
+                      objetivos?.map((chip) => (
                         <Controller
                           key={chip.id}
                           control={control}
@@ -122,7 +122,7 @@ const FormFiltro = (props) => {
                                 pr: '10px',
                                 m: '5px',
                               }}
-                              {...register(`dimensiones`)}
+                              {...register(`objetivos`)}
                             />
                           )}
                           defaultValue={false}

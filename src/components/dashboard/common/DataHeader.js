@@ -9,7 +9,7 @@ import './common.css'
 import FormFiltro from '../forms/indicador/FormFiltro';
 
 export const DataHeader = ({ data, handleOpenModal }) => {
-  const { countEnable, countDisable, setSearch, setDimension, setOwner, searchIndicator } = data;
+  const { countEnable, countDisable, setSearch, setObjetivo, setOwner, searchIndicator } = data;
 
   const textRef = useRef(null)
   const [showClear, setShowClear] = useState(false)
@@ -125,7 +125,7 @@ export const DataHeader = ({ data, handleOpenModal }) => {
         <FormFiltro
           handleClose={handleClose}
           searchIndicator={searchIndicator}
-          setDimension={setDimension}
+          setObjetivo={setObjetivo}
           setSearch={setSearch}
           setOwner={setOwner}
           setFilter={setFilter}

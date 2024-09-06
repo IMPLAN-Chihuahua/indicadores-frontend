@@ -38,7 +38,7 @@ export const GeneralView = () => {
 			idCatalogo: 1
 		}],
 		archive: false,
-		dimension: {},
+		objetivo: {},
 		codigo: '',
 		createdAt: '',
 		createdBy: '',
@@ -51,6 +51,8 @@ export const GeneralView = () => {
 		id: '',
 		idTema: '',
 		tema: {},
+		temas: [],
+		objetivos: [],
 		next: '',
 		nombre: '',
 		observaciones: '',
@@ -83,7 +85,7 @@ export const GeneralView = () => {
 
 		const { id: idIndicador, activo, catalogos, definicion, fuente,
 			idTema, tema, nombre, observaciones, owner, anioUltimoValorDisponible,
-			ultimoValorDisponible, updatedBy, periodicidad, archive, dimension, adornment, unidadMedida } = data;
+			ultimoValorDisponible, updatedBy, periodicidad, archive, objetivo, adornment, unidadMedida } = data;
 
 		const status = activo;
 		const indicadorData = {
@@ -101,7 +103,7 @@ export const GeneralView = () => {
 			anioUltimoValorDisponible,
 			archive,
 			idTema: tema?.id,
-			idDimension: dimension?.id
+			idObjetivo: objetivo?.id
 		};
 
 		const historicoData = {
@@ -194,15 +196,14 @@ export const GeneralView = () => {
 					>
 						<Header methods={methods} />
 						<IndicatorValues methods={methods} updatedAt={indicador.updatedAt} />
-						<Grid container xs={12} md={12}>
+						<Grid container xs={12} md={12} >
 							<GeneralInformation methods={methods} indicador={indicador} />
 							<MoreInformation methods={methods} id={id} />
-							<Grid item xs={12} md={6} sx={{ backgroundColor: 'lightblue' }}>
-								ss
-							</Grid>
-							<Grid item xs={12} md={6} sx={{ backgroundColor: 'lightgoldenrodyellow' }}>
-								ss
-							</Grid>
+						</Grid>
+						<Grid item xs={12} md={12}>
+							<pre>
+								{JSON.stringify(methods.watch(), null, 2)}
+							</pre>
 						</Grid>
 					</Grid>
 

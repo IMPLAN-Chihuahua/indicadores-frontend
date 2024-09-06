@@ -79,7 +79,7 @@ const createTemaSchema = yup.object({
 
 });
 
-const createDimensionSChema = yup.object({
+const createObjetivoSChema = yup.object({
   titulo:
     yup.string()
       .optional('Por favor, ingrese el titulo de la dimensión')
@@ -98,4 +98,4 @@ const createDimensionSChema = yup.object({
       .optional('Por favor, seleccione un color')
 });
 
-export { loginSchema, createTemaSchema, emailSchema, confirmPasswordSchema, createAuthSchema, updateAuthSchema, createDimensionSChema }
+export { loginSchema, createTemaSchema, emailSchema, confirmPasswordSchema, createAuthSchema, updateAuthSchema, createObjetivoSChema }

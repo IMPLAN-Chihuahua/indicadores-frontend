@@ -1,6 +1,6 @@
 import { Box, Button, Card, CardContent, CardMedia, DialogTitle, Grid, IconButton, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import { getDimensionsGeneralInfo } from '../services/dimensionService';
+import { getObjetivosGeneralInfo } from '../services/dimensionService';
 import EditIcon from '@mui/icons-material/Edit';
 import FormDialog from '../components/dashboard/common/FormDialog';
 import { FormDimension } from '../components/dashboard/forms/dimension/FormDimension';
@@ -8,16 +8,16 @@ import { FormDimension } from '../components/dashboard/forms/dimension/FormDimen
 
 
 const Dimensions = () => {
-  const [dimensions, setDimensions] = useState([])
-  const getDimensions = () => {
-    getDimensionsGeneralInfo({})
+  const [objetivos, setObjetivos] = useState([])
+  const getObjetivos = () => {
+    getObjetivosGeneralInfo({})
       .then(({ data }) => {
-        setDimensions(data.data)
+        setObjetivos(data.data)
       })
   }
 
   useEffect(() => {
-    getDimensions()
+    getObjetivos()
   }, [])
 
   return (
@@ -29,15 +29,15 @@ const Dimensions = () => {
       justifyContent: 'start',
     }}>
       {
-        dimensions.map((dimension) => (
+        objetivos.map((objetivo) => (
           <Cardie
-            key={dimension.dimension.id}
-            id={dimension.dimension.id}
-            titulo={dimension.dimension.titulo}
-            descripcion={dimension.dimension.descripcion}
-            color={dimension.dimension.color}
-            urlImagen={dimension.dimension.urlImagen}
-            count={dimension.indicadoresCount}
+            key={objetivos.objetivos.id}
+            id={objetivos.objetivos.id}
+            titulo={objetivos.objetivos.titulo}
+            descripcion={objetivos.objetivos.descripcion}
+            color={objetivos.objetivos.color}
+            urlImagen={objetivos.objetivos.urlImagen}
+            count={objetivos.indicadoresCount}
           />
 
         ))
@@ -46,7 +46,7 @@ const Dimensions = () => {
   )
 };
 
-const Cardie = (dimension) => {
+const Cardie = (objetivo) => {
 
   const {
     id,
@@ -55,20 +55,19 @@ const Cardie = (dimension) => {
     color,
     urlImagen,
     count
-  } = dimension
-  console.log('%c ' + dimension, 'background: #222; color: #26A783; font-weight: bold;');
+  } = objetivo
 
   const [openModal, setOpenModal] = useState(false);
-  const [selectedDimension, setSelectedDimension] = useState(null);
+  const [selectedObjetivo, setSelectedObjetivo] = useState(null);
 
   const handleCloseModal = async () => {
     setOpenModal(false)
-    setSelectedDimension(null)
+    setSelectedObjetivo(null)
   };
 
   const handleEdit = () => {
     setOpenModal(true)
-    setSelectedDimension(dimension)
+    setSelectedObjetivo(objetivo)
   }
 
 
@@ -141,7 +140,7 @@ const Cardie = (dimension) => {
       >
         <DialogTitle>Editar dimensión</DialogTitle>
         <FormDimension
-          selectedDimension={selectedDimension}
+          selectedObjetivo={selectedObjetivo}
           handleCloseModal={handleCloseModal}
           action='edit' />
       </FormDialog>

@@ -51,7 +51,7 @@ export const Sidebar = () => {
   },
   {
     to: '/dimensiones',
-    label: "Dimensiones",
+    label: "Objetivos",
     icon: <DashboardIcon className='sidebar-icon' />
   }
   ]
