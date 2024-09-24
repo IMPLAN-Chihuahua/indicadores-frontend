@@ -226,7 +226,7 @@ const FormulaView = () => {
 
   if (error) {
     return (
-      <Box className='indicator' sx={{ overflow: 'scroll', flex: '1 1 auto', height: '500px' }} padding={3}>
+      <Box className='indicator' sx={{ overflow: 'auto', flex: '1 1 auto', height: '500px' }} padding={3}>
         <Paper sx={{ p: 2 }}>
           <ErrorContent error={error} justifyContent='flex-start' />
         </Paper>
@@ -235,18 +235,22 @@ const FormulaView = () => {
   }
 
   return (
-    <>
-      <Box className='indicator' sx={{ overflow: 'scroll', flex: '1 1 auto', height: '500px' }} padding={3}>
+    <Grid item xs={12} md={12} sx={{
+      p: 1,
+      height: '100%',
+    }}>
+      <Typography variant='h5'>Fórmula o método de adquisición de información</Typography>
+      <Box className='indicator' sx={{ overflow: 'auto', flex: '1 1 auto', height: '500px', backgroundColor: 'lightgoldenrodyellow' }} >
         {isLoading
           ? (<PersonalLoader />)
           : (Object.keys(formula).length === 0)
             ? (
-              <Paper
+              <Box
                 sx={{ p: 2 }}
               >
                 <Typography mb={1} variant='body1'>Este indicador no cuenta con una formula</Typography>
-                <Button variant='contained' onClick={() => setOpenFormFormula(true)}>Agregar Formula</Button>
-              </Paper>)
+                <Button variant='contained' onClick={() => setOpenFormFormula(true)}>Agregar Fórmula</Button>
+              </Box>)
             : (
               <Grid container gap={1}>
                 <Paper
@@ -381,6 +385,9 @@ const FormulaView = () => {
             )
         }
       </Box >
+
+
+
       <FormDialog
         open={openFormVariable}
         fullWidth
@@ -425,7 +432,7 @@ const FormulaView = () => {
           </FormDialog>
         </>)
       }
-    </>
+    </Grid>
   );
 }
 

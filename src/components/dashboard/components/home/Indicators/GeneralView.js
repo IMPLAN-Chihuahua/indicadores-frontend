@@ -22,6 +22,7 @@ import IndicatorValues from './GeneralViewComponents/IndicatorValues';
 import GeneralInformation from './GeneralViewComponents/GeneralInformation';
 import MoreInformation from './GeneralViewComponents/MoreInformation';
 import Header from './GeneralViewComponents/Header';
+import FormulaView from './Formula/FormulaView';
 
 export const GeneralView = () => {
 	const [indicador, setIndicador] = useState(null);
@@ -63,6 +64,7 @@ export const GeneralView = () => {
 		updatedBy: '',
 		urlImagen: '',
 		periodicidad: 0,
+		metas: []
 	}
 
 	useEffect(() => {
@@ -84,8 +86,8 @@ export const GeneralView = () => {
 		let updatedVals = 0;
 
 		const { id: idIndicador, activo, catalogos, definicion, fuente,
-			idTema, tema, nombre, observaciones, owner, anioUltimoValorDisponible,
-			ultimoValorDisponible, updatedBy, periodicidad, archive, objetivo, adornment, unidadMedida } = data;
+			idTema, temas, nombre, observaciones, owner, anioUltimoValorDisponible,
+			ultimoValorDisponible, updatedBy, periodicidad, archive, objetivo, objetivos, adornment, unidadMedida, metas } = data;
 
 		const status = activo;
 		const indicadorData = {
@@ -102,8 +104,10 @@ export const GeneralView = () => {
 			unidadMedida,
 			anioUltimoValorDisponible,
 			archive,
-			idTema: tema?.id,
-			idObjetivo: objetivo?.id
+			temas,
+			objetivos,
+			idObjetivo: objetivo?.id,
+			metas
 		};
 
 		const historicoData = {
@@ -127,23 +131,7 @@ export const GeneralView = () => {
 			confirmButtonText: `Guardar cambios`,
 			denyButtonText: `Actualizar indicador`,
 		}).then(async (result) => {
-			if (result.isConfirmed || result.isDenied) {
-				if (isNumber(ultimoValorDisponible)) {
-					updateData(result, idIndicador, indicadorData, historicoData, updatedVals);
-				} else {
-					Swal.fire({
-						title: 'El último valor disponible no es un valor numérico válido',
-						text: 'El valor del indicador no es un valor numérico cerrado, esto quiere decir que no es un número entero o decimal. Si estás seguro de guardar el valor de esta forma, por favor, ten en cuenta que es posible que no se pueda gráficar. Recuerda que el indicador ya cuenta con una unidad de medida.',
-						showCancelButton: true,
-						confirmButtonText: `Guardar`,
-						cancelButtonText: `Cancelar`,
-					}).then(async (result) => {
-						if (result.isConfirmed) {
-							updateData(result, idIndicador, indicadorData, historicoData, updatedVals);
-						}
-					})
-				}
-			}
+			if (result.isConfirmed || result.isDenied) updateData(result, idIndicador, indicadorData, historicoData, updatedVals);
 		});
 
 	};
@@ -175,7 +163,6 @@ export const GeneralView = () => {
 			}
 		}
 	}
-
 	return (
 		isLoading
 			? (
@@ -200,12 +187,9 @@ export const GeneralView = () => {
 							<GeneralInformation methods={methods} indicador={indicador} />
 							<MoreInformation methods={methods} id={id} />
 						</Grid>
-						<Grid item xs={12} md={12}>
-							<pre>
-								{JSON.stringify(methods.watch(), null, 2)}
-							</pre>
-						</Grid>
+						{/* <FormulaView /> */}
 					</Grid>
+
 
 					<Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 2, gap: 3 }}>
 						<Button variant='contained'>

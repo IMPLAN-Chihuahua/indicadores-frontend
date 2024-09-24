@@ -14,16 +14,16 @@ import { useAuth } from '../../../../../../contexts/AuthContext';
 import { displayLabel } from '../../../../../../utils/getCatalog';
 import ODSTable from '../ODS/ODSTable';
 import { getTemas } from '../../../../../../services/temaService';
-import { getObjetivosGeneralInfo } from '../../../../../../services/dimensionService';
+import { getObjetivos } from '../../../../../../services/dimensionService';
 
 const getTemasRes = async () => {
   const temas = await getTemas();
   return temas;
 };
 
-const getObjetivos = async () => {
-  const { data } = await getObjetivosGeneralInfo();
-  return data;
+const getObjetivosRes = async () => {
+  const { data: objetivos } = await getObjetivos();
+  return objetivos.data;
 }
 
 const MoreInformation = ({ methods, id }) => {
@@ -39,13 +39,11 @@ const MoreInformation = ({ methods, id }) => {
       setTemas(temas);
     })
 
-    getObjetivos().then(objetivos => {
+    getObjetivosRes().then(objetivos => {
       setObjetivos(objetivos);
     })
 
   }, [])
-
-  console.log(objetivos);
 
   return (
     <Grid item xs={12} md={6} sx={{
@@ -81,44 +79,12 @@ const MoreInformation = ({ methods, id }) => {
               isOptionEqualToValue={(option, value) => option.id === value.id}
               onChange={(_, data) => onChange(data)}
               multiple
-              id='Objetivos'
+              id='objetivos'
               renderInput={(params) => <TextField {...params} label='Objetivos del PDU2040' />}
             />
           )}
         />
-
-
-        {/* <Autocomplete
-          multiple
-          id='temas'
-          options={temasArray}
-          getOptionLabel={(option) => option.name}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              variant='outlined'
-              label="Temáticas de interés"
-              placeholder='Selecciona los temas de interés'
-            />
-          )}
-        /> */}
-
-        {/* <Autocomplete
-          multiple
-          id='objetivos'
-          options={temasArray}
-          getOptionLabel={(option) => option.name}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              variant='outlined'
-              label="Objetivos del PDU2040"
-              placeholder='Selecciona los objetivos a los que pertenece este indicador'
-            />
-          )}
-        /> */}
-
-        <ODSTable />
+        <ODSTable methods={methods} />
       </Stack>
     </Grid>
   )

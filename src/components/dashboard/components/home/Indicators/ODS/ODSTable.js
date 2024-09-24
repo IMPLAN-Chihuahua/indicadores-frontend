@@ -1,38 +1,52 @@
-import { Box, FormControl, MenuItem, Select, InputLabel, FormGroup, FormControlLabel, Checkbox, Typography } from '@mui/material'
-import React from 'react'
+import { Box, FormControl, MenuItem, Select, InputLabel, FormGroup, FormControlLabel, Checkbox, Typography, Tooltip } from '@mui/material'
+import React, { useEffect } from 'react'
+import { getMetas, getOds } from '../../../../../../services/odsService'
+import { Controller } from 'react-hook-form'
+import { CheckCircle, PanoramaFishEye } from '@material-ui/icons';
 
-const ODSSelector = () => {
-  const [age, setAge] = React.useState('');
-
-  const handleChange = (event) => {
-    setAge(event.target.value);
-  };
+const ODSSelector = ({ ods, selectedOds, setSelectedOds }) => {
 
   return (
     <FormControl fullWidth>
       <InputLabel id="demo-simple-select-label">Objetivos de Desarrollo Sostenible</InputLabel>
       <Select
-        labelId="demo-simple-select-label"
-        id="demo-simple-select"
-        value={age}
-        label="Age"
-        onChange={handleChange}
+        label="ODS"
       >
-        <MenuItem value={10}>ODS 1</MenuItem>
-        <MenuItem value={20}>ODS 2</MenuItem>
-        <MenuItem value={30}>ODS 3</MenuItem>
+        {
+          ods.map((item, index) => {
+            return (
+              <MenuItem
+                onClick={() => setSelectedOds(item)} value={item.id} key={index}>{item.titulo}</MenuItem>
+            )
+          })
+        }
       </Select>
     </FormControl>
   )
 }
 
-const ODSTable = () => {
+const ODSTable = ({ methods }) => {
+  const [selectedOds, setSelectedOds] = React.useState(1);
+  const [ods, setOds] = React.useState([]);
+  const [metas, setMetas] = React.useState([]);
+
+
+
+  useEffect(async () => {
+    await getOds().then(ods => {
+      setOds(ods);
+    });
+
+    await getMetas(selectedOds.id).then(metas => {
+      setMetas(metas);
+    })
+  }, [selectedOds]);
 
   return (
     <Box sx={{
       height: '100%',
     }}>
-      <ODSSelector />
+      <ODSSelector ods={ods} selectedOds={selectedOds} setSelectedOds={setSelectedOds} />
       <Box sx={{
         display: 'flex',
         flexDirection: 'column',
@@ -44,11 +58,46 @@ const ODSTable = () => {
         borderBottom: '1px solid #ccc',
         p: 1,
       }}>
-        <FormControlLabel control={<Checkbox />} label="Meta 1 del ODS seleccionado" />
-        <FormControlLabel control={<Checkbox />} label="Meta 2 del ODS seleccionado" />
-        <FormControlLabel control={<Checkbox />} label="Meta 3 del ODS seleccionado" />
-        <FormControlLabel control={<Checkbox />} label="Meta 1 del ODS seleccionado" />
-        <FormControlLabel control={<Checkbox />} label="Meta 2 del ODS seleccionado" />
+        <Typography variant='caption'>
+          Metas que busca alcanzar este ODS
+        </Typography>
+        {
+          metas?.rows?.map((meta, idx) => (
+            <Controller
+              key={meta.id}
+              // name={`metas.${meta.id}`}
+              control={methods.control}
+              render={({ field: { value, onChange }, fieldState: { error } }) => (
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      size='small'
+                      icon={<PanoramaFishEye />}
+                      checkedIcon={< CheckCircle />}
+                      onChange={onChange}
+                      value={meta.id}
+                    />}
+                  label={
+                    <Tooltip title={meta.descripcion}>
+                      <Typography>
+                        {meta.titulo}
+                      </Typography>
+                    </Tooltip>
+                  }
+                  sx={{
+                    borderRadius: '50px',
+                    border: '1px solid #ccc',
+                    p: '1px',
+                    pr: '10px',
+                    m: '5px',
+                  }}
+                  {...methods.register(`metas`)}
+                />
+              )}
+              defaultValue={false}
+            />
+          ))
+        }
       </Box>
 
     </Box>

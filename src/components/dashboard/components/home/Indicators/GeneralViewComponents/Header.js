@@ -3,6 +3,7 @@ import React from 'react'
 import CustomizedMenus from './MenuButton'
 import EditIcon from '@mui/icons-material/Edit';
 import { Controller } from 'react-hook-form';
+import { Link as RouterLink } from 'react-router-dom';
 
 const Header = ({ methods }) => {
   const [display, setDisplay] = React.useState('none')
@@ -59,7 +60,7 @@ const Header = ({ methods }) => {
       <Grid item xs={12} md={6} sx={{
         display: 'flex', justifyContent: 'flex-end',
       }}>
-        <CustomizedMenus />
+        <CustomizedMenus methods={methods} />
       </Grid>
     </Grid>
   )

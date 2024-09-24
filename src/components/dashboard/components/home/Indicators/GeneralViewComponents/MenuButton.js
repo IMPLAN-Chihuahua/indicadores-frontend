@@ -6,11 +6,14 @@ import MenuItem from '@mui/material/MenuItem';
 import HideSourceIcon from '@mui/icons-material/HideSource';
 import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
-import LanguageOutlinedIcon from '@mui/icons-material/LanguageOutlined';
-import ComputerOutlinedIcon from '@mui/icons-material/ComputerOutlined';
 import RocketLaunchOutlinedIcon from '@mui/icons-material/RocketLaunchOutlined';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { Typography } from '@mui/material';
+import { updateIndicator } from '../../../../../../services/indicatorService';
+import { useParams } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import { Link as RouterLink } from 'react-router-dom';
+import { Link, TextField } from '@mui/material'
 
 /**Componente completamente robado de https://mui.com/material-ui/react-menu/ */
 
@@ -48,7 +51,40 @@ const StyledMenu = styled((props) => (
   },
 }));
 
-export default function CustomizedMenus() {
+const ARCHIVO = 'ARCHIVO'
+const ESTADO = 'ESTADO'
+
+export default function CustomizedMenus({ methods }) {
+  const { id } = useParams()
+
+  const changeIndicadorStatus = async (status) => {
+    handleClose()
+    Swal.fire({
+      title: `Esta acción ${status === ARCHIVO ? 'archivará' : 'desactivará'} el indicador, lo que significa que no se mostrará en la lista de indicadores del sitio web.`,
+      text: '¿Estás seguro de que deseas continuar?',
+      icon: 'info',
+      showCancelButton: true,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        switch (status) {
+          case ARCHIVO:
+            methods.setValue('archive', !methods.getValues('archive'))
+            await updateIndicator(id, {
+              archive: methods.getValues('archive')
+            });
+            break;
+          case ESTADO:
+            methods.setValue('activo', !methods.getValues('activo'))
+            await updateIndicator(id, {
+              activo: methods.getValues('activo')
+            });
+            break;
+        }
+      }
+    })
+  }
+
+
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -61,10 +97,7 @@ export default function CustomizedMenus() {
   return (
     <div>
       <Button
-        id="demo-customized-button"
-        aria-controls={open ? 'demo-customized-menu' : undefined}
         aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}
         variant="contained"
         disableElevation
         onClick={handleClick}
@@ -81,31 +114,54 @@ export default function CustomizedMenus() {
         open={open}
         onClose={handleClose}
       >
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={() => {
+          changeIndicadorStatus(ARCHIVO)
+        }}>
           <ArchiveOutlinedIcon />
-          <Typography variant='body1' sx={{ pl: 1 }}>
-            Archivar
-          </Typography>
+          {
+            methods.getValues('archive') ?
+              <Typography variant='body1' sx={{ pl: 1 }}>
+                Desarchivar
+              </Typography>
+              :
+              <Typography variant='body1' sx={{ pl: 1 }}>
+                Archivar
+              </Typography>
+          }
         </MenuItem>
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={() => {
+          changeIndicadorStatus(ESTADO)
+        }}>
           <HideSourceIcon />
-          <Typography variant='body1' sx={{ pl: 1 }}>
-            Desactivar
-          </Typography>
+          {
+            methods.getValues('activo') ?
+              <Typography variant='body1' sx={{ pl: 1 }}>
+                Desactivar
+              </Typography>
+              :
+              <Typography variant='body1' sx={{ pl: 1 }}>
+                Activar
+              </Typography>
+          }
         </MenuItem>
         <MenuItem onClick={handleClose}>
           <FileDownloadOutlinedIcon />
-          <Typography variant='body1' sx={{ pl: 1 }}>
-            Descargar ficha
-          </Typography>
+          <a href={`http://10.218.108.59:8080/api/v1/documentos/${id}/pdf`} target='_blank' rel='noreferrer'>
+            <Typography variant='body1' sx={{ pl: 1 }}>
+              Descargar ficha
+            </Typography>
+          </a>
         </MenuItem>
         <MenuItem onClick={handleClose}>
           <RocketLaunchOutlinedIcon />
-          <Typography variant='body1' sx={{ pl: 1 }}>
-            Ver en Métrica
-          </Typography>
+          <a href={`http://10.218.108.59:3000/chihuahua-en-datos/indicadores/${id}`} target='_blank' rel='noreferrer'>
+            <Typography variant='body1' sx={{ pl: 1 }}>
+              Ver en Métrica
+            </Typography>
+          </a>
         </MenuItem>
       </StyledMenu>
     </div>
   );
 }
+
