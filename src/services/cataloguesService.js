@@ -34,8 +34,6 @@ const getCatalogosFromIndicador = async (id) => {
 
 const updateOrCreateCatalogo = async (id, data) => {
     try {
-        console.log()
-        // console.log(data);
         // const response = await protectedApi.patch(`/indicadores/${id}/catalogos`, data);
         return 1;
     } catch (error) {
