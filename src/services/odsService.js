@@ -13,7 +13,7 @@ const getOds = async () => {
 
 const getMetas = async (idOds) => {
   try {
-    const response = await protectedApi.get(`/ods/metas/${idOds}`)
+    const response = await protectedApi.get(`/ods/metas`)
 
     return response.data.data;
   } catch (err) {

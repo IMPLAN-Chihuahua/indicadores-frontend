@@ -26,6 +26,7 @@ export const getTemas = async () => {
     throw error;
   }
 }
+
 export const getTemasGeneralInfo = async ({ page, perPage, attributes, id, sortBy, order }) => {
   const attributesQuery = attributes
     ? attributes.map(attribute => `attributes[]=${attribute}`).join('&')

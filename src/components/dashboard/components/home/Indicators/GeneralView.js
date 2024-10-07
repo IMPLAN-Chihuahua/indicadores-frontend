@@ -23,6 +23,7 @@ import GeneralInformation from './GeneralViewComponents/GeneralInformation';
 import MoreInformation from './GeneralViewComponents/MoreInformation';
 import Header from './GeneralViewComponents/Header';
 import FormulaView from './Formula/FormulaView';
+import MapView from './Mapa/MapView';
 
 export const GeneralView = () => {
 	const [indicador, setIndicador] = useState(null);
@@ -53,6 +54,8 @@ export const GeneralView = () => {
 		idTema: '',
 		tema: {},
 		temas: [],
+		idCobertura: '',
+		idOds: '',
 		objetivos: [],
 		next: '',
 		nombre: '',
@@ -86,7 +89,7 @@ export const GeneralView = () => {
 		let updatedVals = 0;
 
 		const { id: idIndicador, activo, catalogos, definicion, fuente,
-			idTema, temas, nombre, observaciones, owner, anioUltimoValorDisponible,
+			idTema, temas, nombre, observaciones, owner, anioUltimoValorDisponible, idCobertura, idOds,
 			ultimoValorDisponible, updatedBy, periodicidad, archive, objetivo, objetivos, adornment, unidadMedida, metas } = data;
 
 		const status = activo;
@@ -106,6 +109,8 @@ export const GeneralView = () => {
 			archive,
 			temas,
 			objetivos,
+			idCobertura: idCobertura?.id,
+			idOds: idOds?.id,
 			idObjetivo: objetivo?.id,
 			metas
 		};
@@ -121,6 +126,7 @@ export const GeneralView = () => {
 			catalogos,
 			idIndicador,
 		}
+
 		updateOrCreateCatalogo(idIndicador, catalogosData);
 
 		Swal.fire({
@@ -187,7 +193,15 @@ export const GeneralView = () => {
 							<GeneralInformation methods={methods} indicador={indicador} />
 							<MoreInformation methods={methods} id={id} />
 						</Grid>
-						{/* <FormulaView /> */}
+
+
+						{/* <Grid item xs={6} md={6}>
+							<pre style={{ backgroundColor: 'lightcoral' }}>
+								{
+									JSON.stringify(indicador, null, 2)
+								}
+							</pre>
+						</Grid> */}
 					</Grid>
 
 
