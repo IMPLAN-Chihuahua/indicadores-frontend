@@ -93,7 +93,7 @@ const FormFiltro = (props) => {
               </Grid>
 
               <Grid item xs={12}>
-                <Typography variant='h2' fontSize={'19px'} pb={1} fontWeight={'bold'}>Dimensiones</Typography>
+                <Typography variant='h2' fontSize={'19px'} pb={1} fontWeight={'bold'}>Objetivos</Typography>
                 <Divider sx={{ mb: 1 }} />
 
                 <Grid container>

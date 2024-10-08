@@ -50,7 +50,7 @@ export const Sidebar = () => {
     icon: <Lock className='sidebar-icon' />
   },
   {
-    to: '/dimensiones',
+    to: '/objetivos',
     label: "Objetivos",
     icon: <DashboardIcon className='sidebar-icon' />
   }
@@ -81,7 +81,7 @@ const SidebarItem = (props) => {
   return (
     <>
       {
-        ((props.label === 'Autorización' || props.label === 'Usuarios' || props.label === 'Dimensiones') && !isAdmin(user)) ?
+        ((props.label === 'Autorización' || props.label === 'Usuarios' || props.label === 'Objetivos') && !isAdmin(user)) ?
           <></>
           :
           <li className='sidebar-list-item' style={{ marginBottom: '3px' }}>

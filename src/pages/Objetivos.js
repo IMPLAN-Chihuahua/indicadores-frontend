@@ -7,7 +7,7 @@ import { FormDimension } from '../components/dashboard/forms/dimension/FormDimen
 
 
 
-const Dimensions = () => {
+const Objetivos = () => {
   const [objetivos, setObjetivos] = useState([])
   const getObjetivos = () => {
     getObjetivosGeneralInfo({})
@@ -29,19 +29,30 @@ const Dimensions = () => {
       justifyContent: 'start',
     }}>
       {
-        objetivos.map((objetivo) => (
+        objetivos.map((element) => (
+          console.log(element),
           <Cardie
-            key={objetivos.objetivos.id}
-            id={objetivos.objetivos.id}
-            titulo={objetivos.objetivos.titulo}
-            descripcion={objetivos.objetivos.descripcion}
-            color={objetivos.objetivos.color}
-            urlImagen={objetivos.objetivos.urlImagen}
-            count={objetivos.indicadoresCount}
+            titulo={element.objetivo.titulo}
+            descripcion={element.objetivo.descripcion}
+            color={element.objetivo.color}
+            summary={element.objetivo.summary}
+            urlImagen={element.objetivo.urlImagen}
+            count={element.indicadoresCount}
           />
-
+          // <Cardie
+          //   key={objetivos.objetivos.id}
+          //   id={objetivos.objetivos.id}
+          //   titulo={objetivos.objetivos.titulo}
+          //   descripcion={objetivos.objetivos.descripcion}
+          //   color={objetivos.objetivos.color}
+          //   urlImagen={objetivos.objetivos.urlImagen}
+          //   count={objetivos.indicadoresCount}
+          // />
         ))
       }
+
+
+
     </Box>
   )
 };
@@ -52,6 +63,7 @@ const Cardie = (objetivo) => {
     id,
     titulo,
     descripcion,
+    summary,
     color,
     urlImagen,
     count
@@ -110,12 +122,16 @@ const Cardie = (objetivo) => {
       </IconButton> */}
 
       <Box sx={{ p: 1 }}>
-        <Typography gutterBottom variant="h5" component="div" sx={{
+        <Typography variant="h5" component="div" sx={{
           mr: 3
         }}>
           {titulo}
         </Typography>
-        <Typography variant="body1" color="text.secondary">
+        <Typography variant="h6" >
+          {summary}
+        </Typography>
+
+        <Typography variant="body2" >
           {descripcion}
         </Typography>
       </Box>
@@ -131,7 +147,7 @@ const Cardie = (objetivo) => {
 
         }}
       >
-        <b>Indicadores en esta dimensión:</b> {count}
+        <b>Indicadores bajo este objetivo:</b> {count}
       </Box>
 
       <FormDialog
@@ -148,4 +164,4 @@ const Cardie = (objetivo) => {
   )
 };
 
-export default Dimensions
+export default Objetivos
