@@ -16,7 +16,6 @@ import { getIndicator, updateIndicator } from '../../../../../services/indicator
 import { createHistoricos } from '../../../../../services/historicosService';
 import { useAuth } from '../../../../../contexts/AuthContext';
 import { isNumber } from '../../../../../utils/stringsValidator';
-import { updateOrCreateCatalogo } from '../../../../../services/cataloguesService';
 import PersonalLoader from '../../../../common/PersonalLoader/PersonalLoader';
 import IndicatorValues from './GeneralViewComponents/IndicatorValues';
 import GeneralInformation from './GeneralViewComponents/GeneralInformation';
@@ -70,20 +69,22 @@ export const GeneralView = () => {
 		metas: []
 	}
 
+	const methods = useForm({
+		defaultValues,
+		resolver: yupResolver(createIndicatorSchema),
+		mode: 'all',
+	});
+
 	useEffect(() => {
 		getIndicator(id).then(res => {
+			const sortedCatalogos = res.catalogos.sort((a, b) => a.idCatalogo - b.idCatalogo)
+			res.catalogos = sortedCatalogos;
 			setIndicador(res);
 			methods.reset({
 				...res,
 			});
 		}).finally(_ => setLoading(false))
 	}, [id]);
-
-	const methods = useForm({
-		defaultValues,
-		resolver: yupResolver(createIndicatorSchema),
-		mode: 'all',
-	});
 
 	const onSubmit = async (data) => {
 		let updatedVals = 0;
@@ -126,8 +127,6 @@ export const GeneralView = () => {
 			catalogos,
 			idIndicador,
 		}
-
-		updateOrCreateCatalogo(idIndicador, catalogosData);
 
 		Swal.fire({
 			title: '¿Deseas actualizar la información del indicador o sólo guardar los cambios?',

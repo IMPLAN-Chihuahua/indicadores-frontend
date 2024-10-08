@@ -13,7 +13,7 @@ import { updateVariable } from "../../../../../../services/variablesService";
 
 const variableSchema = Yup.object().shape({
   nombre: Yup.string().required('Nombre es requerido'),
-  dato: Yup.string().default(0).notRequired(),
+  dato: Yup.string().default(0).nullable().notRequired(),
   anio: Yup
     .number()
     .transform(value => isNaN(value) ? undefined : value)
