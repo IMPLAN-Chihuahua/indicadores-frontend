@@ -5,6 +5,7 @@ import { GeneralView } from './GeneralView';
 import { HistoricosView } from './Historicos/HistoricosView';
 import './indicator.css'
 import MapView from './Mapa/MapView';
+import UsuariosIndicadores from '../Responsables/UsuariosIndicadores';
 
 function LinkTab(props) {
   return (
@@ -34,7 +35,7 @@ export const Indicator = () => {
         flexDirection: 'column'
       }}
       className='indicator-background'
-      >
+    >
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs
           value={value}
@@ -48,6 +49,7 @@ export const Indicator = () => {
           <LinkTab label="Fórmula" />
           <LinkTab label="Mapa" />
           <LinkTab label="Históricos" />
+          <LinkTab label="Editores" />
         </Tabs>
       </Box>
       {
@@ -55,7 +57,8 @@ export const Indicator = () => {
           : value === 1 ? <FormulaView />
             : value === 2 ? <MapView />
               : value === 3 ? <HistoricosView />
-                : null
+                : value === 4 ? <UsuariosIndicadores />
+                  : null
       }
     </Box>
   )

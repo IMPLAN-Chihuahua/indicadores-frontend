@@ -1,5 +1,4 @@
-.testz {
-  margin-left: 10px;
+.title-box {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -24,7 +23,7 @@
 .owner-container {
   cursor: pointer;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-evenly;
 }
 
 .moks {

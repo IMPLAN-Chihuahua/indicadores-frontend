@@ -9,7 +9,7 @@ import MenuItem from "@mui/material/MenuItem";
 import { getUsersFromIndicador } from "../../../../../../services/userService";
 import './Owner.css'
 import useIsMounted from '../../../../../../hooks/useIsMounted';
-
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 const OwnerList = ({ value, name, apellido, image, actualOwner }) => {
   return (
     <Box
@@ -20,16 +20,16 @@ const OwnerList = ({ value, name, apellido, image, actualOwner }) => {
     >
       <Avatar
         src={image}
-        sx={{ width: 85, height: 85 }}
+        sx={{ width: 125, height: 125 }}
       ></Avatar>
-      <Box className="testz">
-        <Typography sx={{ fontSize: 15 }}>
+      <Box className="title-box">
+        <Typography sx={{ fontSize: 17 }}>
           {name} {apellido}
         </Typography>
         {
           actualOwner === value && (
-            <Typography sx={{ fontSize: 12 }} color="text.secondary">
-              Responsable actual
+            <Typography sx={{ fontSize: 14 }} color="text.secondary">
+              Líder del indicador
             </Typography>
           )
         }
@@ -60,8 +60,8 @@ export const OwnerListDropdown = ({ type, id, actualOwner, onChange }) => {
 
   return (
     <Paper variant='outlined' sx={{ p: 2 }}>
-      <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-        Responsable
+      <Typography variant='h6' gutterBottom>
+        Responsable directo del indicador
       </Typography>
       <Divider />
       <FormControl fullWidth>
@@ -74,7 +74,7 @@ export const OwnerListDropdown = ({ type, id, actualOwner, onChange }) => {
                 }}
                 className="owner-container"
               >
-                <Skeleton variant="circular" width={50} height={50} animation="wave" />
+                <Skeleton variant="circular" width={60} height={60} animation="wave" />
                 <Box className="testz">
                   <Typography sx={{ fontSize: 14 }}>
                     <Skeleton variant="rectangular" width={200} height={20} animation="wave" />
@@ -90,9 +90,17 @@ export const OwnerListDropdown = ({ type, id, actualOwner, onChange }) => {
                 }}
                 MenuProps={{
                   disableScrollLock: true,
+                  anchorOrigin: {
+                    horizontal: 'center',
+                  },
+                  transformOrigin: {
+                    horizontal: 'center',
+                    vertical: 'top',
+                  },
                 }}
                 sx={{ boxShadow: 'none', '.MuiOutlinedInput-notchedOutline': { border: 0 } }}
                 onChange={onChange}
+                IconComponent={KeyboardArrowDownIcon}
               >
                 {
                   users.map(user => (
