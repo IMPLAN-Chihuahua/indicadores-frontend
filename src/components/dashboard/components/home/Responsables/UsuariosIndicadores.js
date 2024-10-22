@@ -27,8 +27,6 @@ const UsuariosIndicadores = () => {
     }
   })
 
-
-
   const usersFetcher = async () => {
     const { data } = await getUsersThatDoesntHaveRelation(id);
     return data;
@@ -95,6 +93,7 @@ const UsuariosIndicadores = () => {
             mutate();
             setClear(!clear);
             setNewUsers([])
+            setUsuarios(usuarios.filter((user) => !ids.includes(user.id)))
           })
       }
     })
