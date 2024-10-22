@@ -21,8 +21,6 @@ import IndicatorValues from './GeneralViewComponents/IndicatorValues';
 import GeneralInformation from './GeneralViewComponents/GeneralInformation';
 import MoreInformation from './GeneralViewComponents/MoreInformation';
 import Header from './GeneralViewComponents/Header';
-import FormulaView from './Formula/FormulaView';
-import MapView from './Mapa/MapView';
 
 export const GeneralView = () => {
 	const [indicador, setIndicador] = useState(null);

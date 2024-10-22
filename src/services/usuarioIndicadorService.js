@@ -13,9 +13,14 @@ const useIndicadorUsuarios = (perPage, page, search) => {
   }
 }
 
-const createRelation = async (id, data, type) => {
-  return protectedApi.post(`/relation/create?relationType=${type}&id=${id}`, data);
+const createRelation = async (idIndicador, data) => {
+  return protectedApi.post(`/relation/create/${idIndicador}`, data);
 };
+
+const changeOwner = async (idIndicador, idUsuario) => {
+
+  return protectedApi.patch(`/relation/owner/${idIndicador}`, idUsuario);
+}
 
 const useRelationUsers = (id, page = 1, perPage = 5) => {
   const { data, error, mutate } = useSWR(`/relation/indicador/${id}?page=${page}&perPage=${perPage}`, fetcher);
@@ -32,8 +37,11 @@ const getUsersThatDoesntHaveRelation = async (id) => {
   return protectedApi.get(`/relation/indicador/${id}/usuarios`);
 };
 
-const deleteRelation = async (id) => {
-  return protectedApi.delete(`/relation/${id}`);
+const deleteRelation = async (selectedCheckboxes) => {
+
+  const queryParams = selectedCheckboxes.map((id) => `ids=${id}`).join('&');
+
+  return protectedApi.delete(`/relation?${queryParams}`);
 };
 
 const updateRelation = async (id, data) => {
@@ -47,4 +55,5 @@ export {
   useRelationUsers,
   deleteRelation,
   updateRelation,
+  changeOwner
 };

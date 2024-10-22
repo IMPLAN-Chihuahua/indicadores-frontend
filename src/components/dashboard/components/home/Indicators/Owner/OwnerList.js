@@ -14,13 +14,13 @@ const OwnerList = ({ value, name, apellido, image, actualOwner }) => {
   return (
     <Box
       sx={{
-        display: "flex"
+        display: "flex",
       }}
       className="owner-container"
     >
       <Avatar
         src={image}
-        sx={{ width: 125, height: 125 }}
+        sx={{ width: 100, height: 100, mr: 2, ml: 1 }}
       ></Avatar>
       <Box className="title-box">
         <Typography sx={{ fontSize: 17 }}>
@@ -59,7 +59,7 @@ export const OwnerListDropdown = ({ type, id, actualOwner, onChange }) => {
   }, [isMounted]);
 
   return (
-    <Paper variant='outlined' sx={{ p: 2 }}>
+    <Box variant='outlined' sx={{ p: 2, backgroundColor: 'white', width: '100%', height: '100%' }}>
       <Typography variant='h6' gutterBottom>
         Responsable directo del indicador
       </Typography>
@@ -113,7 +113,7 @@ export const OwnerListDropdown = ({ type, id, actualOwner, onChange }) => {
               : <Typography variant='body2'>Este Indicador no cuenta con usuarios asignados</Typography>
         }
       </FormControl>
-    </Paper>
+    </Box>
   );
 };
 export default OwnerListDropdown
