@@ -1,24 +1,13 @@
 import { Box, Button, Card, CardContent, CardMedia, DialogTitle, Grid, IconButton, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import { getObjetivosGeneralInfo } from '../services/dimensionService';
+import { getObjetivosGeneralInfo, useObjetivos } from '../services/objetivoService';
 import EditIcon from '@mui/icons-material/Edit';
 import FormDialog from '../components/dashboard/common/FormDialog';
 import { FormDimension } from '../components/dashboard/forms/dimension/FormDimension';
 
 
-
 const Objetivos = () => {
-  const [objetivos, setObjetivos] = useState([])
-  const getObjetivos = () => {
-    getObjetivosGeneralInfo({})
-      .then(({ data }) => {
-        setObjetivos(data.data)
-      })
-  }
-
-  useEffect(() => {
-    getObjetivos()
-  }, [])
+  const { objetivos } = useObjetivos();
 
   return (
     <Box sx={{
@@ -29,26 +18,10 @@ const Objetivos = () => {
       justifyContent: 'start',
     }}>
       {
-        objetivos.map(({ indicadoresCount, objetivo }) => (
-          <Cardie
-            key={objetivo.id}
-            count={indicadoresCount}
-            {...objetivo}
-          />
-          // <Cardie
-          //   key={objetivos.objetivos.id}
-          //   id={objetivos.objetivos.id}
-          //   titulo={objetivos.objetivos.titulo}
-          //   descripcion={objetivos.objetivos.descripcion}
-          //   color={objetivos.objetivos.color}
-          //   urlImagen={objetivos.objetivos.urlImagen}
-          //   count={objetivos.indicadoresCount}
-          // />
+        objetivos.map((o) => (
+          <Cardie key={o.id} {...o} />
         ))
       }
-
-
-
     </Box>
   )
 };
@@ -61,7 +34,7 @@ const Cardie = (objetivo) => {
     summary,
     color,
     urlImagen,
-    count
+    indicadoresCount: count
   } = objetivo
 
   const [openModal, setOpenModal] = useState(false);
@@ -100,22 +73,6 @@ const Cardie = (objetivo) => {
         alt={titulo}
         src={urlImagen}
       />
-
-      {/* <IconButton
-        sx={{
-          position: 'absolute',
-          top: 0,
-          right: 0,
-          color: 'black',
-          borderRadius: 1,
-        }}
-        onClick={() => {
-          handleEdit()
-        }}
-      >
-        <EditIcon />
-      </IconButton> */}
-
       <Box sx={{ p: 1 }}>
         <Typography variant="h5" component="div" sx={{
           mr: 3

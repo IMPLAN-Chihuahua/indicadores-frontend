@@ -1,251 +1,272 @@
-import { useState, useEffect } from "react";
+import { useState, lazy, Suspense, useCallback } from "react";
+import { useIndicadores } from "../services/indicatorService";
 import DatagridTable from "../components/dashboard/common/DatagridTable";
-import { DataHeader } from "../components/dashboard/common/DataHeader";
-import { useIndicators } from "../services/userService";
-import { Status } from "../components/dashboard/common/Status";
-import FormDialog from "../components/dashboard/common/FormDialog";
-import { FormIndicador } from "../components/dashboard/forms/indicador/FormIndicador";
-import { useNavigate } from 'react-router-dom';
 import { getGlobalPerPage } from "../utils/objects";
-import { Box, IconButton, Link, Typography } from "@mui/material";
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import { parseDate } from "../utils/dateParser";
+import { Box, Button, Chip, Dialog, IconButton, Link as MuiLink, Typography } from "@mui/material";
 import { showAlert } from "../utils/alert";
-import { getIndicatorsGeneralInfo, toggleIndicadorStatus } from "../services/indicatorService";
+import { toggleIndicadorStatus } from "../services/indicatorService";
+import { Link } from "react-router-dom";
+import { intlFormat, parseISO } from 'date-fns'
+import PageHeader from "../components/dashboard/common/DataHeader";
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import AddIcon from '@mui/icons-material/Add';
+import useIsMounted from "../hooks/useIsMounted";
+import SearchInput from "../components/dashboard/common/SearchInput";
+import useQueryParams from "../hooks/useQueryParams";
+
 
 export const Indicators = () => {
-  const navigate = useNavigate();
-  const [searchIndicator, setSearchIndicator] = useState("");
-  const [objetivo, setObjetivo] = useState();
-  const [owner, setOwner] = useState("");
-  const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(getGlobalPerPage);
-  const [total, setTotal] = useState(0)
-  const { indicadores, isLoading, mutate } = useIndicators(perPage, page, searchIndicator, objetivo, owner);
-  const [isFormVisible, setFormVisible] = useState(false);
-  const [indicatorsQuantity, setIndicatorsQuantity] = useState(0);
-  const [inactiveIndicators, setInactiveIndicators] = useState(0);
+  const { updateSearchQuery, updateFilters, updatePage, updatePerPage, params } = useQueryParams(indicadoresParamsInitialState)
+  const { page, perPage, searchQuery, hasActiveFilters, filters } = params;
+  const { indicadores, isLoading, mutate, total } = useIndicadores({ page, perPage, searchQuery, ...filters });
 
-  const handleOpenModal = () => setFormVisible(true);
-
-  const [rows, setRows] = useState([]);
-
-  const fetchCount = () => {
-    getIndicatorsGeneralInfo({
-      attributes: ['activo']
-    })
-      .then(({ data }) => {
-        setIndicatorsQuantity(data.total);
-        const inactive = data.data.filter(({ activo }) => activo === 'NO').length;
-        setInactiveIndicators(inactive);
-      })
-  };
-
-  useEffect(() => {
-    fetchCount();
-  }, [indicatorsQuantity])
-
-  useEffect(() => {
-    if (!indicadores) {
-      return;
-    }
-    setRows(indicadores.data);
-    setTotal(indicadores.total);
-  }, [indicadores]);
-
-  const toggleStatus = (indicador) => {
-    showAlert({
-      title: `¿Deseas cambiar el estado de ${indicador.nombre}?`,
-      text: `Al actualizar este registro, el estado del indicador se alternará, 
-      es decir, si se encuentra ACTIVO pasará a estar INACTIVO y viceversa.`,
-      icon: 'warning',
-      showCancelButton: true
-    }).then(option => {
-      if (option.isConfirmed) {
-        return toggleIndicadorStatus(indicador.id);
-      }
-    })
-      .then(res => {
-        if (res) {
-          showAlert({
-            title: 'Estado actualizado exitosamente',
-            text: `El estado de ${indicador.nombre} ha sido actualizado.`,
-            icon: 'success'
-          });
-          fetchCount();
-        }
-      })
-      .catch(err => {
-        showAlert({
-          title: 'Hubo un error',
-          text: err,
-          icon: 'error'
-        })
-      })
-      .finally(mutate)
-  }
-
-  const editable = true;
-  const sortable = false;
-  const headerAlign = "center";
-  const align = "center";
   const columns = [
     {
       field: "id",
       headerName: "ID ",
-      flex: 0.1,
-      editable,
-      sortable,
-      headerAlign,
-      align,
+      flex: 1,
+      maxWidth: 50,
+      editable: false,
+      headerAlign: 'right',
+      align: 'right',
       hide: true,
     },
     {
       field: "codigo",
       headerName: "Código",
-      flex: 0.2,
-      minWidth: 50,
-      editable: 'false',
-      sortable,
+      minWidth: 30,
+      editable: false,
       headerAlign: 'left',
       align: 'left',
     },
     {
       field: "nombre",
       headerName: "Nombre",
-      flex: 1,
-      minWidth: 150,
+      flex: 2,
+      minWidth: 200,
       editable: false,
-      sortable,
       headerAlign: 'left',
       align: 'left',
-      renderCell: (params) => <Typography noWrap>{params.row.nombre}</Typography>,
+      renderCell: (params) => (
+        <MuiLink component={Link} to={`/indicadores/${params.row.id}`}>{params.row.nombre}</MuiLink>
+      )
     },
     {
       field: "ultimoValorDisponible",
       headerName: "Valor actual",
-      flex: .5,
+      flex: 1,
       minWidth: 100,
-      editable,
-      sortable,
       headerAlign: 'right',
       align: 'right',
     },
     {
-      field: "definicion",
-      headerName: "Definición",
-      flex: 2,
-      minWidth: 150,
+      field: "adornment",
+      headerName: "Simbolo",
+      flex: 1,
+      maxWidth: 80,
       editable: false,
-      sortable,
+      sortable: false,
       headerAlign: 'left',
       align: 'left',
-      renderCell: (params) => <Typography noWrap>{params.row.definicion}</Typography>,
+    },
+    {
+      field: "unidadMedida",
+      headerName: "Unidad de medida",
+      flex: 1,
+      minWidth: 150,
+      editable: false,
+      sortable: false,
+      headerAlign: 'left',
+      align: 'left',
+    },
+    {
+      field: "usuarios",
+      headerName: "Responsable",
+      flex: 1,
+      minWidth: 80,
+      editable: false,
+      sortable: false,
+      headerAlign: 'left',
+      align: 'left',
+      valueGetter: (params) => params.row.usuarios.length > 0 ? params.row.usuarios[0].nombres : 'NA'
+    },
+    {
+      field: "periodicidad",
+      headerName: "Actualización",
+      flex: 1,
+      maxWidth: 120,
+      editable: false,
+      sortable: false,
+      headerAlign: 'left',
+      align: 'left',
+      valueGetter: params => `Cada ${params.row.periodicidad === 1 ? 'mes' : `${params.row.periodicidad} meses`}`,
+    },
+    {
+      field: "updatedAt",
+      headerName: "Última actualización",
+      flex: 1,
+      headerAlign: 'left',
+      align: 'left',
+      valueGetter: params => intlFormat(parseISO(params.row.updatedAt), { locale: 'es-MX' })
+    },
+    {
+      field: "createdAt",
+      headerName: "Creado",
+      headerAlign: 'left',
+      align: 'left',
+      hide: true,
+      valueGetter: params => intlFormat(parseISO(params.row.createdAt), { locale: 'es-MX' })
     },
     {
       field: "activo",
       headerName: "Estado",
-      flex: 0.2,
       editable: false,
-      minWidth: 100,
-      sortable,
+      maxWidth: 85,
       renderCell: (params) => (
-        <Status
-          status={params.row.activo}
-          handleClick={() => toggleStatus(params.row)}
+        <Chip
+          onClick={() => toggleStatus(params.row, mutate)}
+          color={params.row.activo ? 'success' : 'error'}
+          label={params.row.activo ? 'Activo' : 'Inactivo'}
         />
       ),
     },
-    {
-      field: "createdAt",
-      headerName: "Creación",
-      flex: 0.5,
-      minWidth: 100,
-      editable,
-      sortable,
-      headerAlign: 'left',
-      hide: true,
-      align: 'left',
-      renderCell: (params) => (<Typography noWrap>
-        {parseDate(params.row.createdAt)}
-      </Typography>)
-    },
-    {
-      field: "updatedAt",
-      headerName: "Edición",
-      flex: 0.3,
-      minWidth: 100,
-      editable,
-      sortable,
-      headerAlign: 'left',
-      hide: true,
-      align: 'left',
-      renderCell: (params) => (<Typography noWrap>
-        {parseDate(params.row.updatedAt)}
-      </Typography>)
-    },
-    {
-      field: "moreInfo",
-      headerName: "Editar",
-      flex: 0.2,
-      minWidth: 30,
-      editable: false,
-      sortable: false,
-      renderCell: (params) => (
-        <IconButton
-          sx={{
-            border: '1px solid #d2d2d2',
-          }}
-          onClick={() => navigate(`/indicadores/${params.row.id}`)}
-        >
-          <NavigateNextIcon />
-        </IconButton>
-      )
-    },
   ];
-
-  const dataIndicator = {
-    topic: "indicador",
-    countEnable: indicatorsQuantity || 0,
-    countDisable: inactiveIndicators || 0,
-    searchIndicator,
-    setSearch: setSearchIndicator,
-    searchValue: searchIndicator,
-    setObjetivo,
-    setOwner
-  };
 
   return (
     <Box display='flex' flexDirection='column' p={2} height='100%'>
-      <DataHeader
-        data={dataIndicator}
-        handleOpenModal={handleOpenModal}
-      />
+      <PageHeader
+        title='Indicadores'
+        SearchBar={
+          <SearchInput
+            placeholder='Buscar por nombre, unidad de medida o código'
+            onDebouncedChange={updateSearchQuery}
+            AdvancedSearch={<IndicadoresFilterDialog submitCallback={updateFilters} hasActiveFilters={hasActiveFilters} />}
+          />
+        }
+      >
+        <IconButton onClick={() => mutate()} color="primary"><RefreshIcon /></IconButton>
+        <NewIndicadorDialog />
+      </PageHeader>
       <div className='datagrid-container'>
         <DatagridTable
-          rows={rows}
+          rows={indicadores}
           columns={columns}
           isLoading={isLoading}
           page={page}
           total={total}
           perPage={perPage}
-          handlePageChange={newPage => setPage(newPage + 1)}
-          handlePageSizeChange={size => setPerPage(size)}
+          handlePageChange={updatePage}
+          handlePageSizeChange={updatePerPage}
         />
       </div>
-      {
-        isFormVisible && (
-          <FormDialog
-            open={isFormVisible}
-            handleClose={() => setFormVisible(false)}
-            fullWidth
-            keepMounted
-            maxWidth='xl'
-          >
-            <FormIndicador close={() => setFormVisible(false)} />
-          </FormDialog>
-        )
-      }
     </Box>
   );
 };
+
+
+const indicadoresParamsInitialState = () => {
+  return {
+    page: 1,
+    perPage: getGlobalPerPage(),
+    searchQuery: '',
+    hasActiveFilters: false,
+    filters: {
+      owner: null,
+      objetivos: [],
+      temas: [],
+      usuarios: [],
+    }
+  }
+}
+
+
+const toggleStatus = (indicador, successCallback) => {
+  showAlert({
+    title: `¿Deseas cambiar el estado de '${indicador.nombre}'?`,
+    text: `Al actualizar este registro, el estado del indicador se alternará, 
+    es decir, si se encuentra ACTIVO pasará a estar INACTIVO y viceversa.`,
+    icon: 'warning',
+    showCancelButton: true
+  }).then(option => {
+    if (option.isConfirmed) {
+      return toggleIndicadorStatus(indicador.id);
+    }
+  })
+    .then(res => {
+      console.log('RESPONSE', res)
+      if (res) {
+        showAlert({
+          title: 'Estado actualizado exitosamente',
+          text: `El estado de '${indicador.nombre}' ha sido actualizado.`,
+          icon: 'success'
+        })
+      }
+    })
+    .catch(err => {
+      showAlert({
+        title: 'Hubo un error',
+        text: err,
+        icon: 'error'
+      })
+    })
+    .finally(() => {
+      if (typeof successCallback === 'function') {
+        return successCallback();
+      }
+    })
+}
+
+
+const FormFiltro = lazy(() => import("../components/dashboard/forms/indicador/FormFiltro"))
+
+
+const IndicadoresFilterDialog = (props) => {
+  const [open, setOpen] = useState(false);
+  const isMounted = useIsMounted();
+
+  const handleClose = useCallback(() => {
+    if (isMounted()) {
+      setOpen(false)
+    }
+  }, [isMounted])
+
+  return (<>
+    <IconButton onClick={() => setOpen(true)}>
+      <FilterAltIcon color={props.hasActiveFilters ? 'primary' : 'action'} />
+    </IconButton>
+    <Dialog
+      open={open}
+      fullWidth
+      maxWidth='sm'
+      onClose={handleClose}
+      disableScrollLock
+      keepMounted
+    >
+      <Suspense fallback={<Typography mx={4} my={2}>Cargando...</Typography>}>
+        <FormFiltro
+          handleClose={handleClose}
+          submitCallback={props.submitCallback}
+        />
+      </Suspense>
+    </Dialog>
+  </>)
+}
+
+
+const FormIndicador = lazy(() => import("../components/dashboard/forms/indicador/FormIndicador").then(module => ({ default: module.FormIndicador })));
+
+
+const NewIndicadorDialog = () => {
+  const [open, setOpen] = useState(false);
+  const handleClose = useCallback(() => setOpen(false), [])
+
+  return (<>
+    <Button startIcon={<AddIcon />} onClick={() => setOpen(true)} variant='outlined'>Agregar Indicador</Button>
+    <Dialog open={open} fullWidth maxWidth='md' onClose={handleClose}>
+      <Suspense fallback={<Typography mx={4} my={2}>Cargando...</Typography>}>
+        <FormIndicador close={handleClose} />
+      </Suspense>
+    </Dialog>
+  </>);
+}

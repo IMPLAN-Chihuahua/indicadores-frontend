@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import DatagridTable from "../components/dashboard/common/DatagridTable";
-import { DataHeader } from "../components/dashboard/common/DataHeader";
+import PageHeader from "../components/dashboard/common/DataHeader";
 import { useTemas } from "../services/userService";
 import { Status } from "../components/dashboard/common/Status";
 import FormDialog from "../components/dashboard/common/FormDialog";
@@ -265,18 +265,10 @@ export const Temas = () => {
     },
   ];
 
-  const dataTema = {
-    topic: "tema",
-    countEnable: temaQuantity || 0,
-    countDisable: inactiveTemas || 0,
-    setSearch: setSearchTema,
-    searchValue: searchTema
-  };
   return (
     <Box display='flex' flexDirection='column' p={2} height='100%'>
-      <DataHeader
-        data={dataTema}
-        handleOpenModal={handleNew}
+      <PageHeader
+        title='Temas'
       />
       <div className='datagrid-container'>
         <DatagridTable

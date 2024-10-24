@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect } from "react";
 import { useState } from "react";
 import DatagridTable from "../components/dashboard/common/DatagridTable";
-import { DataHeader } from "../components/dashboard/common/DataHeader";
+import PageHeader from "../components/dashboard/common/DataHeader";
 import { useIndicadorUsuarios } from "../services/usuarioIndicadorService";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
@@ -171,7 +171,7 @@ export const Relationship = () => {
 
   return (
     <Box display='flex' flexDirection='column' p={2} height='100%'>
-      <DataHeader
+      <PageHeader
         data={dataIndicator}
         handleOpenModal={() => handleOpenModal()}
       />
