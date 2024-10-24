@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import DatagridTable from "../components/dashboard/common/DatagridTable";
-import { DataHeader } from "../components/dashboard/common/DataHeader";
+import PageHeader from "../components/dashboard/common/DataHeader";
 import { Status } from "../components/dashboard/common/Status";
 import FormDialog from "../components/dashboard/common/FormDialog";
 import { getUsersGeneralInfo, toggleUserStatus, useUsers } from "../services/userService";
 import FormUser, { FORM_USER_ACTIONS } from "../components/dashboard/forms/user/FormUser";
 import { getGlobalPerPage } from "../utils/objects";
-import { Avatar, Box, DialogTitle, IconButton, Stack, Typography } from "@mui/material";
+import { Avatar, Box, Button, DialogTitle, IconButton, Stack, Typography } from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit';
 import { parseDate } from "../utils/dateParser";
 import { showAlert } from "../utils/alert";
@@ -17,16 +17,10 @@ export const Users = () => {
   const [perPage, setPerPage] = useState(getGlobalPerPage);
   const [page, setPage] = useState(1);
   const [searchUser, setSearchUser] = useState('');
-  const [total, setTotal] = useState(0);
-  const { users, isLoading, mutate } = useUsers(perPage, page, searchUser);
-  const isMounted = useIsMounted();
+  const { users, isLoading, mutate, total } = useUsers({ perPage, page, searchQuery: searchUser });
   const [openModal, setOpenModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [formUserAction, setFormUserAction] = useState('');
-  const [usersQuantity, setUsersQuantity] = useState(0);
-  const [inactiveUsers, setInactiveUsers] = useState(0);
-
-  const [rows, setRows] = useState([]);
 
   const handleEditUser = (user) => {
     setOpenModal(true);
@@ -75,19 +69,6 @@ export const Users = () => {
       })
       .finally(mutate)
   };
-
-  useEffect(() => {
-    getUsersGeneralInfo({
-      attributes: ['activo']
-    })
-      .then(({ data }) => {
-        if (isMounted()) {
-          setUsersQuantity(data.total);
-          const inactive = data.data.filter(({ activo }) => activo === 'NO').length;
-          setInactiveUsers(inactive);
-        }
-      })
-  }, [usersQuantity, isMounted])
 
   const editable = true;
   const sortable = true;
@@ -190,34 +171,16 @@ export const Users = () => {
     },
   ];
 
-  useEffect(() => {
-    if (!users) {
-      return;
-    }
-    if (isMounted()) {
-      setRows(users.data);
-      setTotal(users.total);
-    }
-  }, [users, isMounted]);
-
-  const dataUser = {
-    topic: "usuario",
-    countEnable: usersQuantity || 0,
-    countDisable: inactiveUsers || 0,
-    setSearch: setSearchUser,
-    searchValue: searchUser
-  };
-
   return (
     <Box display='flex' flexDirection='column' p={2} height='100%'>
-      <DataHeader
-        isLoading={isLoading}
-        data={dataUser}
-        handleOpenModal={handleNewUser}
-      />
+      <PageHeader
+        title='Usuarios'
+      >
+        <Button>Agregar usuario</Button>
+      </PageHeader>
       <div className='datagrid-container'>
         <DatagridTable
-          rows={rows}
+          rows={users}
           columns={columns}
           page={page}
           perPage={perPage}

@@ -1,192 +1,170 @@
-import { CheckCircle, PanoramaFishEye } from '@material-ui/icons';
-import { Box, Button, Checkbox, DialogActions, DialogContent, DialogTitle, Divider, FormControlLabel, Grid, TextField, Typography } from '@mui/material';
-import React, { useEffect, useState } from 'react'
-import { Controller, FormProvider, set, useFieldArray, useForm } from 'react-hook-form';
-import AutoCompleteInput from '../../../common/AutoCompleteInput';
-import { getUsersGeneralInfo } from '../../../../services/userService';
-import { getObjetivosGeneralInfo } from '../../../../services/dimensionService';
+import { Autocomplete, Box, Button, Checkbox, DialogActions, DialogContent, DialogTitle, FormControlLabel, Grid, TextField } from '@mui/material';
+import React from 'react'
+import { Controller, useForm, useWatch } from 'react-hook-form';
 import { useAuth } from '../../../../contexts/AuthContext';
+import { useObjetivos } from '../../../../services/objetivoService';
+import { useTemas } from '../../../../services/temaService';
+import { useUsers } from '../../../../services/userService';
 
+const defaultValues = {
+  objetivos: [],
+  usuarios: [],
+  temas: [],
+  usuario: null,
+  me: false,
+}
 const FormFiltro = (props) => {
-  const { handleClose, setSearch, searchIndicator, setObjetivo, setOwner, setFilter } = props;
-  const [objetivos, setObjetivos] = useState([]);
+  const { handleClose, submitCallback } = props;
+  const { objetivos, isLoading: isObjetivosLoading } = useObjetivos();
+  const { temas, isLoading: isTemasLoading } = useTemas();
+  const { users: usuarios, isLoading: isUsuariosLoading } = useUsers();
   const { user } = useAuth();
 
-  const methods = useForm({
-    defaultValues: {
-      objetivos: undefined,
-      searchQuery: searchIndicator,
-      usuario: null,
-      me: false
-    }
-  });
+  const methods = useForm({ defaultValues });
 
-  useEffect(() => {
-    fetchObjetivos().then(data => {
-      setObjetivos(data);
-    });
-  }, [0])
-
-  const { control, handleSubmit, reset, register, watch } = methods;
-
-  const fetchUsers = async () => {
-    const { data } = await getUsersGeneralInfo({
-      attributes: ['id', 'nombres', 'apellidoPaterno', 'apellidoMaterno'],
-    })
-    return data.data;
-  };
-
-  const fetchObjetivos = async () => {
-    const { data } = await getObjetivosGeneralInfo();
-    return data.data
-  }
+  const { control, handleSubmit, reset } = methods;
+  const meValue = useWatch({ name: 'me', control })
 
   const onSubmit = (data) => {
-    const owner = watch('me') ? user.id : data.usuario?.id;
-    setSearch(data.searchQuery);
-    setOwner(owner);
-    setObjetivo(data.objetivos);
-    setFilter(true);
+    const owner = meValue ? user.id : null;
+    const objetivos = data.objetivos.map(o => o.id);
+    const temas = data.temas.map(t => t.id);
+    const usuarios = meValue ? [] : data.usuarios.map(u => u.id)
+    const hasActiveFilters = owner !== null || [objetivos, temas, usuarios].some(arr => arr.length > 0)
+
+    submitCallback({
+      owner,
+      objetivos,
+      temas,
+      usuarios,
+      hasActiveFilters
+    });
     handleClose();
   };
 
   const clearFilter = () => {
-    setFilter(false);
-    setSearch('');
-    setOwner(null);
-    setObjetivo([]);
-
-    reset({
-      searchQuery: '',
-      usuario: null,
-      me: false,
-      objetivos: []
-    })
-
-  }
+    reset(defaultValues);
+    submitCallback({ owner: null, objetivos: [], temas: [], usuarios: [], hasActiveFilters: false })
+  };
 
   return (
-    <FormProvider {...methods}>
-      <Box component={'form'} noValidate onSubmit={handleSubmit(onSubmit)}>
-        <DialogTitle>
-          <Typography variant='h5'>Búsqueda avanzada</Typography>
-        </DialogTitle>
+    <Box component={'form'} noValidate onSubmit={handleSubmit(onSubmit)}>
+      <DialogTitle>Búsqueda avanzada</DialogTitle>
+      <DialogContent>
+        <Box>
+          <Grid container spacing={2}>
 
-        <DialogContent>
-          <Box>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <Typography variant='h2' fontSize={'19px'} pb={1} fontWeight={'bold'}>Nombre del indicador</Typography>
-                <Divider sx={{ mb: 1 }} />
-                <Controller
-                  name='searchQuery'
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      fullWidth
-                      variant='outlined'
-                      label='Buscar indicador'
-                      {...field}
-                    />
-                  )}
-                />
-              </Grid>
-
-              <Grid item xs={12}>
-                <Typography variant='h2' fontSize={'19px'} pb={1} fontWeight={'bold'}>Objetivos</Typography>
-                <Divider sx={{ mb: 1 }} />
-
-                <Grid container>
-                  <Grid item xs={12} sx={{ mt: 1, mb: 1 }}>
-                    {
-                      objetivos?.map((chip) => (
-                        <Controller
-                          key={chip.id}
-                          control={control}
-                          render={({ field: { value, onChange } }) => (
-                            <FormControlLabel
-                              control={
-                                <Checkbox
-                                  size='small'
-                                  icon={<PanoramaFishEye />}
-                                  checkedIcon={< CheckCircle />}
-                                  onChange={onChange}
-                                  value={chip.id}
-
-                                />}
-                              label={<Typography sx={{ fontSize: '12px' }}>{chip.titulo}</Typography>}
-                              sx={{
-                                borderRadius: '50px',
-                                border: '1px solid #ccc',
-                                p: '1px',
-                                pr: '10px',
-                                m: '5px',
-                              }}
-                              {...register(`objetivos`)}
-                            />
-                          )}
-                          defaultValue={false}
-                        />
-                      ))
-                    }
-                  </Grid>
+            <Grid item xs={12}>
+              <Grid container>
+                <Grid item xs={12} sx={{ mb: 1 }}>
+                  <Controller
+                    control={control}
+                    name='objetivos'
+                    render={({ field: { value, onChange } }) => (
+                      <Autocomplete
+                        value={value}
+                        onChange={(e, data) => onChange(data)}
+                        multiple
+                        id='objetivos-autocomplete'
+                        options={objetivos}
+                        loading={isObjetivosLoading}
+                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                        getOptionLabel={tema => tema.titulo}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            variant='standard'
+                            label='Selecciona objetivos'
+                          />
+                        )}
+                      />
+                    )}
+                  />
                 </Grid>
               </Grid>
-              <Grid item xs={12}>
-                <Typography variant='h2' fontSize={'19px'} pb={1} fontWeight={'bold'}>Usuarios</Typography>
-                <Divider sx={{ mb: 1 }} />
-                <Controller
-                  control={control}
-                  defaultValue={null}
-                  name='usuario'
-                  render={({ field: { value, onChange }, fieldState: { error } }) => (
-                    <AutoCompleteInput
-                      value={value}
-                      onChange={onChange}
-                      error={error}
-                      label='Usuarios'
-                      helperText='Usuario con indicadores asignados'
-                      getOptionLabel={item => `${item.nombres} ${item.apellidoPaterno}`}
-                      fetcher={fetchUsers}
-                      disabled={watch('me')}
-                      required />
-                  )}
-                />
-              </Grid>
-              <Grid item xs={12} sx={{
-              }}>
-                <Controller
-                  name='me'
-                  control={control}
-                  render={({ field }) => (
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          size='medium'
-                        />
-                      }
-                      label={'Mis indicadores'}
-                      sx={{
-                        padding: '5px 10px',
-                        margin: '0 10px 10px 0',
-                      }}
-                      {...field}
-                    />
-                  )}
-                />
-              </Grid>
             </Grid>
-          </Box>
-        </DialogContent>
+            <Grid item xs={12}>
+              <Controller
+                control={control}
+                name='temas'
+                render={({ field: { value, onChange } }) => (
+                  <Autocomplete
+                    value={value}
+                    onChange={(e, data) => onChange(data)}
+                    multiple
+                    id='temas-autocomplete'
+                    options={temas}
+                    loading={isTemasLoading}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                    getOptionLabel={tema => tema.temaIndicador}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        variant='standard'
+                        label='Selecciona temas'
+                      />
+                    )}
+                  />
+                )}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Controller
+                control={control}
+                name='usuarios'
+                render={({ field: { value, onChange } }) => (
+                  <Autocomplete
+                    value={value}
+                    onChange={(e, data) => onChange(data)}
+                    multiple
+                    disabled={meValue}
+                    id='usuarios-autocomplete'
+                    options={usuarios}
+                    loading={isUsuariosLoading}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                    getOptionLabel={tema => tema.nombres}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        variant='standard'
+                        label='Selecciona usuarios'
+                      />
+                    )}
+                  />
+                )}
+              />
+            </Grid>
+            <Grid item xs={12} sx={{
+            }}>
+              <Controller
+                name='me'
+                control={control}
+                render={({ field }) => (
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        size='medium'
+                        checked={field.value}
+                      />
+                    }
+                    label={'Mis indicadores'}
+                    {...field}
+                  />
+                )}
+              />
+            </Grid>
+          </Grid>
+        </Box>
+      </DialogContent>
 
-        <DialogActions>
-          <Button onClick={clearFilter} variant='text' color='secondary'>Limpiar</Button>
-          <Button onClick={handleClose} variant='contained' color='secondary'>Cerrar</Button>
-          <Button type='submit' variant='contained' color='primary'>Buscar</Button>
-        </DialogActions>
-      </Box>
-    </FormProvider>
+      <DialogActions>
+        <Button onClick={clearFilter} variant='text' color='secondary'>Limpiar</Button>
+        <Button onClick={handleClose} variant='contained' color='secondary'>Cerrar</Button>
+        <Button type='submit' variant='contained' color='primary'>Buscar</Button>
+      </DialogActions>
+    </Box>
   )
 }
+
 
 export default FormFiltro
