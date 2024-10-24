@@ -29,15 +29,11 @@ const Objetivos = () => {
       justifyContent: 'start',
     }}>
       {
-        objetivos.map((element) => (
-          console.log(element),
+        objetivos.map(({ indicadoresCount, objetivo }) => (
           <Cardie
-            titulo={element.objetivo.titulo}
-            descripcion={element.objetivo.descripcion}
-            color={element.objetivo.color}
-            summary={element.objetivo.summary}
-            urlImagen={element.objetivo.urlImagen}
-            count={element.indicadoresCount}
+            key={objetivo.id}
+            count={indicadoresCount}
+            {...objetivo}
           />
           // <Cardie
           //   key={objetivos.objetivos.id}
@@ -60,7 +56,6 @@ const Objetivos = () => {
 const Cardie = (objetivo) => {
 
   const {
-    id,
     titulo,
     descripcion,
     summary,
