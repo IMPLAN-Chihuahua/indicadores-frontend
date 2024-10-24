@@ -1,6 +1,8 @@
-import { protectedApi, publicApi } from '.';
+  import { protectedApi, publicApi } from '.';
 import useSWRImmutable from 'swr/immutable';
 import useSWR from 'swr';
+import { useEffect, useMemo, useState } from 'react';
+import qs from 'qs';
 
 export const fetcher = (url) => protectedApi.get(url).then(res => res.data);
 
@@ -88,3 +90,37 @@ export const getMapa = (id) => {
 export const createMapa = (id, mapa) => {
   return protectedApi.post(`/indicadores/${id}/mapa`, mapa);
 }
+
+
+export const useIndicadores = ({ perPage, page, searchQuery, ...filters }) => {
+  const queryParams = useMemo(() => qs.stringify({
+    perPage,
+    page,
+    searchQuery,
+    ...filters
+  }, {
+    skipNulls: true,
+    addQueryPrefix: true,
+  }), [searchQuery, page, perPage, filters])
+  const { data: res, error, mutate } = useSWRImmutable(`/indicadores${queryParams.toString()}`, fetcher)
+
+  const [total, setTotal] = useState(0)
+  const [totalPages, setTotalPages] = useState(0)
+  const [indicadores, setIndicadores] = useState([])
+
+  useEffect(() => {
+    if (!res) return;
+    setIndicadores(res.data);
+    setTotal(res.total);
+    setTotalPages(res.totalPages);
+  }, [res])
+
+  return {
+    indicadores,
+    isLoading: !error && !res,
+    hasError: error,
+    total,
+    totalPages,
+    mutate
+  }
+};

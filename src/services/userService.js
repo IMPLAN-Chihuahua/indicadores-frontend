@@ -1,5 +1,8 @@
+import { useEffect, useMemo, useState } from "react";
 import { protectedApi } from ".";
 import useSWR from 'swr';
+import useSWRImmutable from 'swr/immutable';
+import qs from 'qs';
 
 const fetcher = (url) => protectedApi.get(url).then(res => res.data)
 
@@ -52,35 +55,37 @@ export const useTemas = (perPage, page, search) => {
     mutate
   }
 };
-export const useIndicators = (perPage, page, search, idObjetivos, owner) => {
-  const searchQueries = new URLSearchParams({
-    perPage,
+
+
+export const useUsers = (args) => {
+  const { perPage = 25, page = 1, searchQuery = '' } = args || {};
+  const queryParams = qs.stringify({
     page,
-    ...(search.length > 0 && { searchQuery: search.trim() }),
-    ...(owner > 0 && { owner }),
-    ...(idObjetivos?.length > 0 && { idObjetivos: idObjetivos }),
+    perPage,
+    searchQuery
+  }, {
+    skipNulls: true,
+    addQueryPrefix: true,
   });
+  const { data: res, error, mutate } = useSWRImmutable(`/usuarios${queryParams.toString()}`, fetcher)
 
-  const { data, error, mutate } = useSWR(`indicadores?${searchQueries.toString()}`, fetcher)
+  const [usuarios, setUsuarios] = useState([])
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+
+  useEffect(() => {
+    if (!res) return;
+    
+    setUsuarios(res.data);
+    setTotal(res.total);
+    setTotalPages(res.totalPages);
+  }, [res])
 
   return {
-    indicadores: data,
-    isLoading: !error && !data,
-    hasError: error,
-    mutate
-  }
-};
-
-export const useUsers = (perPage, page, search) => {
-  const endpoint = new URLSearchParams({
-    perPage,
-    page,
-    ...(search.length > 0 && { searchQuery: search.trim() }),
-  })
-  const { data, error, mutate } = useSWR(`usuarios?${endpoint.toString()}`, fetcher)
-  return {
-    users: data,
-    isLoading: !error && !data,
+    users: usuarios,
+    total,
+    totalPages,
+    isLoading: !error && !res,
     hasError: error,
     mutate
   }

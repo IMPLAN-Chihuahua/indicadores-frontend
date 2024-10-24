@@ -1,4 +1,8 @@
 import { protectedApi } from '.';
+import qs from 'qs';
+import useSWRImmutable from 'swr/immutable';
+import { useEffect, useState } from 'react';
+import { fetcher } from './indicatorService';
 
 export const createTema = async (tema) => {
   try {
@@ -39,4 +43,35 @@ export const getTemasGeneralInfo = async ({ page, perPage, attributes, id, sortB
   const query = `${attributesQuery}${sortByQuery}${orderQuery}${pageQuery}${perPageQuery}`;
 
   return protectedApi.get(`/temas/info/general?b=0&${query}`);
+}
+
+
+export const useTemas = (args) => {
+  const { page = 1, perPage = 25, searchQuery = '', ...moreParams } = args || {};
+  const queryParams = qs.stringify({ page, perPage, searchQuery, ...moreParams }, {
+    skipNulls: true,
+    addQueryPrefix: true,
+  });
+
+  const { data: res, error, mutate } = useSWRImmutable(`/temas${queryParams.toString()}`, fetcher);
+  const [temas, setTemas] = useState([])
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+
+  useEffect(() => {
+    if (!res) return;
+
+    setTemas(res.data)
+    // setTotal(res.total);
+    // setTotalPages(res.totalPages)
+  }, [res])
+
+  return {
+    temas,
+    total,
+    totalPages,
+    isLoading: !res && !error,
+    hasError: error,
+    mutate
+  }
 }
