@@ -19,6 +19,7 @@ export const Status = ({ status, type, handleClick }) => {
     switch (formattedStatus) {
       case 'activo':
       case true:
+      case 'SI':
         return (
           <Chip
             label='Activo'
@@ -29,6 +30,7 @@ export const Status = ({ status, type, handleClick }) => {
             sx={{ width: '95px', justifyContent: 'flex-start' }} />)
       case 'inactivo':
       case false:
+      case 'NO':
         return (
           <Chip
             label='Inactivo'
