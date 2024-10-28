@@ -46,16 +46,6 @@ export const getLatestTemas = async () => {
   }
 };
 
-export const useTemas = (perPage, page, search) => {
-  const { data, error, mutate } = useSWR(`me/temas?perPage=${perPage}&page=${page}&searchQuery=${search}&sortBy=updatedAt&order=DESC`, fetcher)
-  return {
-    temas: data,
-    isLoading: !error && !data,
-    hasError: error,
-    mutate
-  }
-};
-
 
 export const useUsers = (args) => {
   const { perPage = 25, page = 1, searchQuery = '' } = args || {};
