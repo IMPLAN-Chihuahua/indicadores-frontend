@@ -14,6 +14,7 @@ import AddIcon from '@mui/icons-material/Add';
 import useIsMounted from "../hooks/useIsMounted";
 import SearchInput from "../components/dashboard/common/SearchInput";
 import useQueryParams from "../hooks/useQueryParams";
+import { Status } from "../components/dashboard/common/Status";
 
 
 export const Indicators = () => {
@@ -122,13 +123,9 @@ export const Indicators = () => {
       field: "activo",
       headerName: "Estado",
       editable: false,
-      maxWidth: 85,
+      flex: 1,
       renderCell: (params) => (
-        <Chip
-          onClick={() => toggleStatus(params.row, mutate)}
-          color={params.row.activo ? 'success' : 'error'}
-          label={params.row.activo ? 'Activo' : 'Inactivo'}
-        />
+        <Status handleClick={() => toggleStatus(params.row, mutate)} status={params.row.activo} />
       ),
     },
   ];
@@ -145,7 +142,13 @@ export const Indicators = () => {
           />
         }
       >
-        <IconButton onClick={() => mutate()} color="primary"><RefreshIcon /></IconButton>
+        <Button
+          variant="outlined"
+          onClick={() => mutate()}
+          color="primary"
+        >
+          <RefreshIcon />
+        </Button>
         <NewIndicadorDialog />
       </PageHeader>
       <div className='datagrid-container'>
