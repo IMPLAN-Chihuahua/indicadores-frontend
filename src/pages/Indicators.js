@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense, useCallback } from "react";
+import { useState, lazy, Suspense, useCallback, useEffect } from "react";
 import { useIndicadores } from "../services/indicatorService";
 import DatagridTable from "../components/dashboard/common/DatagridTable";
 import { getGlobalPerPage } from "../utils/objects";
@@ -11,10 +11,12 @@ import PageHeader from "../components/dashboard/common/DataHeader";
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import AddIcon from '@mui/icons-material/Add';
+import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import useIsMounted from "../hooks/useIsMounted";
 import SearchInput from "../components/dashboard/common/SearchInput";
 import useQueryParams from "../hooks/useQueryParams";
 import { Status } from "../components/dashboard/common/Status";
+import Loader from "react-spinners/BarLoader";
 
 
 export const Indicators = () => {
@@ -134,7 +136,13 @@ export const Indicators = () => {
   const rowSelectionHandler = (ids) => {
     const selectedData = ids.map(id => indicadores.find(row => row.id === id));
     setSelectedIndicadores(selectedData);
+    console.log(selectedIndicadores);
   }
+
+  useEffect(() => {
+    console.log(selectedIndicadores);
+  }
+    , [selectedIndicadores])
 
 
   return (
@@ -157,7 +165,9 @@ export const Indicators = () => {
           <RefreshIcon />
         </Button>
         <NewIndicadorDialog />
+        <NewRelationDialog selectedIndicadores={selectedIndicadores} setSelectedIndicadores={setSelectedIndicadores} />
       </PageHeader>
+
       <div className='datagrid-container'>
         <DatagridTable
           rows={indicadores}
@@ -169,6 +179,7 @@ export const Indicators = () => {
           onSelectionModelChange={rowSelectionHandler}
           handlePageChange={updatePage}
           handlePageSizeChange={updatePerPage}
+          selectionModel={selectedIndicadores.map(item => item.id)}
         />
       </div>
     </Box>
@@ -190,7 +201,6 @@ const indicadoresParamsInitialState = () => {
     }
   }
 }
-
 
 const toggleStatus = (indicador, successCallback) => {
   showAlert({
@@ -280,4 +290,28 @@ const NewIndicadorDialog = () => {
       </Suspense>
     </Dialog>
   </>);
+}
+
+const FormAssignation = lazy(() => import("../components/dashboard/forms/relationship/FormAssignation").then(module => ({ default: module.FormAssignation })));
+
+const NewRelationDialog = ({ selectedIndicadores, setSelectedIndicadores }) => {
+  const [open, setOpen] = useState(false);
+  const handleClose = useCallback(() => setOpen(false), [])
+
+  return (
+    <>
+      <Button startIcon={<PersonOutlineOutlinedIcon />} variant='outlined' onClick={() => setOpen(true)}>Asignar</Button>
+      <Dialog open={open} fullWidth maxWidth='md' onClose={handleClose}>
+        <Suspense fallback={<Loader
+          color='#3f51b5'
+          loading={true}
+          height={4}
+          width={100}
+        />
+        }>
+          <FormAssignation indicadores={selectedIndicadores} setSelectedIndicadores={setSelectedIndicadores} close={handleClose} />
+        </Suspense>
+      </Dialog>
+    </>
+  )
 }

@@ -4,7 +4,7 @@ import SyncAltIcon from '@mui/icons-material/SyncAlt';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import { useUsers } from '../../../../services/userService';
 
-const FormAssignation = ({
+export const FormAssignation = ({
   indicadores, setSelectedIndicadores
 }) => {
 
@@ -104,5 +104,3 @@ const FormAssignation = ({
     </Box>
   )
 }
-
-export default FormAssignation
