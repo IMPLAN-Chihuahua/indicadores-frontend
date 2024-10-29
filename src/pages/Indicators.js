@@ -31,15 +31,6 @@ export const Indicators = () => {
       editable: false,
       headerAlign: 'right',
       align: 'right',
-      hide: true,
-    },
-    {
-      field: "codigo",
-      headerName: "Código",
-      minWidth: 30,
-      editable: false,
-      headerAlign: 'left',
-      align: 'left',
     },
     {
       field: "nombre",
