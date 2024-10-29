@@ -16,7 +16,7 @@ import { Summary } from "./Summary";
 const STEPS = [
   {
     idx: 0,
-    label: 'Información Básica',
+    label: 'Información básica',
     form: 'form-basic'
   }, {
     idx: 1,
@@ -56,12 +56,12 @@ const Content = (props) => {
 
 const initialState = {
   nombre: '',
-  codigo: '',
+  adornment: '',
   definicion: '',
   ultimoValorDisponible: 0,
   anioUltimoValorDisponible: new Date().getFullYear(),
   periodicidad: 0,
-  tema: null,
+  temas: [],
   medida: null,
   cobertura: null,
   ods: null,
@@ -108,7 +108,7 @@ const createIndicadorFormData = (indicador) => {
       formData.append('idDimension', indicador[field].id);
       continue;
     }
-    
+
     if (field === 'medida' || field === 'ods' || field === 'cobertura') {
       formData.append('catalogos[]', indicador[field].id);
       continue;
@@ -209,11 +209,11 @@ export const FormIndicador = (props) => {
     >
       <DialogTitle>
         Nuevo Indicador
-        <HorizontalStepper
-          activeStep={currentStep}
-          stepLabels={STEPS}
-        />
       </DialogTitle>
+      <HorizontalStepper
+        activeStep={currentStep}
+        stepLabels={STEPS}
+      />
       <DialogContent sx={{ height: '60vh' }}>
         <Content step={currentStep} />
       </DialogContent>
