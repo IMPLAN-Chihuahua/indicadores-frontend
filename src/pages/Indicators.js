@@ -12,6 +12,7 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { parseDate } from "../utils/dateParser";
 import { showAlert } from "../utils/alert";
 import { getIndicatorsGeneralInfo, toggleIndicadorStatus } from "../services/indicatorService";
+import FormAssignation from "../components/dashboard/forms/relationship/FormAssignation";
 
 export const Indicators = () => {
   const navigate = useNavigate();
@@ -21,12 +22,23 @@ export const Indicators = () => {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(getGlobalPerPage);
   const [total, setTotal] = useState(0)
+  const [selectedIndicadores, setSelectedIndicadores] = useState([]);
   const { indicadores, isLoading, mutate } = useIndicators(perPage, page, searchIndicator, objetivo, owner);
   const [isFormVisible, setFormVisible] = useState(false);
+  const [isAssignationFormVisible, setAssignationFormVisible] = useState(false);
   const [indicatorsQuantity, setIndicatorsQuantity] = useState(0);
   const [inactiveIndicators, setInactiveIndicators] = useState(0);
 
-  const handleOpenModal = () => setFormVisible(true);
+  const handleOpenModal = (modal) => {
+    switch (modal) {
+      case 'indicador':
+        setFormVisible(true);
+        break;
+      case 'assignation':
+        setAssignationFormVisible(true);
+        break;
+    }
+  };
 
   const [rows, setRows] = useState([]);
 
@@ -215,12 +227,18 @@ export const Indicators = () => {
     setOwner
   };
 
+  const rowSelectionHandler = (ids) => {
+    const selectedData = ids.map(id => rows.find(row => row.id === id));
+    setSelectedIndicadores(selectedData);
+  }
+
   return (
     <Box display='flex' flexDirection='column' p={2} height='100%'>
       <DataHeader
         data={dataIndicator}
         handleOpenModal={handleOpenModal}
       />
+
       <div className='datagrid-container'>
         <DatagridTable
           rows={rows}
@@ -231,6 +249,7 @@ export const Indicators = () => {
           perPage={perPage}
           handlePageChange={newPage => setPage(newPage + 1)}
           handlePageSizeChange={size => setPerPage(size)}
+          onSelectionModelChange={rowSelectionHandler}
         />
       </div>
       {
@@ -243,6 +262,20 @@ export const Indicators = () => {
             maxWidth='xl'
           >
             <FormIndicador close={() => setFormVisible(false)} />
+          </FormDialog>
+        )
+      }
+
+      {
+        isAssignationFormVisible && (
+          <FormDialog
+            open={isAssignationFormVisible}
+            handleClose={() => setAssignationFormVisible(false)}
+            fullWidth
+            keepMounted
+            maxWidth='xl'
+          >
+            <FormAssignation indicadores={selectedIndicadores} setSelectedIndicadores={setSelectedIndicadores} />
           </FormDialog>
         )
       }

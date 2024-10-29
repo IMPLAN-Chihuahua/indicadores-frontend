@@ -7,6 +7,7 @@ import debounce from 'lodash.debounce';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import './common.css'
 import FormFiltro from '../forms/indicador/FormFiltro';
+import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 
 export const DataHeader = ({ data, handleOpenModal }) => {
   const { countEnable, countDisable, setSearch, setObjetivo, setOwner, searchIndicator } = data;
@@ -105,14 +106,24 @@ export const DataHeader = ({ data, handleOpenModal }) => {
             }}
           />
         </Grid>
-        <Grid item xs={12} md={3} className='dh-options'>
+        <Grid item xs={12} md={3} gap={2} className='dh-options'>
           <Button
             variant='contained'
             className='dh-options-button'
             sx={{ lineHeight: '15px' }}
-            onClick={handleOpenModal}
+            onClick={() => { handleOpenModal('indicador') }}
           >
             <AddIcon />Agregar
+          </Button>
+
+          <Button
+            variant='contained'
+            className='dh-options-button'
+            sx={{ lineHeight: '15px' }}
+            onClick={() => { handleOpenModal('assignation') }}
+          >
+            <PersonOutlineOutlinedIcon />
+            Asignar
           </Button>
         </Grid>
       </Paper>

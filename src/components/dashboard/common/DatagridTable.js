@@ -23,6 +23,7 @@ const DatagridTable = (props) => {
         handlePageSizeChange(size)
       }}
       disableSelectionOnClick
+      checkboxSelection
       localeText={esES.components.MuiDataGrid.defaultProps.localeText}
       {...settings}
     />
