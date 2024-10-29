@@ -21,6 +21,7 @@ export const Indicators = () => {
   const { updateSearchQuery, updateFilters, updatePage, updatePerPage, params } = useQueryParams(indicadoresParamsInitialState)
   const { page, perPage, searchQuery, hasActiveFilters, filters } = params;
   const { indicadores, isLoading, mutate, total } = useIndicadores({ page, perPage, searchQuery, ...filters });
+  const [selectedIndicadores, setSelectedIndicadores] = useState([]);
 
   const columns = [
     {
@@ -130,6 +131,12 @@ export const Indicators = () => {
     },
   ];
 
+  const rowSelectionHandler = (ids) => {
+    const selectedData = ids.map(id => indicadores.find(row => row.id === id));
+    setSelectedIndicadores(selectedData);
+  }
+
+
   return (
     <Box display='flex' flexDirection='column' p={2} height='100%'>
       <PageHeader
@@ -159,6 +166,7 @@ export const Indicators = () => {
           page={page}
           total={total}
           perPage={perPage}
+          onSelectionModelChange={rowSelectionHandler}
           handlePageChange={updatePage}
           handlePageSizeChange={updatePerPage}
         />
