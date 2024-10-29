@@ -13,6 +13,92 @@ import { FormExtra } from "./FormExtra";
 import { HorizontalStepper } from "./HorizontalStepper";
 import { Summary } from "./Summary";
 
+
+export const FormIndicador = (props) => {
+  const alert = useAlert();
+  const isMounted = useIsMounted();
+  const [indicador, dispatch] = useReducer(reducer, initialState);
+  const [currentStep, setCurrentStep] = useState(0)
+  const [formState, setFormState] = useState(formStateInitial);
+  const handleBack = useCallback(() => {
+    setFormState(formStateInitial)
+    setCurrentStep(prev => prev === 0 ? 0 : prev - 1)
+  }, [setCurrentStep]);
+
+  const handleNext = useCallback(() => {
+    setCurrentStep(prev => {
+      const lastValue = (STEPS.length - 1)
+      return prev === lastValue ? lastValue : prev + 1
+    })
+  }, [setCurrentStep]);
+
+  const onSubmit = useCallback((data) => {
+    const currentForm = STEPS[currentStep].form;
+    dispatch({ type: `update-${currentForm}`, payload: { ...data } });
+    handleNext();
+  }, [currentStep]);
+
+  const handleSubmit = async () => {
+    const payload = createIndicadorFormData(indicador);
+    setFormState(prev => ({ ...prev, uploading: true }))
+    try {
+      const created = await createIndicador(payload);
+      alert.success(`Indicador '${created.nombre}' creado exitosamente`)
+      props.close();
+    } catch (error) {
+      setFormState(prev => ({ ...prev, error }))
+    } finally {
+      if (isMounted()) {
+        setFormState(prev => ({ ...prev, uploading: false }))
+      }
+    }
+  };
+
+  return (
+    <IndicadorProvider
+      indicador={indicador}
+      dispatch={dispatch}
+      onSubmit={onSubmit}
+      formState={formState}
+      setFormState={setFormState}
+    >
+      <DialogTitle>
+        Nuevo Indicador
+      </DialogTitle>
+      <HorizontalStepper
+        activeStep={currentStep}
+        stepLabels={STEPS}
+      />
+      <DialogContent sx={{ height: '60vh' }}>
+        <Content step={currentStep} />
+      </DialogContent>
+      <DialogActions>
+        <Button
+          sx={{ mr: 'auto' }}
+          onClick={props.close}
+        >Cancelar</Button>
+        <Button
+          onClick={handleBack}
+          disabled={currentStep === 0}>Atras</Button>
+        {
+          (currentStep === STEPS.length - 1)
+            ? (
+              <Button
+                variant='contained'
+                onClick={handleSubmit}>
+                {formState.error ? 'Intentar de nuevo' : 'Terminar'}
+              </Button>)
+            : (<Button
+              type='submit'
+              form={STEPS[currentStep].form}
+              variant='contained'>Siguiente</Button>)
+        }
+      </DialogActions>
+    </IndicadorProvider>
+  );
+};
+
+
 const STEPS = [
   {
     idx: 0,
@@ -158,87 +244,3 @@ const formStateInitial = {
   error: null,
   uploading: false,
 }
-
-export const FormIndicador = (props) => {
-  const alert = useAlert();
-  const isMounted = useIsMounted();
-  const [indicador, dispatch] = useReducer(reducer, initialState);
-  const [currentStep, setCurrentStep] = useState(0)
-  const [formState, setFormState] = useState(formStateInitial);
-  const handleBack = useCallback(() => {
-    setFormState(formStateInitial)
-    setCurrentStep(prev => prev === 0 ? 0 : prev - 1)
-  }, [setCurrentStep]);
-
-  const handleNext = useCallback(() => {
-    setCurrentStep(prev => {
-      const lastValue = (STEPS.length - 1)
-      return prev === lastValue ? lastValue : prev + 1
-    })
-  }, [setCurrentStep]);
-
-  const onSubmit = useCallback((data) => {
-    const currentForm = STEPS[currentStep].form;
-    dispatch({ type: `update-${currentForm}`, payload: { ...data } });
-    handleNext();
-  }, [currentStep]);
-
-  const handleSubmit = async () => {
-    const payload = createIndicadorFormData(indicador);
-    setFormState(prev => ({ ...prev, uploading: true }))
-    try {
-      const created = await createIndicador(payload);
-      alert.success(`Indicador '${created.nombre}' creado exitosamente`)
-      props.close();
-    } catch (error) {
-      setFormState(prev => ({ ...prev, error }))
-    } finally {
-      if (isMounted()) {
-        setFormState(prev => ({ ...prev, uploading: false }))
-      }
-    }
-  };
-
-  return (
-    <IndicadorProvider
-      indicador={indicador}
-      dispatch={dispatch}
-      onSubmit={onSubmit}
-      formState={formState}
-      setFormState={setFormState}
-    >
-      <DialogTitle>
-        Nuevo Indicador
-      </DialogTitle>
-      <HorizontalStepper
-        activeStep={currentStep}
-        stepLabels={STEPS}
-      />
-      <DialogContent sx={{ height: '60vh' }}>
-        <Content step={currentStep} />
-      </DialogContent>
-      <DialogActions>
-        <Button
-          sx={{ mr: 'auto' }}
-          onClick={props.close}
-        >Cancelar</Button>
-        <Button
-          onClick={handleBack}
-          disabled={currentStep === 0}>Atras</Button>
-        {
-          (currentStep === STEPS.length - 1)
-            ? (
-              <Button
-                variant='contained'
-                onClick={handleSubmit}>
-                {formState.error ? 'Intentar de nuevo' : 'Terminar'}
-              </Button>)
-            : (<Button
-              type='submit'
-              form={STEPS[currentStep].form}
-              variant='contained'>Siguiente</Button>)
-        }
-      </DialogActions>
-    </IndicadorProvider>
-  );
-};

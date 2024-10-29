@@ -1,44 +1,18 @@
 import {
   Grid, Link as MuiLink, Typography, Box,
-  TextField, CircularProgress, Button, FormControlLabel, Checkbox
+  TextField, FormControlLabel, Checkbox
 } from "@mui/material";
 import { Controller, FormProvider, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { MathJax } from "better-react-mathjax";
 import EquationEditor from "equation-editor-react";
-import { useCallback, useEffect, useState } from "react";
-import "../../../common/mathInput/mathInput.css";
+import { useEffect, useState } from "react";
 import { Variable } from "../../../common/formula/Variable";
-import { getCatalogosDetails } from "../../../../services/cataloguesService";
 import { useIndicadorContext } from "../../../../contexts/IndicadorContext";
-import useIsMounted from "../../../../hooks/useIsMounted";
-import { UNIDAD_MEDIDA_ID } from "../../../../utils/getCatalog";
 import * as Yup from 'yup';
 import { yupResolver } from "@hookform/resolvers/yup";
 import { defaultVariable } from "../../components/home/Indicators/Formula/FormVariable";
+import "../../../common/mathInput/mathInput.css";
 
-const formulaSchema = Yup.object().shape({
-  ecuacion: Yup.string().trim(),
-  descripcion: Yup.string(),
-  variables: Yup.array().when('ecuacion', {
-    is: (ecuacion) => !!ecuacion,
-    then: Yup.array().of(Yup.object().shape({
-      nombre: Yup.string().trim().min(1, 'Ingresa un nombre valido').required('Ingresa una variable'),
-      dato: Yup
-        .string()
-        .default('No aplica')
-        .notRequired(),
-      anio: Yup
-        .number()
-        .transform(value => isNaN(value) ? undefined : value)
-        .max(new Date().getFullYear(), 'El año no puede ser mayor al actual')
-        .default(0)
-        .notRequired(),
-      descripcion: Yup.string().optional(),
-      medida: Yup.object().typeError('Selecciona una unidad de medida').required()
-    })
-    )
-  })
-});
 
 const EquationInput = ({ value, onChange }) => {
   return (
@@ -74,7 +48,6 @@ const EquationViewer = ({ equation }) => {
 
 export const FormFormula = (props) => {
   const { indicador, onSubmit } = useIndicadorContext();
-  const isMounted = useIsMounted();
   const methods = useForm({
     resolver: yupResolver(formulaSchema),
     defaultValues: {
@@ -93,20 +66,8 @@ export const FormFormula = (props) => {
 
   const addVariable = variable => append({ ...variable });
   const deleteVariable = idx => remove(idx);
-  const [medidaOptions, setMedidaOptions] = useState([]);
-
-  const fetchUnidadMedida = useCallback(async () => {
-    if (medidaOptions.length > 0) {
-      return;
-    }
-    const items = await getCatalogosDetails(UNIDAD_MEDIDA_ID);
-    if (isMounted()) {
-      setMedidaOptions(items);
-    }
-  }, [medidaOptions, isMounted]);
 
   useEffect(() => {
-    fetchUnidadMedida();
     reset(indicador.formula);
   }, []);
 
@@ -122,13 +83,6 @@ export const FormFormula = (props) => {
         mt={1}
       >
         <Grid container gap={2}>
-          {
-            props.defaultTitle && (
-              <Grid item xs={12}>
-                <Typography variant='h5' component='h3'>Formula</Typography>
-              </Grid>
-            )
-          }
           <Grid item xs={12}>
             <Controller
               name='descripcion'
@@ -213,25 +167,48 @@ export const FormFormula = (props) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <Typography variant='h5' component='h3'>Variables</Typography>
+            <Typography variant='h6' component='h3'>Variables</Typography>
           </Grid>
           {
-            medidaOptions.length > 0 ? fields.map((field, i) => (
+            fields.map((field, i) => (
               <Variable
                 index={i}
                 key={field.id}
                 addVariable={i === 0 && addVariable}
                 deleteVariable={i !== 0 && deleteVariable}
-                medidaOptions={medidaOptions}
+
               />
-            )) : (
-              <CircularProgress color='primary' />
-            )
+            ))
           }
         </Grid>
       </Box>
     </FormProvider>
   );
 };
+
+const formulaSchema = Yup.object().shape({
+  ecuacion: Yup.string().trim(),
+  descripcion: Yup.string(),
+  variables: Yup.array().when('ecuacion', {
+    is: (ecuacion) => !!ecuacion,
+    then: Yup.array().of(Yup.object().shape({
+      nombre: Yup.string().trim().min(1, 'Ingresa un nombre valido').required('Ingresa una variable'),
+      dato: Yup
+        .string()
+        .default('No aplica')
+        .notRequired(),
+      anio: Yup
+        .number()
+        .transform(value => isNaN(value) ? undefined : value)
+        .max(new Date().getFullYear(), 'El año no puede ser mayor al actual')
+        .default(0)
+        .notRequired(),
+      descripcion: Yup.string().optional(),
+      medida: Yup.string().optional().trim()
+    })
+    )
+  })
+});
+
 
 export { EquationInput, EquationViewer };

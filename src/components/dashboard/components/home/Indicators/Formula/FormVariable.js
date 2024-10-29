@@ -21,7 +21,7 @@ const variableSchema = Yup.object().shape({
     .default(0)
     .notRequired(),
   descripcion: Yup.string().optional(),
-  medida: Yup.object().typeError('Selecciona una unidad de medida').required()
+  medida: Yup.string().notRequired().trim()
 })
 
 export const VARIABLE_FORM_ACTIONS = {
@@ -34,7 +34,7 @@ export const defaultVariable = {
   dato: '',
   anio: '',
   variableDesc: '',
-  medida: null,
+  medida: '',
 }
 
 const FormVariable = (props) => {
@@ -42,17 +42,6 @@ const FormVariable = (props) => {
     defaultValues: defaultVariable,
     resolver: yupResolver(variableSchema)
   });
-  const [medidaOptions, setMedidaOptions] = useState([]);
-  const isMounted = useIsMounted();
-  const fetchUnidadMedida = useCallback(async () => {
-    if (medidaOptions.length > 0) {
-      return;
-    }
-    const items = await getCatalogosDetails(UNIDAD_MEDIDA_ID);
-    if (isMounted()) {
-      setMedidaOptions(items);
-    }
-  }, [medidaOptions, isMounted]);
 
 
   const onSubmit = (data) => {
@@ -97,11 +86,10 @@ const FormVariable = (props) => {
   }
 
   useEffect(() => {
-    fetchUnidadMedida();
     if (props.selectedVariable) {
       methods.reset(props.selectedVariable);
     }
-  }, [fetchUnidadMedida]);
+  }, []);
 
   return (
     <FormProvider {...methods}>
@@ -118,16 +106,10 @@ const FormVariable = (props) => {
             props.handleClose()
           }}
         >
-          {
-            medidaOptions.length > 0
-              ? (
-                <Variable
-                  medidaOptions={medidaOptions}
-                  direction='column'
-                  mode={VARIABLE_MODES.SINGLE}
-                />)
-              : <CircularProgress />
-          }
+          <Variable
+            direction='column'
+            mode={VARIABLE_MODES.SINGLE}
+          />
         </Box>
       </DialogContent>
       <DialogActions>
