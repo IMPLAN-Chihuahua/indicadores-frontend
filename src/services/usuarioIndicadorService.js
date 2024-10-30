@@ -48,6 +48,10 @@ const updateRelation = async (id, data) => {
   return protectedApi.patch(`/relation/${id}`, data);
 };
 
+const createRelationUsersIndicadores = async (indicadores, usuarios) => {
+  return protectedApi.post(`/relation/create`, { indicadores, usuarios });
+}
+
 export {
   useIndicadorUsuarios,
   createRelation,
@@ -55,5 +59,6 @@ export {
   useRelationUsers,
   deleteRelation,
   updateRelation,
-  changeOwner
+  changeOwner,
+  createRelationUsersIndicadores
 };

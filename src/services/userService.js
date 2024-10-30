@@ -48,11 +48,12 @@ export const getLatestTemas = async () => {
 
 
 export const useUsers = (args) => {
-  const { perPage = 25, page = 1, searchQuery = '' } = args || {};
+  const { perPage = 25, page = 1, searchQuery = '', activo = '' } = args || {};
   const queryParams = qs.stringify({
     page,
     perPage,
-    searchQuery
+    searchQuery,
+    activo
   }, {
     skipNulls: true,
     addQueryPrefix: true,
@@ -65,7 +66,7 @@ export const useUsers = (args) => {
 
   useEffect(() => {
     if (!res) return;
-    
+
     setUsuarios(res.data);
     setTotal(res.total);
     setTotalPages(res.totalPages);

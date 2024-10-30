@@ -300,7 +300,7 @@ const NewRelationDialog = ({ selectedIndicadores, setSelectedIndicadores }) => {
 
   return (
     <>
-      <Button startIcon={<PersonOutlineOutlinedIcon />} variant='outlined' onClick={() => setOpen(true)}>Asignar</Button>
+      <Button disabled={selectedIndicadores.length === 0} startIcon={<PersonOutlineOutlinedIcon />} variant='outlined' onClick={() => setOpen(true)}>Asignar</Button>
       <Dialog open={open} fullWidth maxWidth='md' onClose={handleClose}>
         <Suspense fallback={<Loader
           color='#3f51b5'
