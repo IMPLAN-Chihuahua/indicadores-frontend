@@ -3,16 +3,86 @@ import React from 'react'
 import SyncAltIcon from '@mui/icons-material/SyncAlt';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import { useUsers } from '../../../../services/userService';
+import { useParams } from 'react-router-dom';
+import { createRelationUsersIndicadores } from '../../../../services/usuarioIndicadorService';
+import Swal from 'sweetalert2';
+import './FormAssignation.css';
+
 
 export const FormAssignation = ({
-  indicadores, setSelectedIndicadores
+  indicadores, setSelectedIndicadores, close
 }) => {
+  const [usersId, setUsersId] = React.useState([]);
 
   const handleDelete = (id) => {
     setSelectedIndicadores(indicadores.filter((item) => item.id !== id));
   }
 
-  const { users, isLoading, mutate } = useUsers(100, 1, '');
+  const handleUserChecking = (id) => {
+    if (usersId.includes(id)) setUsersId(usersId.filter((item) => item !== id))
+    else setUsersId([...usersId, id])
+  }
+
+  const submitAssignation = async () => {
+    const indicadoresArray = indicadores.map((item) => {
+      return item.id
+    })
+
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Se asignarán los indicadores seleccionados a los usuarios seleccionados',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, asignar',
+      cancelButtonText: 'Cancelar',
+      customClass: {
+        container: 'zIndex'
+      }
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await createRelationUsersIndicadores(indicadoresArray, usersId).then(() => {
+          Swal.fire({
+            title: 'Asignación exitosa',
+            icon: 'success',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Aceptar',
+            //set z index on top
+            customClass: {
+              container: 'zIndex'
+            }
+          }).then(() => {
+            close();
+          })
+            .catch((error) => {
+              Swal.fire({
+                title: 'Error',
+                text: 'Ocurrió un error al asignar los indicadores',
+                icon: 'error',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'Aceptar',
+                //set z index on top
+                customClass: {
+                  container: 'zIndex'
+                }
+              })
+            })
+        })
+      }
+    })
+
+  }
+
+  const { users, isLoading, mutate } = useUsers({ perPage: 100, activo: 'SI' });
+
+  const handleDeleteIndicador = (id) => {
+    setSelectedIndicadores(indicadores.filter((item) => item.id !== id));
+    if (indicadores.length === 1) {
+      close();
+    }
+  }
+
 
   return (
     <Box>
@@ -45,7 +115,7 @@ export const FormAssignation = ({
                     }
                   }}
                   title='Eliminar indicador del listado'
-                  onClick={() => handleDelete(item.id)}
+                  onClick={() => handleDeleteIndicador(item.id)}
                 >
                   <RemoveCircleOutlineIcon />
                 </IconButton>
@@ -72,14 +142,17 @@ export const FormAssignation = ({
         }}>
           {
             isLoading ? <Typography>Cargando...</Typography> :
-              users?.data?.map((item, idx) => (
+              users?.map((item, idx) => (
                 <Box sx={{
                   display: 'flex',
                   alignItems: 'center',
                   alignContent: 'center',
                 }}>
                   <FormControlLabel control={
-                    <Checkbox onChange={() => console.log('hola')} />
+                    <Checkbox
+                      onChange={() => handleUserChecking(item.id)}
+                      checked={usersId.includes(item.id)}
+                    />
                   }
                     label={
                       <Typography variant="p">
@@ -93,12 +166,9 @@ export const FormAssignation = ({
           }
         </Grid>
       </Grid>
-
-      <Button variant="contained" sx={{ m: 2 }}>
-        Cancelar
-      </Button>
-
-      <Button variant="contained" sx={{ m: 2 }}>
+      <Button variant="contained" sx={{ m: 2 }}
+        onClick={submitAssignation} color="primary"
+      >
         Asignar
       </Button>
     </Box>
