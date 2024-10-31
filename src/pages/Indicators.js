@@ -85,7 +85,7 @@ export const Indicators = () => {
     },
     {
       field: "periodicidad",
-      headerName: "Actualización",
+      headerName: "Periodicidad",
       flex: 1,
       maxWidth: 120,
       editable: false,
