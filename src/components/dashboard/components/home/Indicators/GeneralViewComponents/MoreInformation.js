@@ -17,6 +17,7 @@ import { getTemas } from '../../../../../../services/temaService';
 import { getCoberturas } from '../../../../../../services/coberturasService';
 import { getObjetivos } from '../../../../../../services/dimensionService';
 import { getOds } from '../../../../../../services/odsService';
+import { useResourceList } from '../../../../../../hooks/useResourceList';
 
 const getTemasRes = async () => {
   const temas = await getTemas();
@@ -43,7 +44,7 @@ const MoreInformation = ({ methods, id }) => {
   const [temasRes, setTemas] = React.useState([]);
   const [objetivos, setObjetivos] = React.useState([]);
   const [coberturas, setCoberturas] = React.useState([]);
-  const [ods, setOds] = React.useState([]);
+  const { resources: ods } = useResourceList({ resource: 'ods' })
 
   useEffect(() => {
     getTemasRes().then(temas => {
@@ -56,10 +57,6 @@ const MoreInformation = ({ methods, id }) => {
 
     getCoberturasRes().then(coberturas => {
       setCoberturas(coberturas);
-    })
-
-    getOdsRes().then(ods => {
-      setOds(ods);
     })
 
   }, []);

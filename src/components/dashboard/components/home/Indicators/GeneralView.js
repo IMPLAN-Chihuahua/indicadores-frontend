@@ -75,8 +75,6 @@ export const GeneralView = () => {
 
 	useEffect(() => {
 		getIndicator(id).then(res => {
-			const sortedCatalogos = res.catalogos.sort((a, b) => a.idCatalogo - b.idCatalogo)
-			res.catalogos = sortedCatalogos;
 			setIndicador(res);
 			methods.reset({
 				...res,
@@ -190,15 +188,6 @@ export const GeneralView = () => {
 							<GeneralInformation methods={methods} indicador={indicador} />
 							<MoreInformation methods={methods} id={id} />
 						</Grid>
-
-
-						{/* <Grid item xs={6} md={6}>
-							<pre style={{ backgroundColor: 'lightcoral' }}>
-								{
-									JSON.stringify(indicador, null, 2)
-								}
-							</pre>
-						</Grid> */}
 					</Grid>
 
 
