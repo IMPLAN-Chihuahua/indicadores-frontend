@@ -160,7 +160,7 @@ export const FormFormula = (props) => {
                       fullWidth
                       multiline
                       label='Otros medios'
-                      placeholder='Describe el lugar de donde proviene la información'
+                      placeholder='¿De dónde proviene la información?'
                       rows={2}
                     />)
               }
@@ -188,9 +188,10 @@ export const FormFormula = (props) => {
 
 const formulaSchema = Yup.object().shape({
   ecuacion: Yup.string().trim(),
+  hasEcuacion: Yup.boolean().default(false),
   descripcion: Yup.string(),
-  variables: Yup.array().when('ecuacion', {
-    is: (ecuacion) => !!ecuacion,
+  variables: Yup.array().when('hasEcuacion', {
+    is: (hasEcuacion) => !!hasEcuacion,
     then: Yup.array().of(Yup.object().shape({
       nombre: Yup.string().trim().min(1, 'Ingresa un nombre valido').required('Ingresa una variable'),
       dato: Yup
