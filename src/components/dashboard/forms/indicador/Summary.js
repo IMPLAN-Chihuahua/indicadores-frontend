@@ -26,65 +26,70 @@ export const Summary = () => {
 
   return (
     <Box>
-      <Typography variant='h5' component='h3'>Resumen</Typography>
       <Typography>
-        A continuación se muestra un resumen de la información ingresada en los pasos anteriores.
+        A continuación se muestra un resumen de la información que ingresaste en los pasos anteriores.
         Si todo está correcto, da clic en terminar para crear el indicador.
       </Typography>
 
-      <SummarySection title='General'>
-        <Typography fontSize={20}>{indicador.nombre} ({indicador.codigo})</Typography>
-        <Typography><SemiboldSpan content={'Tema:'} /> {indicador.tema.temaIndicador}</Typography>
+      <SummarySection title={indicador.nombre}>
         <Typography>
-          <SemiboldSpan content={'Último valor disponible:'} /> {indicador.ultimoValorDisponible} •
-          <SemiboldSpan content={' Año del último valor disponible:'} /> {indicador.anioUltimoValorDisponible}
+          <SemiboldSpan content={'Último valor disponible:'} /> {indicador.ultimoValorDisponible}{indicador.adornment} ({indicador.anioUltimoValorDisponible})
+        </Typography>
+        <Typography>
+          <SemiboldSpan content={'Definición:'} /> {indicador.definicion}
         </Typography>
         <Typography>
           <SemiboldSpan content={'Periodicidad:'} /> {indicador.periodicidad} meses
         </Typography>
         <Typography>
-          <SemiboldSpan content={'Unidad de medida:'} /> {indicador?.medida?.nombre || 'NA'}
+          <SemiboldSpan content={'Unidad de medida:'} /> {indicador?.medida || 'NA'}
         </Typography>
         <Typography>
-          <SemiboldSpan content={'Cobertura geográfica:'} /> {indicador?.cobertura?.nombre || 'NA'}
+          <SemiboldSpan content={'Cobertura geográfica:'} /> {indicador?.cobertura?.tipo || 'NA'}
         </Typography>
         <Typography>
-          <SemiboldSpan content={'Objetivo desarrollo sostenible:'} /> {indicador?.ods?.nombre || 'NA'}
-        </Typography>
-        <Typography>
-          <SemiboldSpan content={'Definición:'} /> {indicador.definicion}
+          <SemiboldSpan content={'Objetivo desarrollo sostenible:'} /> {indicador?.ods?.titulo || 'NA'}
         </Typography>
       </SummarySection>
       <SummarySection title='Formula'>
         <Typography><SemiboldSpan content={'Descripción:'} /> {indicador.formula.descripcion}</Typography>
         <Typography>
-          <SemiboldSpan content={'Ecuación:'} /> <MathJax inline>{`\\(${indicador.formula.ecuacion}\\)`}</MathJax>
+          <SemiboldSpan content={indicador.hasEcuacion ? 'Ecuación:' : 'Origen'} /> {
+            indicador.hasEcuacion ? <MathJax inline>{`\\(${indicador.formula.ecuacion}\\)`}</MathJax> :
+              indicador.formula.ecuacion
+          }
         </Typography>
-        <Typography fontWeight={500}>Variables:</Typography>
-        <Table aria-label='Variables usadas en la ecuación'>
-          <TableHead>
-            <TableRow>
-              <TableCell>Variable</TableCell>
-              <TableCell>Dato</TableCell>
-              <TableCell>Año</TableCell>
-              <TableCell>Descripción</TableCell>
-              <TableCell>Unidad de medida</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {
-              variables.map((v, idx) => (
-                <TableRow key={idx}>
-                  <TableCell><MathJax inline>{`\\(${v.nombre}\\)`}</MathJax></TableCell>
-                  <TableCell>{v.dato}</TableCell>
-                  <TableCell>{v.anio}</TableCell>
-                  <TableCell>{v.variableDesc}</TableCell>
-                  <TableCell>{v.medida.nombre}</TableCell>
-                </TableRow>
-              ))
-            }
-          </TableBody>
-        </Table>
+        {
+          variables.length > 0 && (
+            <>
+              <Typography fontWeight={500}>Variables:</Typography>
+              <Table aria-label='Variables usadas en la ecuación'>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Variable</TableCell>
+                    <TableCell>Dato</TableCell>
+                    <TableCell>Año</TableCell>
+                    <TableCell>Descripción</TableCell>
+                    <TableCell>Unidad de medida</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {
+                    variables.map((v, idx) => (
+                      <TableRow key={idx}>
+                        <TableCell><MathJax inline>{`\\(${v.nombre}\\)`}</MathJax></TableCell>
+                        <TableCell>{v.dato}</TableCell>
+                        <TableCell>{v.anio}</TableCell>
+                        <TableCell>{v.variableDesc}</TableCell>
+                        <TableCell>{v.medida}</TableCell>
+                      </TableRow>
+                    ))
+                  }
+                </TableBody>
+              </Table>
+            </>
+          )
+        }
       </SummarySection>
       <SummarySection title='Mapa'>
         <Typography noWrap>
@@ -109,9 +114,9 @@ export const Summary = () => {
 
 const SummarySection = ({ children, title }) => {
   return (
-    <Box component='section' sx={{ margin: 3 }}>
+    <Box component='section' sx={{ my: 3 }}>
       <Typography variant='h6' component='h4'>{title}</Typography>
-      <Box sx={{ margin: 1, display: 'flex', flexDirection: 'column', rowGap: '8px' }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', rowGap: '8px' }}>
         {children}
       </Box>
     </Box>
@@ -120,6 +125,6 @@ const SummarySection = ({ children, title }) => {
 
 const SemiboldSpan = ({ content }) => {
   return (
-    <span className='semibold'>{content}</span>
+    <Typography component='span' fontWeight={500}>{content}</Typography>
   );
 }
