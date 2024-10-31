@@ -40,13 +40,6 @@ export const FormMapa = (props) => {
           rowSpacing={2}
           columnSpacing={2}
         >
-          {
-            props.defaultTitle && (
-              <Grid item xs={12}>
-                <Typography variant='h5' component='h3'>Mapa</Typography>
-              </Grid>
-            )
-          }
           <Grid item xs={12}>
             <Controller
               control={control}

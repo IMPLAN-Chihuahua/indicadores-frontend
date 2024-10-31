@@ -121,13 +121,12 @@ export const Variable = (props) => {
             field: { value, onChange },
             fieldState: { error }
           }) => (
-            <AutoCompleteInput
+            <TextField
+              label='Unidad de medida'
               value={value}
               onChange={onChange}
-              error={error}
-              label='Unidad de medida'
-              getOptionLabel={(item) => item.nombre}
-              opts={props.medidaOptions}
+              error={!!error}
+              helperText={error ? error.message : ''}
             />
           )}
         />

@@ -13,151 +13,6 @@ import { FormExtra } from "./FormExtra";
 import { HorizontalStepper } from "./HorizontalStepper";
 import { Summary } from "./Summary";
 
-const STEPS = [
-  {
-    idx: 0,
-    label: 'Información Básica',
-    form: 'form-basic'
-  }, {
-    idx: 1,
-    label: 'Formula',
-    form: 'form-formula'
-  }, {
-    idx: 2,
-    label: 'Mapa',
-    form: 'form-mapa'
-  }, {
-    idx: 3,
-    label: 'Extra',
-    form: 'form-extra'
-  }, {
-    idx: 4,
-    label: 'Resumen',
-    form: ''
-  }
-];
-
-const Content = (props) => {
-  switch (props.step) {
-    case 0:
-      return <FormBasic />
-    case 1:
-      return <FormFormula defaultTitle />
-    case 2:
-      return <FormMapa defaultTitle />
-    case 3:
-      return <FormExtra />
-    case 4:
-      return <Summary />;
-    default:
-      return <ErrorContent error='Invalid Step' />
-  }
-}
-
-const initialState = {
-  nombre: '',
-  codigo: '',
-  definicion: '',
-  ultimoValorDisponible: 0,
-  anioUltimoValorDisponible: new Date().getFullYear(),
-  periodicidad: 0,
-  tema: null,
-  medida: null,
-  cobertura: null,
-  ods: null,
-  formula: {
-    ecuacion: '',
-    descripcion: '',
-    hasEcuacion: true,
-    variables: [defaultVariable]
-  },
-  mapa: defaultMapa,
-  observaciones: '',
-  fuente: '',
-  image: ''
-};
-
-const reducer = (state, action) => {
-  switch (action.type) {
-    case 'update-form-basic':
-    case 'update-form-extra':
-      return { ...state, ...action.payload };
-    case 'update-form-mapa':
-      return { ...state, mapa: { ...action.payload } }
-    case 'update-form-formula':
-      return { ...state, formula: { ...action.payload } }
-    case 'clear':
-      return initialState;
-    default:
-      throw new Error('Invalid action type');
-  }
-}
-
-const createIndicadorFormData = (indicador) => {
-  const formData = new FormData();
-  for (const field in indicador) {
-    if (!indicador[field]) {
-      continue;
-    }
-    if (field === 'tema') {
-      formData.append('idTema', indicador[field].id);
-      continue;
-    }
-
-    if (field === 'dimension') {
-      formData.append('idDimension', indicador[field].id);
-      continue;
-    }
-    
-    if (field === 'medida' || field === 'ods' || field === 'cobertura') {
-      formData.append('catalogos[]', indicador[field].id);
-      continue;
-    }
-    if (field === 'formula') {
-      if (!indicador[field].ecuacion) {
-        continue;
-      }
-      formData.append('formula[ecuacion]', encodeURIComponent(indicador[field].ecuacion));
-      formData.append('formula[descripcion]', indicador[field].descripcion);
-      formData.append('formula[isFormula]', indicador[field].hasEcuacion ? 'SI' : 'NO');
-      for (const variable of indicador[field].variables) {
-        const { nombre, dato, anio, medida, variableDesc } = variable;
-        formData.append('formula[variables][]',
-          JSON.stringify({
-            nombre,
-            dato: Number(dato),
-            anio: Number(anio),
-            idUnidad: medida.id,
-            descripcion: variableDesc
-          }));
-      }
-
-      continue;
-    }
-    if (field === 'mapa') {
-      if (indicador[field].url) {
-        formData.append('mapa[url]', indicador[field].url);
-      }
-      if (indicador[field].ubicacion) {
-        formData.append('mapa[ubicacion]', indicador[field].ubicacion)
-      }
-      if (indicador[field]?.urlImagen && indicador[field].urlImagen.length > 0) {
-        formData.append('urlImagen', indicador[field].urlImagen[0]);
-      }
-      continue;
-    }
-    if (field === 'periodicidad') {
-      formData.append('periodicidad', typeof indicador[field] === 'number' ? indicador[field] : null)
-    }
-    formData.append(field, indicador[field])
-  }
-  return formData;
-}
-
-const formStateInitial = {
-  error: null,
-  uploading: false,
-}
 
 export const FormIndicador = (props) => {
   const alert = useAlert();
@@ -209,12 +64,12 @@ export const FormIndicador = (props) => {
     >
       <DialogTitle>
         Nuevo Indicador
-        <HorizontalStepper
-          activeStep={currentStep}
-          stepLabels={STEPS}
-        />
       </DialogTitle>
-      <DialogContent sx={{ height: '60vh' }}>
+      <HorizontalStepper
+        activeStep={currentStep}
+        stepLabels={STEPS}
+      />
+      <DialogContent sx={{ height: '45vh' }}>
         <Content step={currentStep} />
       </DialogContent>
       <DialogActions>
@@ -242,3 +97,136 @@ export const FormIndicador = (props) => {
     </IndicadorProvider>
   );
 };
+
+
+const STEPS = [
+  {
+    idx: 0,
+    label: 'Información básica',
+    form: 'form-basic'
+  }, {
+    idx: 1,
+    label: 'Formula',
+    form: 'form-formula'
+  }, {
+    idx: 2,
+    label: 'Mapa',
+    form: 'form-mapa'
+  }, {
+    idx: 3,
+    label: 'Extra',
+    form: 'form-extra'
+  }, {
+    idx: 4,
+    label: 'Resumen',
+    form: ''
+  }
+];
+
+const Content = (props) => {
+  switch (props.step) {
+    case 0:
+      return <FormBasic />
+    case 1:
+      return <FormFormula defaultTitle />
+    case 2:
+      return <FormMapa defaultTitle />
+    case 3:
+      return <FormExtra />
+    case 4:
+      return <Summary />;
+    default:
+      return <ErrorContent error='Invalid Step' />
+  }
+}
+
+const initialState = {
+  nombre: '',
+  adornment: '',
+  definicion: '',
+  ultimoValorDisponible: 0,
+  anioUltimoValorDisponible: new Date().getFullYear(),
+  periodicidad: '',
+  temas: [],
+  medida: '',
+  cobertura: null,
+  ods: null,
+  formula: {
+    ecuacion: '',
+    descripcion: '',
+    hasEcuacion: true,
+    variables: [defaultVariable]
+  },
+  mapa: defaultMapa,
+  observaciones: '',
+  fuente: '',
+  image: ''
+};
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'update-form-basic':
+    case 'update-form-extra':
+      return { ...state, ...action.payload };
+    case 'update-form-mapa':
+      return { ...state, mapa: { ...action.payload } }
+    case 'update-form-formula':
+      return { ...state, formula: { ...action.payload } }
+    case 'clear':
+      return initialState;
+    default:
+      throw new Error('Invalid action type');
+  }
+}
+
+const createIndicadorFormData = (indicador) => {
+  const formData = new FormData();
+
+  formData.append('nombre', indicador.nombre);
+  formData.append('adornment', indicador.adornment);
+  formData.append('definicion', indicador.definicion);
+  formData.append('idObjetivo', indicador.objetivo.id);
+  formData.append('ultimoValorDisponible', indicador.ultimoValorDisponible);
+  formData.append('anioUltimoValorDisponible', indicador.anioUltimoValorDisponible);
+  formData.append('periodicidad', indicador.periodicidad);
+  formData.append('idOds', indicador.ods.id);
+  formData.append('idCobertura', indicador.cobertura.id);
+  formData.append('fuente', indicador.fuente)
+  formData.append('observaciones', indicador.observaciones)
+  formData.append('unidadMedida', indicador.medida)
+  
+  for (const tema of indicador.temas) {
+    formData.append('temas[]', tema.id);
+  }
+
+  const formula = indicador.formula;
+  formData.append('formula[descripcion]', formula.descripcion);
+  if (formula.hasEcuacion) {
+    formData.append('formula[ecuacion]', encodeURIComponent(formula.ecuacion));
+    formData.append('formula[isFormula]', formula.hasEcuacion ? 'SI' : 'NO');
+
+    for (const variable of formula.variables) {
+      const { nombre, dato, anio, medida, variableDesc } = variable;
+      formData.append('formula[variables][]',
+        JSON.stringify({
+          nombre,
+          dato: Number(dato),
+          anio: Number(anio),
+          idUnidad: medida.id,
+          descripcion: variableDesc
+        }));
+    }
+  }
+
+  const mapa = indicador.mapa;
+  formData.append('mapa[url]', mapa.url);
+  formData.append('mapa[ubicacion]', mapa.ubicacion)
+  formData.append('urlImagen', mapa.urlImagen[0]);
+
+  return formData;
+}
+
+const formStateInitial = {
+  error: null,
+  uploading: false,
+}

@@ -1,72 +1,33 @@
 import {
   Autocomplete,
-  Box, Grid, TextField, Typography,
+  Box, Grid, TextField,
 } from "@mui/material";
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useIndicadorContext } from "../../../../contexts/IndicadorContext";
-import { CatalogoAutocomplete } from "../../common/CatalogPicker";
-import AutoCompleteInput from "../../../common/AutoCompleteInput";
-import { getTemas } from "../../../../services/temaService";
-import { getObjetivosGeneralInfo } from "../../../../services/dimensionService";
+import { useTemas } from "../../../../services/temaService";
+import { useObjetivos } from "../../../../services/objetivoService";
+import { useResourceList } from "../../../../hooks/useResourceList";
 
-const indicadorBasicSchema = yup.object({
-  nombre: yup.string().required('Ingresa el nombre'),
-  codigo: yup.string().required('Ingresa el código'),
-  definicion: yup.string().required('Ingresa la definición'),
-  ultimoValorDisponible: yup.string().required('Ingresa el último valor disponible'),
-  anioUltimoValorDisponible: yup
-    .number().typeError('Ingresa una valor válido')
-    .required('Ingresa el año del último valor disponible')
-    .positive('El año debe ser positivo')
-    .integer('El año debe ser un número entero')
-    .max(new Date().getFullYear(), 'El año no puede ser mayor que el actual')
-  ,
-  periodicidad: yup.number()
-    .integer()
-    .typeError('Periodicidad debe ser un número')
-    .min(0)
-    .nullable(),
-  tema: yup.object({
-    id: yup.number(),
-    temaIndicador: yup.string()
-  }).nullable().required('Selecciona un tema'),
-  objetivo: yup.object({
-    id: yup.number(),
-    titulo: yup.string()
-  }).nullable().required('Selecciona una dimensión')
-})
 
 export const FormBasic = () => {
   const { indicador, onSubmit } = useIndicadorContext();
   const methods = useForm({
     resolver: yupResolver(indicadorBasicSchema)
   });
-  const { control, reset, handleSubmit, setValue } = methods;
-  const selectedTema = useWatch({ control, name: 'tema' });
+  const { control, reset, handleSubmit } = methods;
+  const { objetivos, isLoading: isObjetivosLoading } = useObjetivos();
+  const { temas, isLoading: isTemasLoading } = useTemas();
+  const { resources: ods, isLoading: isOdsLoading } = useResourceList({ resource: 'ods' });
+  
 
   useEffect(() => {
-    if (!selectedTema) {
-      setValue('codigo', '');
-      return;
-    }
-    const { codigo, indicadoresCount } = selectedTema;
-    const count = (parseInt(indicadoresCount) + 1).toString();
-    setValue('codigo', `${codigo}${count.padStart(3, '0')}`, { shouldValidate: true });
-  }, [selectedTema]);
+    if (indicador.nombre === '') return;
 
-  const initForm = useCallback(() => {
-    if (indicador.nombre === '') {
-      return;
-    }
     reset(indicador);
-  }, [indicador]);
-
-  useEffect(() => {
-    initForm();
-  }, [initForm])
+  }, [indicador])
 
   return (
     <Box
@@ -82,50 +43,6 @@ export const FormBasic = () => {
         direction="row"
       >
         <Grid item xs={12}>
-          <Typography variant='h6'>General</Typography>
-        </Grid>
-        <Grid item xs={6}>
-          <Controller
-            control={control}
-            name='objetivo'
-            defaultValue={null}
-            render={({ field: { value, onChange }, fieldState: { error } }) => (
-              <AutoCompleteInput
-                value={value}
-                onChange={onChange}
-                error={error}
-                label='Dimensión'
-                helperText='Objetivo de PDU'
-                getOptionLabel={item => item.titulo}
-                fetcher={async () => {
-                  const res = await getObjetivosGeneralInfo()
-                  return res.data.data
-                }}
-                required
-              />
-            )}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <Controller
-            control={control}
-            name='tema'
-            defaultValue={null}
-            render={({ field: { value, onChange }, fieldState: { error } }) => (
-              <AutoCompleteInput
-                value={value}
-                onChange={onChange}
-                error={error}
-                label='Tema de interes'
-                helperText='Tema al que pertenece el indicador'
-                getOptionLabel={(item) => item.temaIndicador}
-                fetcher={getTemas}
-                required
-              />
-            )}
-          />
-        </Grid>
-        <Grid item xs={8}>
           <Controller
             name="nombre"
             control={control}
@@ -150,29 +67,6 @@ export const FormBasic = () => {
         </Grid>
         <Grid item xs={4}>
           <Controller
-            name="codigo"
-            defaultValue=''
-            control={control}
-            render={({
-              field: { onChange, value },
-              fieldState: { error }
-            }) => (
-              <TextField
-                label='Codigo'
-                type='text'
-                required
-                placeholder='DRY'
-                error={!!error}
-                helperText={error ? error.message : value ? 'Código recomendado' : null}
-                onChange={onChange}
-                value={value}
-                fullWidth
-              />
-            )}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <Controller
             name="ultimoValorDisponible"
             control={control}
             defaultValue=''
@@ -193,7 +87,48 @@ export const FormBasic = () => {
             )}
           />
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={2}>
+          <Controller
+            name="adornment"
+            control={control}
+            defaultValue=''
+            render={({
+              field: { onChange, value },
+              fieldState: { error }
+            }) => (
+              <TextField
+                label='Simbolo'
+                type='text'
+                error={!!error}
+                helperText={error?.message}
+                onChange={onChange}
+                value={value}
+                fullWidth
+              />
+            )}
+          />
+        </Grid>
+        <Grid item md={3}>
+          <Controller
+            name="medida"
+            control={control}
+            defaultValue={''}
+            render={({
+              field: { value, onChange },
+              fieldState: { error }
+            }) => (
+              <TextField
+                label='Unidad de medida'
+                value={value}
+                placeholder="Lotes, Predios, Arboles, etc."
+                onChange={onChange}
+                error={!!error}
+                helperText={error ? error.message : ''}
+              />
+            )}
+          />
+        </Grid>
+        <Grid item md={3}>
           <Controller
             name="anioUltimoValorDisponible"
             control={control}
@@ -209,28 +144,6 @@ export const FormBasic = () => {
                 placeholder={new Date().getFullYear().toString()}
                 error={!!error}
                 helperText={error?.message}
-                onChange={onChange}
-                value={value}
-                fullWidth
-              />
-            )}
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <Controller
-            name="periodicidad"
-            control={control}
-            defaultValue=''
-            render={({
-              field: { onChange, value },
-              fieldState: { error }
-            }) => (
-              <TextField
-                label='Periodicidad en meses'
-                type='text'
-                placeholder='Tiempo entre actualizaciones'
-                error={!!error}
-                helperText={error && error.message}
                 onChange={onChange}
                 value={value}
                 fullWidth
@@ -261,8 +174,125 @@ export const FormBasic = () => {
               />
             )}
           />
+
+        </Grid>
+        <Grid item xs={4}>
+          <Controller
+            control={control}
+            name='objetivo'
+            defaultValue={null}
+            render={({ field: { value, onChange }, fieldState: { error } }) => (
+              <Autocomplete
+                value={value}
+                onChange={(_, data) => onChange(data)}
+                options={objetivos}
+                loading={isObjetivosLoading}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+                getOptionLabel={option => option.titulo}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label='Objetivo de PDU'
+                    variant='outlined'
+                    required
+                    error={!!error}
+                    placeholder="Selecciona un objetivo"
+                    helperText={error ? error.message : ''}
+                  />
+                )}
+              />
+            )}
+          />
+        </Grid>
+        <Grid item xs={4}>
+          <Controller
+            control={control}
+            name='temas'
+            defaultValue={[]}
+            render={({ field: { value, onChange }, fieldState: { error } }) => (
+              <Autocomplete
+                value={value}
+                onChange={(_, data) => onChange(data)}
+                multiple
+                options={temas}
+                loading={isTemasLoading}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+                getOptionLabel={option => option.temaIndicador}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant='outlined'
+                    required
+                    placeholder="Selecciona al menos un tema"
+                    error={!!error}
+                    helperText={error ? error.message : ''}
+                    label='Temas de interés'
+                  />
+                )}
+              />
+            )}
+          />
+        </Grid>
+        <Grid item xs={4}>
+          <Controller
+            name="ods"
+            control={control}
+            defaultValue={null}
+            render={({
+              field: { value, onChange },
+              fieldState: { error }
+            }) => (
+              <Autocomplete
+                value={value}
+                onChange={(_, data) => onChange(data)}
+                options={ods}
+                loading={isOdsLoading}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+                getOptionLabel={option => option.titulo}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant='outlined'
+                    required
+                    placeholder="Selecciona un ODS"
+                    error={!!error}
+                    helperText={error ? error.message : ''}
+                    label='Objetivo de Desarrollo Sostenible'
+                  />
+                )}
+              />
+            )}
+          />
         </Grid>
       </Grid>
     </Box>
   );
 };
+
+
+const indicadorBasicSchema = yup.object({
+  nombre: yup.string().required('Ingresa el nombre'),
+  objetivo: yup.object({
+    id: yup.number(),
+    titulo: yup.string()
+  }).typeError('Selecciona un objetivo'),
+  temas: yup.array().of(yup.object({
+    id: yup.number(),
+    temaIndicador: yup.string()
+  })).min(1, 'Selecciona un tema'),
+  ultimoValorDisponible: yup.string().required('Ingresa el último valor disponible'),
+  adornment: yup.string().trim(),
+  definicion: yup.string().required('Ingresa la definición'),
+  anioUltimoValorDisponible: yup
+    .number().typeError('Ingresa una valor válido')
+    .required('Ingresa el año del último valor disponible')
+    .positive('El año debe ser positivo')
+    .integer('El año debe ser un número entero')
+    .max(new Date().getFullYear(), 'El año no puede ser mayor que el actual')
+  ,
+  // periodicidad: yup.number()
+  //   .integer()
+  //   .typeError('Periodicidad debe ser un número')
+  //   .min(0)
+  //   .nullable(),
+})

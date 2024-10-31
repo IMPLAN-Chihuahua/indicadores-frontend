@@ -1,25 +1,22 @@
 import {
+  Autocomplete,
   Box, Grid,
   TextField, Typography
 } from "@mui/material";
 import { useEffect } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { useIndicadorContext } from "../../../../contexts/IndicadorContext";
-import { COBERTURA_GEOGRAFICA_ID, ODS_ID, UNIDAD_MEDIDA_ID } from "../../../../utils/getCatalog";
-import { CatalogoAutocomplete } from "../../common/CatalogPicker";
+import { useResourceList } from "../../../../hooks/useResourceList";
 
 export const FormExtra = () => {
   const { indicador, onSubmit } = useIndicadorContext();
   const methods = useForm();
   const { handleSubmit, control, reset } = methods;
-
-  const initForm = () => {
-    reset(indicador)
-  }
+  const { resources: coberturas, isLoading: isCoberturasLoading } = useResourceList({ resource: 'coberturas' });
 
   useEffect(() => {
-    initForm();
-  }, []);
+    reset(indicador)
+  }, [indicador]);
 
   return (
     <FormProvider {...methods}>
@@ -34,72 +31,6 @@ export const FormExtra = () => {
           columnSpacing={2}
           rowSpacing={2}
         >
-          <Grid item xs={12}>
-            <Typography variant='h5' component='h3'>Características</Typography>
-          </Grid>
-          <Grid item xs={4}>
-            <Controller
-              name="medida"
-              control={control}
-              defaultValue={null}
-              render={({
-                field: { value, onChange },
-                fieldState: { error }
-              }) => (
-                <CatalogoAutocomplete
-                  id={UNIDAD_MEDIDA_ID}
-                  value={value}
-                  onChange={onChange}
-                  label="Unidad Medida"
-                  error={error}
-                  required={false}
-                />
-              )}
-            />
-          </Grid>
-          <Grid item xs={4}>
-            <Controller
-              name="cobertura"
-              control={control}
-              defaultValue={null}
-              render={({
-                field: { value, onChange },
-                fieldState: { error }
-              }) => (
-                <CatalogoAutocomplete
-                  id={COBERTURA_GEOGRAFICA_ID}
-                  value={value}
-                  onChange={onChange}
-                  label="Cobertura Geográfica"
-                  error={error}
-                  required={false}
-                />
-              )}
-            />
-          </Grid>
-          <Grid item xs={4}>
-            <Controller
-              name="ods"
-              control={control}
-              defaultValue={null}
-              render={({
-                field: { value, onChange },
-                fieldState: { error }
-              }) => (
-                <CatalogoAutocomplete
-                  id={ODS_ID}
-                  value={value}
-                  onChange={onChange}
-                  label="Objetivo de Desarrollo Sostenible"
-                  error={error}
-                  required={false}
-                />
-              )}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <Typography variant='h5' component='h3'>Más Información</Typography>
-          </Grid>
           <Grid item xs={12}>
             <Controller
               control={control}
@@ -128,6 +59,60 @@ export const FormExtra = () => {
                   label='Fuente'
                   multiline
                   rows={2}
+                />
+              )}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <Controller
+              name="periodicidad"
+              control={control}
+              defaultValue=''
+              render={({
+                field: { onChange, value },
+                fieldState: { error }
+              }) => (
+                <TextField
+                  label='Periodicidad en meses'
+                  type='text'
+                  placeholder='Tiempo entre actualizaciones'
+                  error={!!error}
+                  helperText={error && error.message}
+                  onChange={onChange}
+                  value={value}
+                  fullWidth
+                />
+              )}
+            />
+          </Grid>
+
+
+          <Grid item xs={6}>
+            <Controller
+              name="cobertura"
+              control={control}
+              defaultValue={null}
+              render={({
+                field: { value, onChange },
+                fieldState: { error }
+              }) => (
+                <Autocomplete
+                  value={value}
+                  onChange={(_, data) => onChange(data)}
+                  options={coberturas}
+                  loading={isCoberturasLoading}
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
+                  getOptionLabel={option => option.tipo}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant='outlined'
+                      required
+                      error={!!error}
+                      helperText={error ? error.message : ''}
+                      label='Cobertura geográfica'
+                    />
+                  )}
                 />
               )}
             />

@@ -34,15 +34,6 @@ export const Indicators = () => {
       editable: false,
       headerAlign: 'right',
       align: 'right',
-      hide: true,
-    },
-    {
-      field: "codigo",
-      headerName: "Código",
-      minWidth: 30,
-      editable: false,
-      headerAlign: 'left',
-      align: 'left',
     },
     {
       field: "nombre",
@@ -97,7 +88,7 @@ export const Indicators = () => {
     },
     {
       field: "periodicidad",
-      headerName: "Actualización",
+      headerName: "Periodicidad",
       flex: 1,
       maxWidth: 120,
       editable: false,
