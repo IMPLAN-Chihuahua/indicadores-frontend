@@ -137,7 +137,7 @@ const IndicatorValues = ({ methods, updatedAt }) => {
           display: 'flex',
           alginItems: 'center',
         }}>
-          <Box sx={{ p: 2 }}>
+          <Box sx={{ py: 2, px: 1 }}>
             <Controller
               name='anioUltimoValorDisponible'
               control={methods.control}
@@ -150,6 +150,7 @@ const IndicatorValues = ({ methods, updatedAt }) => {
                     size='small'
                     type='text'
                     required
+                    label='Año último valor disponible'
                     fullWidth
                     autoComplete='off'
                     error={!!error}
@@ -181,14 +182,6 @@ const IndicatorValues = ({ methods, updatedAt }) => {
               </Typography>
               <Typography>
                 {parseDate(updatedAt)}
-              </Typography>
-            </Box>
-            <Box sx={{ pl: 3, lineHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              <Typography variant='caption' sx={{ color: 'text.secondary' }}>
-                Código
-              </Typography>
-              <Typography>
-                MA001
               </Typography>
             </Box>
           </Box>
