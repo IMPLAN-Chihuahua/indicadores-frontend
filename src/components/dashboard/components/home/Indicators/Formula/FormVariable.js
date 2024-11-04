@@ -45,6 +45,8 @@ const FormVariable = (props) => {
 
 
   const onSubmit = (data) => {
+    console.log(data)
+
     showAlert({
       title: `¿Deseas agregar esta registro?`,
       text: `Al agregar este registro, los cambios generados se actualizarán en la tabla de variables de Chihuahua Métrica y en el sistema de gestión de Chihuahua en Datos.`,
@@ -57,7 +59,7 @@ const FormVariable = (props) => {
           dato: data.dato,
           descripcion: data.variableDesc,
           anio: data.anio,
-          idUnidad: data.medida.id
+          unidadMedida: data.unidadMedida
         }
         if (props.action === VARIABLE_FORM_ACTIONS.NEW) {
           return addVariable(props.idFormula, {

@@ -22,6 +22,7 @@ import { showAlert } from "../../../../../../utils/alert";
 import PersonalLoader from "../../../../../common/PersonalLoader/PersonalLoader";
 
 const VariableTable = (props) => {
+
   return (
     <Table aria-label='Variables usadas en la ecuación'>
       <TableHead>
@@ -52,14 +53,14 @@ const VariableTable = (props) => {
                 <TableCell>{v.dato}</TableCell>
                 <TableCell>{v.anio}</TableCell>
                 <TableCell>{v.descripcion}</TableCell>
-                <TableCell>{v.catalogoDetail.nombre}</TableCell>
+                <TableCell>{v.unidadMedida}</TableCell>
                 <TableCell>
                   <div style={{ display: 'flex' }}>
                     <IconButton
                       aria-label='edit variable'
                       onClick={() => props.handleUpdate({
                         ...v,
-                        medida: v.catalogoDetail,
+                        // medida: v.catalogoDetail,
                         variableDesc: v.descripcion
                       })}>
                       <ModeEditIcon />
@@ -140,7 +141,7 @@ const FormulaView = () => {
     data.variables = data.variables.map(v => ({
       ...v,
       descripcion: v.variableDesc,
-      idUnidad: v.medida.id
+      unidadMedida: v.unidadMedida
     }))
     data.isFormula = data.hasEcuacion ? 'SI' : 'NO';
     showAlert({

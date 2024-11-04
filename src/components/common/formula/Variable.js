@@ -24,7 +24,7 @@ export const Variable = (props) => {
         dato: getValues('dato'),
         anio: getValues('anio'),
         variableDesc: getValues('variableDesc'),
-        medida: getValues('medida'),
+        unidadMedida: getValues('unidadMedida'),
       }
       addVariable(newVariable);
     } else if (deleteVariable) {
@@ -115,7 +115,7 @@ export const Variable = (props) => {
       </Grid>
       <Grid item xs>
         <Controller
-          name={isSingleMode ? 'medida' : `variables.${index}.medida`}
+          name={isSingleMode ? 'unidadMedida' : `variables.${index}.unidadMedida`}
           control={methods.control}
           render={({
             field: { value, onChange },
