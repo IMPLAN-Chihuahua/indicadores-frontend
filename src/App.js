@@ -51,8 +51,6 @@ function App() {
                 <Route element={<AdminRoute />}>
                   <Route path='/usuarios' element={<Users />} />
                   <Route path='/objetivos' element={<Objetivos />} />
-                  <Route path='/autorizacion' element={<Relationship />} />
-                  <Route path='/autorizacion/indicador/:id' element={<Relation />} />
                 </Route>
               </Route>
             </Routes>

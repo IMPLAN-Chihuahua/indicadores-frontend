@@ -45,11 +45,6 @@ export const Sidebar = () => {
     icon: <BubbleChartIcon className='sidebar-icon' />
   },
   {
-    to: '/autorizacion',
-    label: 'Autorización',
-    icon: <Lock className='sidebar-icon' />
-  },
-  {
     to: '/objetivos',
     label: "Objetivos",
     icon: <DashboardIcon className='sidebar-icon' />

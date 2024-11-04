@@ -50,17 +50,19 @@ const Cardie = (objetivo) => {
     setSelectedObjetivo(objetivo)
   }
 
-
   return (
     <Box sx={{
       minHeight: 200,
       display: 'flex',
       flexDirection: 'row',
-      m: 1,
       boxShadow: 'rgba(0, 0, 0, 0.05) 0px 0px 0px 1px',
       borderRadius: 1,
       backgroundColor: 'rgba(255, 255, 255, 0.58)',
-      position: 'relative'
+      position: 'relative',
+      width: '100%',
+      mb: 1,
+      //mt if first
+      mt: 1,
     }}>
       <Box
         component={'img'}
@@ -74,16 +76,16 @@ const Cardie = (objetivo) => {
         src={urlImagen}
       />
       <Box sx={{ p: 1 }}>
-        <Typography variant="h5" component="div" sx={{
+        <Typography variant="h6" component="div" sx={{
           mr: 3
         }}>
           {titulo}
         </Typography>
-        <Typography variant="h6" >
+        <Typography variant="body2" >
           {summary}
         </Typography>
 
-        <Typography variant="body2" >
+        <Typography variant="caption" >
           {descripcion}
         </Typography>
       </Box>
@@ -101,7 +103,6 @@ const Cardie = (objetivo) => {
       >
         <b>Indicadores bajo este objetivo:</b> {count}
       </Box>
-
       <FormDialog
         open={openModal}
         handleClose={handleCloseModal}
