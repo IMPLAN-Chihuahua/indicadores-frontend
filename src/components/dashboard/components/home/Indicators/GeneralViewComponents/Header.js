@@ -52,8 +52,8 @@ const Header = ({ methods }) => {
           pl: 2,
           display: edit ? 'block' : display,
         }}>
-          <IconButton>
-            <EditIcon onClick={() => setEdit(!edit)} />
+          <IconButton onClick={() => setEdit(!edit)}>
+            <EditIcon />
           </IconButton>
         </Box>
       </Grid>
