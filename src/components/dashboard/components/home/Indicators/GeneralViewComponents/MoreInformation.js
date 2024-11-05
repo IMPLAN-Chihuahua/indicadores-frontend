@@ -6,62 +6,17 @@ import {
   Paper, Link as MUILink,
   Autocomplete
 } from '@mui/material';
-import OwnerListDropdown from '../Owner/OwnerList';
-import { CatalogoAutocomplete } from '../../../../common/CatalogPicker';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
-import { Link as RouterLink, useParams } from 'react-router-dom';
-import { useAuth } from '../../../../../../contexts/AuthContext';
-import { displayLabel } from '../../../../../../utils/getCatalog';
-import ODSTable from '../ODS/ODSTable';
-import { getTemas } from '../../../../../../services/temaService';
-import { getCoberturas } from '../../../../../../services/coberturasService';
-import { getObjetivos } from '../../../../../../services/dimensionService';
-import { getOds } from '../../../../../../services/odsService';
 import { useResourceList } from '../../../../../../hooks/useResourceList';
+import { useObjetivos } from '../../../../../../services/objetivoService';
+import { useTemas } from '../../../../../../services/temaService';
 
-const getTemasRes = async () => {
-  const temas = await getTemas();
-  return temas;
-};
-
-const getObjetivosRes = async () => {
-  const { data: objetivos } = await getObjetivos();
-  return objetivos.data;
-}
-
-const getCoberturasRes = async () => {
-  const coberturas = await getCoberturas();
-
-  return coberturas;
-};
-
-const getOdsRes = async () => {
-  const ods = await getOds();
-  return ods;
-}
 
 const MoreInformation = ({ methods, id }) => {
-  const [temasRes, setTemas] = React.useState([]);
-  const [objetivos, setObjetivos] = React.useState([]);
-  const [coberturas, setCoberturas] = React.useState([]);
-  const { resources: ods } = useResourceList({ resource: 'ods' })
-
-  useEffect(() => {
-    getTemasRes().then(temas => {
-      setTemas(temas);
-    })
-
-    getObjetivosRes().then(objetivos => {
-      setObjetivos(objetivos);
-    })
-
-    getCoberturasRes().then(coberturas => {
-      setCoberturas(coberturas);
-    })
-
-  }, []);
-
-  console.log(ods);
+  const { temas } = useTemas();
+  const { objetivos } = useObjetivos();
+  const { resources: ods } = useResourceList({ resource: 'ods' });
+  const { resources: coberturas } = useResourceList({ resource: 'coberturas' });
 
   return (
     <Grid item xs={12} md={6} sx={{
@@ -69,14 +24,14 @@ const MoreInformation = ({ methods, id }) => {
       height: '100%',
     }}>
       <Stack gap={2} sx={{ p: 1, backgroundColor: 'white', height: '100%' }}>
-        <Typography variant='h5' mb={2}>Mássss información</Typography>
+        <Typography variant='h5' mb={2}>Más información</Typography>
         <Controller
           control={methods.control}
           name='temas'
           render={({ field: { value, onChange }, fieldState: { error } }) => (
             <Autocomplete
               value={value}
-              options={temasRes}
+              options={temas}
               getOptionLabel={(option) => option.temaIndicador}
               isOptionEqualToValue={(option, value) => option.id === value.id}
               onChange={(_, data) => onChange(data)}
@@ -88,12 +43,10 @@ const MoreInformation = ({ methods, id }) => {
         />
         <Controller
           control={methods.control}
-          name='idCobertura'
+          name='cobertura'
           render={({ field: { value, onChange }, fieldState: { error } }) => (
             <Autocomplete
-              value={
-                coberturas.find(cobertura => cobertura.id === value) || value
-              }
+              value={value}
               options={coberturas}
               getOptionLabel={(option) => option.tipo}
               isOptionEqualToValue={(option, value) => option.id === value.id}
@@ -105,12 +58,10 @@ const MoreInformation = ({ methods, id }) => {
         />
         <Controller
           control={methods.control}
-          name='idOds'
+          name='ods'
           render={({ field: { value, onChange }, fieldState: { error } }) => (
             <Autocomplete
-              value={
-                ods.find(ods => ods.id === value) || value
-              }
+              value={value}
               options={ods}
               getOptionLabel={(option) => option.titulo}
               isOptionEqualToValue={(option, value) => option.id === value.id}
