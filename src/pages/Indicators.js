@@ -127,14 +127,7 @@ export const Indicators = () => {
   const rowSelectionHandler = (ids) => {
     const selectedData = ids.map(id => indicadores.find(row => row.id === id));
     setSelectedIndicadores(selectedData);
-    console.log(selectedIndicadores);
   }
-
-  useEffect(() => {
-    console.log(selectedIndicadores);
-  }
-    , [selectedIndicadores])
-
 
   return (
     <Box display='flex' flexDirection='column' p={2} height='100%'>
@@ -206,7 +199,6 @@ const toggleStatus = (indicador, successCallback) => {
     }
   })
     .then(res => {
-      console.log('RESPONSE', res)
       if (res) {
         showAlert({
           title: 'Estado actualizado exitosamente',

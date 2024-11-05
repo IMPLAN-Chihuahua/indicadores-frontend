@@ -184,7 +184,7 @@ export const GeneralView = () => {
 					>
 						<Header methods={methods} />
 						<IndicatorValues methods={methods} updatedAt={indicador.updatedAt} />
-						<Grid container xs={12} md={12} >
+						<Grid container item xs={12} md={12} >
 							<GeneralInformation methods={methods} indicador={indicador} />
 							<MoreInformation methods={methods} id={id} />
 						</Grid>
