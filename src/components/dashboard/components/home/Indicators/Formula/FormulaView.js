@@ -241,7 +241,7 @@ const FormulaView = () => {
       height: '100%',
     }}>
       <Typography variant='h5'>Fórmula o método de adquisición de información</Typography>
-      <Box className='indicator' sx={{ overflow: 'auto', flex: '1 1 auto', height: '500px', backgroundColor: 'lightgoldenrodyellow' }} >
+      <Box className='indicator' sx={{ overflow: 'auto', flex: '1 1 auto', height: '500px' }} >
         {isLoading
           ? (<PersonalLoader />)
           : (Object.keys(formula).length === 0)
