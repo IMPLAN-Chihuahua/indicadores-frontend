@@ -190,7 +190,7 @@ const UsuariosIndicadores = () => {
             {
               indicador?.data?.length > 1 ?
                 indicador.data.map((data) => (
-                  <Box sx={{ display: 'flex', alignItems: 'center', alignContent: 'center' }}>
+                  <Box key={data.id} sx={{ display: 'flex', alignItems: 'center', alignContent: 'center' }}>
                     {
                       data.idUsuario != indicador.owner && (
                         <>
