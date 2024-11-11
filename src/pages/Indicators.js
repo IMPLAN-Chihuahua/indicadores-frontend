@@ -76,7 +76,7 @@ export const Indicators = () => {
       align: 'left',
     },
     {
-      field: "usuarios",
+      field: "responsable",
       headerName: "Responsable",
       flex: 1,
       minWidth: 80,
@@ -84,7 +84,7 @@ export const Indicators = () => {
       sortable: false,
       headerAlign: 'left',
       align: 'left',
-      valueGetter: (params) => params.row.usuarios.length > 0 ? params.row.usuarios[0].nombres : 'NA'
+      valueGetter: (params) => params.row.responsable.length > 0 ? params.row.responsable[0].nombres : ''
     },
     {
       field: "periodicidad",
