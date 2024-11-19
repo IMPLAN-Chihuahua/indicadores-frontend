@@ -5,14 +5,12 @@ import {
   Typography, Checkbox, FormControlLabel, Box,
   Divider
 } from '@mui/material';
-import { Controller, FormProvider, useForm } from 'react-hook-form';
-import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
-import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
-import ArchiveIcon from '@mui/icons-material/Archive';
-import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
+import { Controller, FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { parseDate } from '../../../../../../utils/dateParser';
 
-const IndicatorValues = ({ methods, updatedAt }) => {
+const IndicatorValues = () => {
+  const { control, getValues } = useFormContext();
+  const updatedAt = getValues('updatedAt')
   return (
     <Grid container item xs={12} md={12} className='indicador-element' sx={{ display: 'flex', mb: 3 }}>
       <Grid item xs={12} md={6} sx={{ p: 1 }}>
@@ -23,7 +21,7 @@ const IndicatorValues = ({ methods, updatedAt }) => {
           <Box sx={{ p: 2, width: '40%' }}>
             <Controller
               name='ultimoValorDisponible'
-              control={methods.control}
+              control={control}
               render={({
                 field,
                 fieldState: { error }
@@ -48,7 +46,7 @@ const IndicatorValues = ({ methods, updatedAt }) => {
           <Box sx={{ p: 2, width: '60%' }}>
             <Controller
               name='adornment'
-              control={methods.control}
+              control={control}
               render={({
                 field,
                 fieldState: { error }
@@ -73,7 +71,7 @@ const IndicatorValues = ({ methods, updatedAt }) => {
           <Box sx={{ p: 2, width: '100%' }}>
             <Controller
               name='unidadMedida'
-              control={methods.control}
+              control={control}
               render={({
                 field,
                 fieldState: { error }
@@ -98,7 +96,7 @@ const IndicatorValues = ({ methods, updatedAt }) => {
           <Box sx={{ p: 2, width: '40%' }}>
             <Controller
               name="periodicidad"
-              control={methods.control}
+              control={control}
               render={({
                 field: { onChange, value },
                 fieldState: { error }
@@ -140,7 +138,7 @@ const IndicatorValues = ({ methods, updatedAt }) => {
           <Box sx={{ py: 2, px: 1 }}>
             <Controller
               name='anioUltimoValorDisponible'
-              control={methods.control}
+              control={control}
               render={({
                 field,
                 fieldState: { error }

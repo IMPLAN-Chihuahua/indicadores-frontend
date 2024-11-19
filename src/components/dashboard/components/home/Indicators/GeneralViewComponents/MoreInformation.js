@@ -1,18 +1,18 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import '../indicator.css'
 import {
   Grid, TextField,
-  Typography, Box, Stack,
-  Paper, Link as MUILink,
-  Autocomplete
+  Typography, Stack,
+  Autocomplete,
 } from '@mui/material';
-import { Controller, FormProvider, useForm } from 'react-hook-form';
+import { Controller, FormProvider, useForm, useFormContext, useWatch } from 'react-hook-form';
 import { useResourceList } from '../../../../../../hooks/useResourceList';
 import { useObjetivos } from '../../../../../../services/objetivoService';
 import { useTemas } from '../../../../../../services/temaService';
 
 
-const MoreInformation = ({ methods, id }) => {
+const MoreInformation = () => {
+  const { control, getValues } = useFormContext();
   const { temas } = useTemas();
   const { objetivos } = useObjetivos();
   const { resources: ods } = useResourceList({ resource: 'ods' });
@@ -26,7 +26,7 @@ const MoreInformation = ({ methods, id }) => {
       <Stack gap={2} sx={{ p: 1, backgroundColor: 'white', height: '100%' }}>
         <Typography variant='h5' mb={2}>Más información</Typography>
         <Controller
-          control={methods.control}
+          control={control}
           name='temas'
           render={({ field: { value, onChange }, fieldState: { error } }) => (
             <Autocomplete
@@ -42,7 +42,7 @@ const MoreInformation = ({ methods, id }) => {
           )}
         />
         <Controller
-          control={methods.control}
+          control={control}
           name='cobertura'
           render={({ field: { value, onChange }, fieldState: { error } }) => (
             <Autocomplete
@@ -57,7 +57,7 @@ const MoreInformation = ({ methods, id }) => {
           )}
         />
         <Controller
-          control={methods.control}
+          control={control}
           name='ods'
           render={({ field: { value, onChange }, fieldState: { error } }) => (
             <Autocomplete
@@ -72,18 +72,23 @@ const MoreInformation = ({ methods, id }) => {
           )}
         />
         <Controller
-          control={methods.control}
+          control={control}
           name='objetivos'
           render={({ field: { value, onChange }, fieldState: { error } }) => (
             <Autocomplete
               value={value}
               options={objetivos}
               getOptionLabel={(option) => option.titulo}
+              multiple
               isOptionEqualToValue={(option, value) => option.id === value.id}
               onChange={(_, data) => onChange(data)}
-              multiple
               id='objetivos'
-              renderInput={(params) => <TextField {...params} label='Objetivos del PDU2040' />}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label='Objetivos del PDU2040'
+                  helperText={error ? error.message : ''}
+                />)}
             />
           )}
         />
