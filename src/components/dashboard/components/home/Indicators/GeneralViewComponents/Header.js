@@ -1,13 +1,14 @@
-import { Box, Button, Grid, IconButton, TextField, Typography } from '@mui/material'
-import React from 'react'
-import CustomizedMenus from './MenuButton'
+import { Box, Button, CircularProgress, Grid, IconButton, TextField, Typography } from '@mui/material'
+import React, { lazy, Suspense } from 'react'
 import EditIcon from '@mui/icons-material/Edit';
-import { Controller } from 'react-hook-form';
-import { Link as RouterLink } from 'react-router-dom';
+import { Controller, useFormContext } from 'react-hook-form';
+import CustomizedMenus from './MenuButton'
 
-const Header = ({ methods }) => {
+const Header = () => {
+  const { control, getValues } = useFormContext();
   const [display, setDisplay] = React.useState('none')
   const [edit, setEdit] = React.useState(false)
+  const nombre = getValues('nombre')
 
   return (
     <Grid container item xs={12} sx={{
@@ -23,7 +24,7 @@ const Header = ({ methods }) => {
           edit ?
             <Controller
               name='nombre'
-              control={methods.control}
+              control={control}
               render={({ field: { onChange, value }, fieldState: { error }
               }) => (
                 <TextField
@@ -44,7 +45,7 @@ const Header = ({ methods }) => {
             />
             :
             <Typography variant='h4' fontWeight={300}>
-              {methods.getValues('nombre')}
+              {nombre}
             </Typography>
         }
 
@@ -60,7 +61,7 @@ const Header = ({ methods }) => {
       <Grid item xs={12} md={6} sx={{
         display: 'flex', justifyContent: 'flex-end',
       }}>
-        <CustomizedMenus methods={methods} />
+        <CustomizedMenus />
       </Grid>
     </Grid>
   )

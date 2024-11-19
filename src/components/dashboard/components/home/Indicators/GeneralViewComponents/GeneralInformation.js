@@ -5,7 +5,7 @@ import {
   Typography, Box, Stack,
   Divider
 } from '@mui/material';
-import { Controller } from 'react-hook-form';
+import { Controller, useFormContext } from 'react-hook-form';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import AutoCompleteInput from '../../../../../common/AutoCompleteInput';
@@ -20,7 +20,9 @@ const temasFetcher = async () => {
   return temas;
 };
 
-const GeneralInformation = ({ methods, indicador }) => {
+const GeneralInformation = () => {
+  const { control } = useFormContext();
+
   return (
     <Grid item xs={12} md={6} sx={{
       p: 1,
@@ -37,7 +39,7 @@ const GeneralInformation = ({ methods, indicador }) => {
         <Divider sx={{ lineHeight: 0 }} />
         <Controller
           name="definicion"
-          control={methods.control}
+          control={control}
           render={({
             field: { onChange, value },
             fieldState: { error }
@@ -63,7 +65,7 @@ const GeneralInformation = ({ methods, indicador }) => {
 
         <Controller
           name="observaciones"
-          control={methods.control}
+          control={control}
           render={({
             field: { onChange, value },
             fieldState: { error }
@@ -86,7 +88,7 @@ const GeneralInformation = ({ methods, indicador }) => {
 
         <Controller
           name='fuente'
-          control={methods.control}
+          control={control}
           render={({ field: { onChange, value }, fieldState: { error }
           }) =>
           (

@@ -124,3 +124,14 @@ export const useIndicadores = ({ perPage, page, searchQuery, ...filters }) => {
     mutate
   }
 };
+
+
+export const getObjetivosStatus = async (idIndicador) => {
+  const res = await protectedApi.get(`/indicadores/${idIndicador}/objetivos/status`)
+  return res.data;
+}
+
+
+export const destacarIndicadorInObjetivos = async (idIndicador, objetivosStatus) => {
+  return protectedApi.post(`/indicadores/${idIndicador}/objetivos/status`, objetivosStatus)
+}
