@@ -8,12 +8,13 @@ import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import RocketLaunchOutlinedIcon from '@mui/icons-material/RocketLaunchOutlined';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import { Typography } from '@mui/material';
+import { CircularProgress, ListItemIcon, Typography } from '@mui/material';
 import { updateIndicator } from '../../../../../../services/indicatorService';
 import { useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import { Link as RouterLink } from 'react-router-dom';
-import { Link, TextField } from '@mui/material'
+import { useFormContext } from 'react-hook-form';
+import GradeIcon from '@mui/icons-material/Grade';
+const FormDestacarIndicadorInObjetivo = React.lazy(() => import('../../../../forms/indicador/FormDestacarIndicadorInObjetivo'))
 
 /**Componente completamente robado de https://mui.com/material-ui/react-menu/ */
 
@@ -54,7 +55,8 @@ const StyledMenu = styled((props) => (
 const ARCHIVO = 'ARCHIVO'
 const ESTADO = 'ESTADO'
 
-export default function CustomizedMenus({ methods }) {
+export default function CustomizedMenus() {
+  const { control, getValues, setValue } = useFormContext();
   const { id } = useParams()
 
   const changeIndicadorStatus = async (status) => {
@@ -68,15 +70,15 @@ export default function CustomizedMenus({ methods }) {
       if (result.isConfirmed) {
         switch (status) {
           case ARCHIVO:
-            methods.setValue('archive', !methods.getValues('archive'))
+            setValue('archive', !getValues('archive'))
             await updateIndicator(id, {
-              archive: methods.getValues('archive')
+              archive: getValues('archive')
             });
             break;
           case ESTADO:
-            methods.setValue('activo', !methods.getValues('activo'))
+            setValue('activo', !getValues('activo'))
             await updateIndicator(id, {
-              activo: methods.getValues('activo')
+              activo: getValues('activo')
             });
             break;
         }
@@ -84,84 +86,115 @@ export default function CustomizedMenus({ methods }) {
     })
   }
 
-
+  const [openDestacadoForm, setOpenDestacadoForm] = React.useState(false)
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
+    setOpenDestacadoForm(false);
     setAnchorEl(null);
   };
 
   return (
-    <div>
-      <Button
-        aria-haspopup="true"
-        variant="contained"
-        disableElevation
-        onClick={handleClick}
-        endIcon={<KeyboardArrowDownIcon />}
-      >
-        Opciones
-      </Button>
-      <StyledMenu
-        id="demo-customized-menu"
-        MenuListProps={{
-          'aria-labelledby': 'demo-customized-button',
-        }}
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-      >
-        <MenuItem onClick={() => {
-          changeIndicadorStatus(ARCHIVO)
-        }}>
-          <ArchiveOutlinedIcon />
-          {
-            methods.getValues('archive') ?
-              <Typography variant='body1' sx={{ pl: 1 }}>
-                Desarchivar
+    <>
+      <div>
+        <Button
+          aria-haspopup="true"
+          variant="contained"
+          disableElevation
+          onClick={handleClick}
+          endIcon={<KeyboardArrowDownIcon />}
+        >
+          Opciones
+        </Button>
+        <StyledMenu
+          id="demo-customized-menu"
+          MenuListProps={{
+            'aria-labelledby': 'demo-customized-button',
+          }}
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleClose}
+        >
+          <MenuItem onClick={() => {
+            changeIndicadorStatus(ARCHIVO)
+          }}>
+            <ListItemIcon>
+              <ArchiveOutlinedIcon />
+            </ListItemIcon>
+            {
+              getValues('archive') ?
+                <Typography variant='body1' >
+                  Desarchivar
+                </Typography>
+                :
+                <Typography variant='body1' >
+                  Archivar
+                </Typography>
+            }
+          </MenuItem>
+          <MenuItem onClick={() => {
+            changeIndicadorStatus(ESTADO)
+          }}>
+            <ListItemIcon>
+              <HideSourceIcon />
+            </ListItemIcon>
+            {
+              getValues('activo') ?
+                <Typography variant='body1' >
+                  Desactivar
+                </Typography>
+                :
+                <Typography variant='body1' >
+                  Activar
+                </Typography>
+            }
+          </MenuItem>
+          <MenuItem onClick={() => setOpenDestacadoForm(true)}>
+            <ListItemIcon>
+              <GradeIcon />
+            </ListItemIcon>
+            <Typography>Destacar en objetivos</Typography>
+          </MenuItem>
+          <MenuItem onClick={handleClose}>
+            <ListItemIcon>
+              <FileDownloadOutlinedIcon />
+            </ListItemIcon>
+            <a href={`http://10.218.108.59:8080/api/v1/documentos/${id}/pdf`} target='_blank' rel='noreferrer'>
+              <Typography variant='body1' >
+                Descargar ficha
               </Typography>
-              :
-              <Typography variant='body1' sx={{ pl: 1 }}>
-                Archivar
+            </a>
+          </MenuItem>
+          <MenuItem onClick={handleClose}>
+            <ListItemIcon>
+              <RocketLaunchOutlinedIcon />
+            </ListItemIcon>
+            <a href={`http://10.218.108.59:3000/chihuahua-en-datos/indicadores/${id}`} target='_blank' rel='noreferrer'>
+              <Typography variant='body1' >
+                Ver en Métrica
               </Typography>
-          }
-        </MenuItem>
-        <MenuItem onClick={() => {
-          changeIndicadorStatus(ESTADO)
-        }}>
-          <HideSourceIcon />
-          {
-            methods.getValues('activo') ?
-              <Typography variant='body1' sx={{ pl: 1 }}>
-                Desactivar
-              </Typography>
-              :
-              <Typography variant='body1' sx={{ pl: 1 }}>
-                Activar
-              </Typography>
-          }
-        </MenuItem>
-        <MenuItem onClick={handleClose}>
-          <FileDownloadOutlinedIcon />
-          <a href={`http://10.218.108.59:8080/api/v1/documentos/${id}/pdf`} target='_blank' rel='noreferrer'>
-            <Typography variant='body1' sx={{ pl: 1 }}>
-              Descargar ficha
-            </Typography>
-          </a>
-        </MenuItem>
-        <MenuItem onClick={handleClose}>
-          <RocketLaunchOutlinedIcon />
-          <a href={`http://10.218.108.59:3000/chihuahua-en-datos/indicadores/${id}`} target='_blank' rel='noreferrer'>
-            <Typography variant='body1' sx={{ pl: 1 }}>
-              Ver en Métrica
-            </Typography>
-          </a>
-        </MenuItem>
-      </StyledMenu>
-    </div>
+            </a>
+          </MenuItem>
+        </StyledMenu>
+      </div>
+      {
+        openDestacadoForm && (
+          <React.Suspense fallback={<CircularProgress />}>
+            <FormDestacarIndicadorInObjetivo
+              open={openDestacadoForm}
+              handleClose={() => {
+                console.log('closing form')
+                handleClose();
+              }}
+              destacados={getValues('destacados')}
+            />
+          </React.Suspense>
+        )
+      }
+    </>
   );
 }
 

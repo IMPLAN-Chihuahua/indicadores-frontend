@@ -4,7 +4,6 @@ import './indicator.css'
 import {
 	Grid,
 	Button,
-	Typography
 } from '@mui/material';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { Box } from '@mui/system';
@@ -15,7 +14,6 @@ import { createIndicatorSchema } from '../../../../../utils/indicatorValidator';
 import { getIndicator, updateIndicator } from '../../../../../services/indicatorService';
 import { createHistoricos } from '../../../../../services/historicosService';
 import { useAuth } from '../../../../../contexts/AuthContext';
-import { isNumber } from '../../../../../utils/stringsValidator';
 import PersonalLoader from '../../../../common/PersonalLoader/PersonalLoader';
 import IndicatorValues from './GeneralViewComponents/IndicatorValues';
 import GeneralInformation from './GeneralViewComponents/GeneralInformation';
@@ -23,81 +21,40 @@ import MoreInformation from './GeneralViewComponents/MoreInformation';
 import Header from './GeneralViewComponents/Header';
 
 export const GeneralView = () => {
-	const [indicador, setIndicador] = useState(null);
 	const [isLoading, setLoading] = useState(true);
-	const { id } = useParams();
+	const { id: idIndicador } = useParams();
 	const { user } = useAuth();
 
-	let defaultValues = {
-		activo: '',
-		anioUltimoValorDisponible: '',
-		catalogos: [{
-			id: 0,
-			nombre: '',
-			idCatalogo: 1
-		}],
-		archive: false,
-		objetivo: {},
-		codigo: '',
-		createdAt: '',
-		createdBy: '',
-		definicion: '',
-		formula: {},
-		fuente: '',
-		elif: '',
-		historicos: [],
-		adornment: '',
-		unidadMedida: '',
-		id: '',
-		idTema: '',
-		tema: {},
-		temas: [],
-		idCobertura: '',
-		idOds: '',
-		objetivos: [],
-		next: '',
-		nombre: '',
-		observaciones: '',
-		prev: '',
-		tendenciaActual: '',
-		ultimoValorDisponible: '',
-		updatedAt: '',
-		updatedBy: '',
-		urlImagen: '',
-		periodicidad: 0,
-		metas: []
-	}
-
 	const methods = useForm({
-		defaultValues,
+		defaultValues: indicadorDefaultValues,
 		resolver: yupResolver(createIndicatorSchema),
 		mode: 'all',
 	});
 
 	useEffect(() => {
-		getIndicator(id).then(res => {
-			setIndicador(res);
-			methods.reset({
-				...res,
-			});
+		getIndicator(idIndicador).then(res => {
+			const { objetivos, adornment, ...values } = res;
+			const destacados = objetivos.filter(o => o.destacado)
+			const _adornment = adornment ? adornment : '';
+			methods.reset({ ...values, objetivos, destacados, adornment: _adornment });
 		}).finally(_ => setLoading(false))
-	}, [id]);
+	}, [idIndicador]);
 
-	const onSubmit = async (data) => {
+	const onSubmit = async (data, e) => {
+		if (e === undefined) return;
+		if (e?.target?.id !== 'form-indicator') return;
+
 		let updatedVals = 0;
 
-		const { id: idIndicador, activo, catalogos, definicion, fuente, elif,
-			idTema, temas, nombre, observaciones, owner, anioUltimoValorDisponible, idCobertura, idOds,
-			ultimoValorDisponible, updatedBy, periodicidad, archive, objetivo, objetivos, adornment, unidadMedida, metas } = data;
+		const { activo, definicion, fuente, temas, nombre, observaciones, owner, anioUltimoValorDisponible, idCobertura, idOds,
+			ultimoValorDisponible, periodicidad, archive, objetivo, objetivos, adornment, unidadMedida, elif } = data;
 
-		const status = activo;
 		const indicadorData = {
 			nombre,
 			definicion,
 			observaciones,
 			ultimoValorDisponible,
-			updatedBy: id,
-			activo: status,
+			activo,
 			fuente,
 			elif,
 			owner,
@@ -111,7 +68,6 @@ export const GeneralView = () => {
 			idCobertura: idCobertura?.id,
 			idOds: idOds?.id,
 			idObjetivo: objetivo?.id,
-			metas
 		};
 
 		const historicoData = {
@@ -119,11 +75,6 @@ export const GeneralView = () => {
 			valor: ultimoValorDisponible,
 			anio: anioUltimoValorDisponible,
 			idUsuario: user.id,
-		}
-
-		const catalogosData = {
-			catalogos,
-			idIndicador,
 		}
 
 		Swal.fire({
@@ -134,7 +85,9 @@ export const GeneralView = () => {
 			confirmButtonText: `Guardar cambios`,
 			denyButtonText: `Actualizar indicador`,
 		}).then(async (result) => {
-			if (result.isConfirmed || result.isDenied) updateData(result, idIndicador, indicadorData, historicoData, updatedVals);
+			if (result.isConfirmed || result.isDenied) {
+				return updateData(result, idIndicador, indicadorData, historicoData, updatedVals)
+			}
 		});
 
 	};
@@ -166,42 +119,74 @@ export const GeneralView = () => {
 			}
 		}
 	}
+
+	if (isLoading) {
+		return (<PersonalLoader />)
+	}
+
 	return (
-		isLoading
-			? (
-				<PersonalLoader />
-			)
-			: (
-				<FormProvider {...methods}>
-					<Grid
-						container
-						component='form'
-						onSubmit={methods.handleSubmit(onSubmit)}
-						noValidate
-						onReset={methods.reset}
-						id='form-indicator'
-						sx={{
-							p: 2
-						}}
-					>
-						<Header methods={methods} />
-						<IndicatorValues methods={methods} updatedAt={indicador.updatedAt} />
-						<Grid container item xs={12} md={12} >
-							<GeneralInformation methods={methods} indicador={indicador} />
-							<MoreInformation methods={methods} id={id} />
-						</Grid>
-					</Grid>
+		<FormProvider {...methods}>
+			<Grid
+				container
+				component='form'
+				onSubmit={methods.handleSubmit(onSubmit)}
+				noValidate
+				onReset={methods.reset}
+				id='form-indicator'
+				sx={{ p: 2 }}
+			>
+				<Header />
+				<IndicatorValues />
+				<Grid container item xs={12} md={12} >
+					<GeneralInformation />
+					<MoreInformation />
+				</Grid>
+			</Grid>
 
 
-					<Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 2, gap: 3 }}>
-						<Button variant='contained'>
-							Cancelar
-						</Button>
-						<Button variant='contained' type='submit' form='form-indicator' >
-							Guardar cambios
-						</Button>
-					</Box>
-				</FormProvider >
-			)
+			<Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 2, gap: 3 }}>
+				<Button variant='contained'>
+					Cancelar
+				</Button>
+				<Button variant='contained' type='submit' form='form-indicator'>
+					Guardar cambios
+				</Button>
+			</Box>
+		</FormProvider >
+
 	)
+}
+
+const indicadorDefaultValues = {
+	nombre: '',
+	ultimoValorDisponible: '',
+	anioUltimoValorDisponible: '',
+	activo: '',
+	archive: false,
+	objetivo: {},
+	isDestacado: false,
+	codigo: '',
+	createdAt: '',
+	createdBy: '',
+	definicion: '',
+	formula: {},
+	fuente: '',
+	historicos: [],
+	adornment: '',
+	unidadMedida: '',
+	id: '',
+	idTema: '',
+	destacados: [],
+	tema: {},
+	temas: [],
+	idCobertura: '',
+	idOds: '',
+	objetivos: [],
+	observaciones: '',
+	tendenciaActual: '',
+	updatedAt: '',
+	updatedBy: '',
+	urlImagen: '',
+	periodicidad: 0,
+	elif: '',
 }
