@@ -44,6 +44,7 @@ export const GeneralView = () => {
 		definicion: '',
 		formula: {},
 		fuente: '',
+		elif: '',
 		historicos: [],
 		adornment: '',
 		unidadMedida: '',
@@ -85,7 +86,7 @@ export const GeneralView = () => {
 	const onSubmit = async (data) => {
 		let updatedVals = 0;
 
-		const { id: idIndicador, activo, catalogos, definicion, fuente,
+		const { id: idIndicador, activo, catalogos, definicion, fuente, elif,
 			idTema, temas, nombre, observaciones, owner, anioUltimoValorDisponible, idCobertura, idOds,
 			ultimoValorDisponible, updatedBy, periodicidad, archive, objetivo, objetivos, adornment, unidadMedida, metas } = data;
 
@@ -98,6 +99,7 @@ export const GeneralView = () => {
 			updatedBy: id,
 			activo: status,
 			fuente,
+			elif,
 			owner,
 			periodicidad,
 			adornment,
@@ -195,7 +197,7 @@ export const GeneralView = () => {
 						<Button variant='contained'>
 							Cancelar
 						</Button>
-						<Button variant='contained' type='submit' form='form-indicator'>
+						<Button variant='contained' type='submit' form='form-indicator' >
 							Guardar cambios
 						</Button>
 					</Box>

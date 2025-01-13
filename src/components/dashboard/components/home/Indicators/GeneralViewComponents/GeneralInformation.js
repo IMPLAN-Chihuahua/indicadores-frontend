@@ -85,6 +85,29 @@ const GeneralInformation = ({ methods, indicador }) => {
         />
 
         <Controller
+          name="elif"
+          control={methods.control}
+          render={({
+            field: { onChange, value },
+            fieldState: { error }
+          }) => (
+            <TextField
+              label='ELI5'
+              type='text'
+              placeholder='Explícame este concepto como si tuviera 5 años'
+              multiline
+              rows={4}
+              size='small'
+              fullWidth
+              error={!!error}
+              helperText={error ? error.message : null}
+              onChange={onChange}
+              value={value}
+            />
+          )}
+        />
+
+        <Controller
           name='fuente'
           control={methods.control}
           render={({ field: { onChange, value }, fieldState: { error }

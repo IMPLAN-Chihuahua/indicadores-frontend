@@ -23,7 +23,7 @@ const MoreInformation = ({ methods, id }) => {
       p: 1,
       height: '100%',
     }}>
-      <Stack gap={2} sx={{ p: 1, backgroundColor: 'white', height: '100%' }}>
+      <Stack gap={2} sx={{ p: 1, backgroundColor: 'white' }}>
         <Typography variant='h5' mb={2}>Más información</Typography>
         <Controller
           control={methods.control}
