@@ -48,7 +48,7 @@ export const getLatestTemas = async () => {
 
 
 export const useUsers = (args) => {
-  const { perPage = 25, page = 1, searchQuery = '', activo = '' } = args || {};
+  const { perPage = 25, page = 1, searchQuery = '', activo = null } = args || {};
   const queryParams = qs.stringify({
     page,
     perPage,
