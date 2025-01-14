@@ -88,7 +88,7 @@ const GeneralInformation = () => {
 
         <Controller
           name="elif"
-          control={methods.control}
+          control={control}
           render={({
             field: { onChange, value },
             fieldState: { error }

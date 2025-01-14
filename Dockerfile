@@ -1,6 +1,8 @@
 # build application
 FROM node:lts-alpine3.15 AS base
 WORKDIR /home/node
+ARG REACT_APP_LOCAL_URL
+ENV REACT_APP_LOCAL_URL=$REACT_APP_LOCAL_URL
 
 FROM base AS dev
 RUN --mount=type=bind,source=package.json,target=package.json \
@@ -19,8 +21,8 @@ RUN --mount=type=bind,source=package.json,target=package.json \
     --mount=type=cache,target=/root/.npm \
     npm ci --omit=dev --legacy-peer-deps
 ENV NODE_ENV=production
-USER node
 COPY --chown=node:node . .
+USER node
 RUN npm run build
 
 # serve only compiled app with nginx
