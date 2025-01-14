@@ -25,12 +25,12 @@ export const FORM_USER_ACTIONS = {
 const parseUserToFormData = (user) => {
   const formData = new FormData();
   for (const key in user) {
-    if (key === 'urlImagen') {
+    if (key === 'urlImagen' && user[key] && user[key].length > 0) {
       formData.append('urlImagen', user[key][0] || null)
       continue;
     }
     if (key === 'activo') {
-      formData.append(key, user[key] ? 'SI' : 'NO');
+      formData.append(key, user[key]);
       continue;
     }
     if (user[key]) {
@@ -159,7 +159,6 @@ const FormUser = (props) => {
     reset({
       ...props.selectedUser,
       apellidoMaterno: props.selectedUser.apellidoMaterno || '',
-      activo: props.selectedUser.activo === 'SI',
       urlImagen: [props.selectedUser.urlImagen]
     });
 
@@ -202,7 +201,7 @@ const FormUser = (props) => {
                     <TextField
                       label='Correo'
                       type='email'
-                      placeholder='johndoe@email.com'
+                      placeholder='johndoe@example.com'
                       error={!!error}
                       helperText={error ? error.message : null}
                       onChange={onChange}
