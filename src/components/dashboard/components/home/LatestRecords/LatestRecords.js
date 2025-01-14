@@ -106,7 +106,7 @@ const LatestUsuarios = () => {
                   </Box>
                 </Box>
                 <Box className='latest-status'>
-                  <span className={`latest-status-text ${(user.activo == 'SI' ? 'active' : '')}`}>{`${(user.activo == 'SI' ? 'Activo' : 'Inactivo')}`}</span>
+                  <span className={`latest-status-text ${(user.activo ? 'active' : '')}`}>{`${(user.activo ? 'Activo' : 'Inactivo')}`}</span>
                 </Box>
               </Paper>
             </Box>
