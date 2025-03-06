@@ -19,6 +19,7 @@ const UsuariosIndicadores = () => {
   const [clear, setClear] = useState(false);
   const [owner, setOwner] = useState(null);
   const [selectedCheckboxes, setSelectedCheckboxes] = useState([]);
+  const [refresher, setRefresher] = useState(false);
   const isMounted = useIsMounted();
 
   const methods = useForm({
@@ -61,6 +62,7 @@ const UsuariosIndicadores = () => {
           .then(_ => {
             mutate()
             setSelectedCheckboxes([])
+            setRefresher(!refresher)
           })
       }
     })
@@ -94,6 +96,7 @@ const UsuariosIndicadores = () => {
             setClear(!clear);
             setNewUsers([])
             setUsuarios(usuarios.filter((user) => !ids.includes(user.id)))
+            setRefresher(!refresher);
           })
       }
     })
@@ -229,6 +232,7 @@ const UsuariosIndicadores = () => {
           >
             <Controller
               name='owner'
+              key={refresher}
               control={methods.control}
               render={({
                 field: { value, onChange },

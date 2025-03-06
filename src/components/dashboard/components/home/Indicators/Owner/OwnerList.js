@@ -56,7 +56,7 @@ export const OwnerListDropdown = ({ type, id, actualOwner, onChange }) => {
         setUsers([]);
       })
       .finally(_ => setLoading(false));
-  }, [isMounted]);
+  }, [id, actualOwner]);
 
   return (
     <Box variant='outlined' sx={{ p: 2, backgroundColor: 'white', width: '100%', height: '100%' }}>

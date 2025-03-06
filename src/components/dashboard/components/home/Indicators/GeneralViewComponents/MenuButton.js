@@ -62,7 +62,7 @@ export default function CustomizedMenus() {
   const changeIndicadorStatus = async (status) => {
     handleClose()
     Swal.fire({
-      title: `Esta acción ${status === ARCHIVO ? 'archivará' : 'desactivará'} el indicador, lo que significa que no se mostrará en la lista de indicadores del sitio web.`,
+      title: handleTitle(status),
       text: '¿Estás seguro de que deseas continuar?',
       icon: 'info',
       showCancelButton: true,
@@ -84,6 +84,30 @@ export default function CustomizedMenus() {
         }
       }
     })
+  }
+
+  const handleTitle = (status) => {
+    const isArchived = getValues('archive')
+    const isActive = getValues('activo')
+
+    let actionMessage = '';
+    let actionBody = '';
+
+
+    switch (status) {
+      case ARCHIVO:
+        actionMessage = isArchived ? 'desarchivará' : 'archivará';
+        actionBody = isArchived ? 'se mostrará en la lista de indicadores del sitio web.' : 'no se mostrará en la lista de indicadores del sitio web.';
+        break;
+      case ESTADO:
+        actionMessage = isActive ? 'desactivará' : 'activará';
+        actionBody = isActive ? 'no se mostrará en la lista de indicadores del sitio web.' : 'se mostrará en la lista de indicadores del sitio web.';
+        break;
+    }
+
+    let fullMessage = `Esta acción ${actionMessage} el indicador, lo que significa que ${actionBody}`;
+
+    return fullMessage;
   }
 
   const [openDestacadoForm, setOpenDestacadoForm] = React.useState(false)
@@ -162,7 +186,7 @@ export default function CustomizedMenus() {
             <ListItemIcon>
               <FileDownloadOutlinedIcon />
             </ListItemIcon>
-            <a href={`http://10.218.108.59:8080/api/v1/documentos/${id}/pdf`} target='_blank' rel='noreferrer'>
+            <a href={`http://localhost:8080/api/v1/documentos/${id}/pdf`} target='_blank' rel='noreferrer'>
               <Typography variant='body1' >
                 Descargar ficha
               </Typography>
