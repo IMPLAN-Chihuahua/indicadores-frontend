@@ -16,7 +16,7 @@ export const SIDEBAR_KEY = 'indicadores-sidebar-mode';
 
 export const Sidebar = () => {
 
-  const [isSidebarOpen, setSidebarOpen] = useState(() => JSON.parse(localStorage.getItem(SIDEBAR_KEY) || 'true'));
+  const [isSidebarOpen, setSidebarOpen] = useState(() => localStorage.getItem(SIDEBAR_KEY) === 'true');
   const toggleSidebar = () => {
     setSidebarOpen(prevOpen => {
       const isOpen = !prevOpen;

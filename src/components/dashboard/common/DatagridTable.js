@@ -13,7 +13,7 @@ const DatagridTable = (props) => {
       paginationMode='server'
       rows={rows}
       columns={columns}
-      rowsPerPageOptions={[5, 10, 20, 100]}
+      rowsPerPageOptions={[5, 10, 20, 25, 50, 100]}
       pageSize={perPage}
       page={page - 1}
       rowCount={total}

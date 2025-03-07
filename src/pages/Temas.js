@@ -12,13 +12,14 @@ import EditIcon from '@mui/icons-material/Edit';
 import { showAlert } from "../utils/alert";
 import SearchInput from "../components/dashboard/common/SearchInput";
 import RefreshIcon from '@mui/icons-material/Refresh';
-import useQueryParams from "../hooks/useQueryParams";
+import useQueryParams, { useSearch } from "../hooks/useQueryParams";
 import AddIcon from '@mui/icons-material/Add';
 
 
 export const Temas = () => {
-  const { updatePage, updatePerPage, updateSearchQuery, params } = useQueryParams(temasParamsInitialState)
-  const { page, perPage, searchQuery, } = params;
+  const { updatePage, updatePerPage, params } = useQueryParams()
+  const { page, perPage, } = params;
+  const { updateSearchQuery, searchQuery } = useSearch();
   const { temas, isLoading, hasError, mutate, total } = useTemas({ page, perPage, searchQuery })
 
   const [selectedTema, setSelectedTema] = useState(null);
