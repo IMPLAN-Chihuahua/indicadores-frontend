@@ -1,4 +1,5 @@
 .container {
+    margin-top: var(--navbar-height);
     display: flex;
 }
 
