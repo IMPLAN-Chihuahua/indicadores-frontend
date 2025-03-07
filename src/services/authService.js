@@ -17,11 +17,11 @@ const logout = () => {
 };
 
 const getJwtToken = () => {
-  return JSON.parse(localStorage.getItem(INDICADORES_JWT_KEY));
+  return localStorage.getItem(INDICADORES_JWT_KEY);
 };
 
 const setJwtToken = (jwt) => {
-  localStorage.setItem(INDICADORES_JWT_KEY, JSON.stringify(jwt));
+  localStorage.setItem(INDICADORES_JWT_KEY, jwt);
 };
 
 const getAuthHeaders = () => {
