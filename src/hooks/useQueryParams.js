@@ -1,48 +1,65 @@
-import { useCallback, useReducer } from "react";
+import { useCallback, useReducer, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import qs from 'qs'
 
 
-const useQueryParams = (createInitialState) => {
-    const [params, dispatch] = useReducer(paramsReducer, null, createInitialState);
+const useQueryParams = () => {
+    const [searchParams, setSearchParams] = useSearchParams();
 
     const updateFilters = useCallback((value) => {
-        dispatch({ type: 'UPDATE_FILTERS', filters: value })
-    }, [])
+        setSearchParams(() => {
+            return new URLSearchParams(qs.stringify(value))
+        })
+    }, [searchParams])
 
-    const updateSearchQuery = useCallback(value => {
-        dispatch({ type: 'SEARCH', searchQuery: value })
-    }, [])
 
     const updatePage = useCallback(page => {
-        dispatch({ type: 'UPDATE_PAGE', page: page + 1 })
-    }, []);
+        setSearchParams((prev) => {
+            return new URLSearchParams({
+                ...Object.fromEntries(prev.entries()),
+                page: page + 1,
+            })
+        })
+    }, [searchParams]);
 
     const updatePerPage = useCallback(perPage => {
-        dispatch({ type: 'UPDATE_PER_PAGE', perPage })
-    }, []);
+        setSearchParams((prev) => {
+            return new URLSearchParams({
+                ...Object.fromEntries(prev.entries()),
+                perPage,
+            })
+        })
+    }, [searchParams]);
+
+
+    let { page, perPage, ...filters } = qs.parse(searchParams.toString())
+    page = parseInt(page) || 1;
+    perPage = parseInt(perPage) || 25;
 
     return {
-        params,
+        params: {
+            page,
+            perPage,
+            filters
+        },
         updateFilters,
-        updateSearchQuery,
         updatePage,
         updatePerPage,
     }
 }
 
-const paramsReducer = (state, action) => {
-    switch (action.type) {
-        case 'UPDATE_PER_PAGE':
-            return ({ ...state, perPage: action.perPage });
-        case 'UPDATE_PAGE':
-            return ({ ...state, page: action.page });
-        case 'SEARCH':
-            return ({ ...state, searchQuery: action.searchQuery });
-        case 'UPDATE_FILTERS':
-            const { hasActiveFilters, ...filters } = action.filters;
-            return ({ ...state, hasActiveFilters, filters: filters })
-        default:
-            throw new Error(`Invalid action '${action.type}'`)
+const useSearch = () => {
+    const [search, setSearch] = useState();
+    const updateSearchQuery = useCallback(value => {
+        setSearch(value)
+    }, [])
+
+    return {
+        searchQuery: search,
+        updateSearchQuery
     }
 }
 
 export default useQueryParams;
+
+export { useSearch };

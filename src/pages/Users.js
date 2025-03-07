@@ -9,7 +9,7 @@ import { Avatar, Box, Button, CircularProgress, Dialog, DialogTitle, IconButton,
 import EditIcon from '@mui/icons-material/Edit';
 import { parseDate } from "../utils/dateParser";
 import { showAlert } from "../utils/alert";
-import useQueryParams from "../hooks/useQueryParams";
+import useQueryParams, { useSearch } from "../hooks/useQueryParams";
 import SearchInput from "../components/dashboard/common/SearchInput";
 import RefreshIcon from '@mui/icons-material/Refresh';
 import AddIcon from '@mui/icons-material/Add';
@@ -17,8 +17,9 @@ import AddIcon from '@mui/icons-material/Add';
 const FormUser = lazy(() => import("../components/dashboard/forms/user/FormUser"));
 
 export const Users = () => {
-  const { updatePerPage, updatePage, updateSearchQuery, params } = useQueryParams(usersParamsInitialState)
-  const { searchQuery, page, perPage } = params
+  const { updatePerPage, updatePage, params } = useQueryParams()
+  const { page, perPage } = params
+  const { searchQuery, updateSearchQuery } = useSearch();
   const { users, isLoading, mutate, total } = useUsers({ perPage, page, searchQuery });
   const [open, setOpen] = useState(false);
   const [action, setAction] = useState();

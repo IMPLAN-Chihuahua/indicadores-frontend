@@ -1,11 +1,10 @@
-import { useState, lazy, Suspense, useCallback, useEffect } from "react";
+import { useState, lazy, Suspense, useCallback, } from "react";
 import { useIndicadores } from "../services/indicatorService";
 import DatagridTable from "../components/dashboard/common/DatagridTable";
-import { getGlobalPerPage } from "../utils/objects";
-import { Box, Button, Chip, Dialog, IconButton, Link as MuiLink, Typography } from "@mui/material";
+import { Box, Button, Dialog, IconButton, Link as MuiLink, Typography } from "@mui/material";
 import { showAlert } from "../utils/alert";
 import { toggleIndicadorStatus } from "../services/indicatorService";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { intlFormat, parseISO } from 'date-fns'
 import PageHeader from "../components/dashboard/common/DataHeader";
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
@@ -14,15 +13,16 @@ import AddIcon from '@mui/icons-material/Add';
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import useIsMounted from "../hooks/useIsMounted";
 import SearchInput from "../components/dashboard/common/SearchInput";
-import useQueryParams from "../hooks/useQueryParams";
+import useQueryParams, { useSearch } from "../hooks/useQueryParams";
 import { Status } from "../components/dashboard/common/Status";
 import Loader from "react-spinners/BarLoader";
 
 
 export const Indicators = () => {
-  const { updateSearchQuery, updateFilters, updatePage, updatePerPage, params } = useQueryParams(indicadoresParamsInitialState)
-  const { page, perPage, searchQuery, hasActiveFilters, filters } = params;
-  const { indicadores, isLoading, mutate, total } = useIndicadores({ page, perPage, searchQuery, ...filters });
+  const { updateFilters, updatePage, updatePerPage, params } = useQueryParams()
+  const { page, perPage, filters } = params;
+  const { updateSearchQuery, searchQuery } = useSearch();
+  const { indicadores, isLoading, mutate, total } = useIndicadores({ page, perPage, searchQuery: searchQuery, ...filters });
   const [selectedIndicadores, setSelectedIndicadores] = useState([]);
 
   const columns = [
@@ -128,6 +128,8 @@ export const Indicators = () => {
     const selectedData = ids.map(id => indicadores.find(row => row.id === id));
     setSelectedIndicadores(selectedData);
   }
+  const { owner = null, objetivos = [], temas = [], usuarios = [] } = filters;
+  const hasActiveFilters = owner !== null || [objetivos, temas, usuarios].some(arr => arr.length > 0)
 
   return (
     <Box display='flex' flexDirection='column' p={2} height='100%'>
@@ -137,7 +139,10 @@ export const Indicators = () => {
           <SearchInput
             placeholder='Buscar por nombre, unidad de medida o código'
             onDebouncedChange={updateSearchQuery}
-            AdvancedSearch={<IndicadoresFilterDialog submitCallback={updateFilters} hasActiveFilters={hasActiveFilters} />}
+            AdvancedSearch={<IndicadoresFilterDialog
+              submitCallback={updateFilters}
+              hasActiveFilters={hasActiveFilters}
+            />}
           />
         }
       >
@@ -170,21 +175,6 @@ export const Indicators = () => {
   );
 };
 
-
-const indicadoresParamsInitialState = () => {
-  return {
-    page: 1,
-    perPage: getGlobalPerPage(),
-    searchQuery: '',
-    hasActiveFilters: false,
-    filters: {
-      owner: null,
-      objetivos: [],
-      temas: [],
-      usuarios: [],
-    }
-  }
-}
 
 const toggleStatus = (indicador, successCallback) => {
   showAlert({
