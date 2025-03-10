@@ -11,10 +11,8 @@ import { Users } from "./pages/Users";
 import { ForgotPassword } from "./pages/ForgotPassword";
 import { AlertProvider } from "./contexts/AlertContext";
 import { Indicators } from "./pages/Indicators";
-import { Relationship } from "./pages/Relationship";
 import { MathJaxContext } from 'better-react-mathjax';
 import { GeneralView } from "./components/dashboard/components/home/Indicators/GeneralView";
-import Relation from "./components/dashboard/components/home/Responsables/Relation";
 import Unauthorized from "./pages/Unauthorized";
 import Objetivos from "./pages/Objetivos";
 
