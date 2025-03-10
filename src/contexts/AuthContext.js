@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useContext, useCallback } from 'react';
+import React, { createContext, useState, useContext, useCallback } from 'react';
 import { login, logout } from '../services/authService';
 import { getCurrentUser } from '../services/userService';
 
@@ -14,6 +14,7 @@ const AuthProvider = ({ children }) => {
     try {
       const currentUser = await login(payload.correo, payload.clave);
       setUser(currentUser);
+      localStorage.setItem('indicadores-user', JSON.stringify(currentUser));
       if (onSuccess && typeof onSuccess === 'function') {
         onSuccess();
       }
@@ -57,6 +58,6 @@ const AuthProvider = ({ children }) => {
   );
 };
 
-const useAuth = () => React.useContext(AuthContext);
+const useAuth = () => useContext(AuthContext);
 
 export { AuthProvider, useAuth };
