@@ -54,6 +54,7 @@ export const Indicators = () => {
       minWidth: 100,
       headerAlign: 'right',
       align: 'right',
+      valueGetter: (params) => new Intl.NumberFormat('es-MX', { style: 'decimal' }).format(params.row.ultimoValorDisponible)
     },
     {
       field: "adornment",
