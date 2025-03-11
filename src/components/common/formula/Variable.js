@@ -115,7 +115,7 @@ export const Variable = (props) => {
       </Grid>
       <Grid item xs>
         <Controller
-          name={isSingleMode ? 'unidadMedida' : `variables.${index}.unidadMedida`}
+          name={isSingleMode ? 'unidadMedida' : `variables.${index}.medida`}
           control={methods.control}
           render={({
             field: { value, onChange },
