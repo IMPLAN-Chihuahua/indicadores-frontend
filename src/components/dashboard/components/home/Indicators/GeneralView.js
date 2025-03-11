@@ -144,7 +144,7 @@ export const GeneralView = () => {
 			</Grid>
 
 
-			<Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 2, gap: 3 }}>
+			<Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 2, gap: 3, position: 'absolute', bottom: 0, right: 0 }}>
 				<Button variant='contained'>
 					Cancelar
 				</Button>

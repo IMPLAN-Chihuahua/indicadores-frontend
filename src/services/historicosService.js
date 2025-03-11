@@ -1,19 +1,45 @@
+import { useEffect, useMemo, useState } from 'react';
 import { protectedApi } from '.';
-import useSWR from 'swr';
+import useSWRImmutable from 'swr/immutable';
+import qs from 'qs'
+import useIsMounted from '../hooks/useIsMounted';
 
 const fetcher = (url) => protectedApi.get(url).then(res => res.data);
 
 export const useHistoricos = (perPage, page, idIndicador, sortBy, order) => {
-  const { data, error, mutate } =
-    useSWR(
-      `/indicadores/${idIndicador}/historicos?perPage=${perPage}&page=${page}&order=${order}&sortBy=${sortBy}`,
-      fetcher,
-    );
+  const queryParams = useMemo(() => qs.stringify({
+    perPage,
+    page,
+    sortBy,
+    order,
+  }, {
+    skipNulls: true,
+    addQueryPrefix: true,
+  }), [order, page, perPage, sortBy]);
+  const { data: res, error, mutate } = useSWRImmutable(`/indicadores/${idIndicador}/historicos${queryParams.toString()}`, fetcher);
+  const isMounted = useIsMounted();
+  const [historicos, setHistoricos] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(0)
+  const [latestIndicador, setLatestIndicador] = useState(null);
+
+  useEffect(() => {
+    if (!res) return;
+    if (!isMounted()) return;
+
+    setHistoricos(res.data)
+    setTotal(res.total);
+    setTotalPages(res.totalPages)
+    setLatestIndicador(res.latestIndicador);
+  }, [res, isMounted]);
 
   return {
-    historicosList: data,
-    isLoading: !error && !data,
+    historicos,
+    latestIndicador,
+    isLoading: !error && !res,
     isError: error,
+    total,
+    totalPages,
     mutate,
   };
 };
