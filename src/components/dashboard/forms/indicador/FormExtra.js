@@ -10,6 +10,7 @@ import { useResourceList } from "../../../../hooks/useResourceList";
 
 export const FormExtra = () => {
   const { indicador, onSubmit } = useIndicadorContext();
+
   const methods = useForm();
   const { handleSubmit, control, reset } = methods;
   const { resources: coberturas, isLoading: isCoberturasLoading } = useResourceList({ resource: 'coberturas' });

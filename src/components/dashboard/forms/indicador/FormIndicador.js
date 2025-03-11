@@ -212,16 +212,22 @@ const createIndicadorFormData = (indicador) => {
           nombre,
           dato: Number(dato),
           anio: Number(anio),
-          idUnidad: medida.id,
+          unidadMedida: medida,
           descripcion: variableDesc
         }));
     }
   }
 
   const mapa = indicador.mapa;
-  formData.append('mapa[url]', mapa.url);
-  formData.append('mapa[ubicacion]', mapa.ubicacion)
-  formData.append('urlImagen', mapa.urlImagen[0]);
+  if (mapa.url) {
+    formData.append('mapa[url]', mapa.url);
+  }
+  if (mapa.ubicacion) {
+    formData.append('mapa[ubicacion]', mapa.ubicacion)
+  }
+  if (mapa.urlImagen?.length > 0) {
+    formData.append('urlImagen', mapa.urlImagen[0]);
+  }
 
   return formData;
 }
