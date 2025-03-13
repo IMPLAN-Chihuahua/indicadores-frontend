@@ -1,4 +1,4 @@
-  import { protectedApi, publicApi } from '.';
+import { protectedApi, publicApi } from '.';
 import useSWRImmutable from 'swr/immutable';
 import useSWR from 'swr';
 import { useEffect, useMemo, useState } from 'react';
@@ -34,6 +34,7 @@ export const useIndicadorWithSWR = (id) => {
 }
 
 export const updateIndicator = async (id, data) => {
+  return protectedApi.patch(`/indicadores/${id}`, data);
   try {
     const patch = await protectedApi.patch(`/indicadores/${id}`, data);
     return patch;

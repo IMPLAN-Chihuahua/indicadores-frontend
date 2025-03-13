@@ -12,10 +12,10 @@ const Header = () => {
 
   return (
     <Grid container item xs={12} sx={{
-      display: 'flex', justifyContent: 'space-between', mb: 1,
+      display: 'flex', mb: 1,
     }}>
-      <Grid item xs={12} md={6} sx={{
-        display: 'flex', alignItems: 'center'
+      <Grid item xs={12} md={7} sx={{
+        display: 'flex', width: '100%',
       }}
         onMouseEnter={() => setDisplay('block')}
         onMouseLeave={() => setDisplay('none')}
@@ -48,17 +48,16 @@ const Header = () => {
               {nombre}
             </Typography>
         }
-
         <Box sx={{
-          pl: 2,
-          display: edit ? 'block' : display,
+          display: edit ? 'block' : display
         }}>
           <IconButton onClick={() => setEdit(!edit)}>
             <EditIcon />
           </IconButton>
         </Box>
+
       </Grid>
-      <Grid item xs={12} md={6} sx={{
+      <Grid item xs={12} md={5} sx={{
         display: 'flex', justifyContent: 'flex-end',
       }}>
         <CustomizedMenus />

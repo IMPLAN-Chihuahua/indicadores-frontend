@@ -86,6 +86,7 @@ export const GeneralView = () => {
 			denyButtonText: `Actualizar indicador`,
 		}).then(async (result) => {
 			if (result.isConfirmed || result.isDenied) {
+				console.log('innit')
 				return updateData(result, idIndicador, indicadorData, historicoData, updatedVals)
 			}
 		});
@@ -94,28 +95,23 @@ export const GeneralView = () => {
 
 	const updateData = async (result, idIndicador, indicadorData, historicoData, updatedVals) => {
 		if (result.isConfirmed) {
-			await updateIndicator(idIndicador, indicadorData);
-			Swal.fire('Cambios guardados', '', 'success');
+			await updateIndicator(idIndicador, indicadorData).then(res => {
+				Swal.fire('Cambios guardados', '', 'success');
+			}).catch(err => {
+				Swal.fire('No se pudieron guardar los cambios', err, 'error');
+			})
 		} else if (result.isDenied) {
 			try {
-				await updateIndicator(idIndicador, indicadorData);
+				await updateIndicator(idIndicador, indicadorData)
 				updatedVals++;
 				try {
 					await createHistoricos(idIndicador, historicoData);
 					updatedVals++;
 				} catch (err) {
-					console.log(err);
+					Swal.fire('No se pudieron guardar los cambios', err, 'error');
 				}
 			} catch (error) {
-				console.log(error);
-			}
-
-			if (updatedVals === 2) {
-				Swal.fire('Cambios guardados', '', 'success');
-			} else if (updatedVals === 1) {
-				Swal.fire('Algunos cambios no se pudieron guardar', 'Intenta nuevamente', 'error');
-			} else {
-				Swal.fire('No se pudieron guardar los cambios', 'Intenta nuevamente', 'error');
+				Swal.fire('No se pudieron guardar los cambios', error, 'error');
 			}
 		}
 	}
