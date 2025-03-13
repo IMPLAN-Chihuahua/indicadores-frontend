@@ -24,7 +24,7 @@ ChartJS.register(
 
 export const HistoricosGraph = ({ historicosData, ultimoValor, ultimaFecha }) => {
 
-  const actualDate = new Date(ultimaFecha).getFullYear();
+  const actualDate = new Date(ultimaFecha).getFullYear()
 
   const orderedHistoricos = orderHistoricos([...historicosData]);
 
@@ -48,12 +48,10 @@ export const HistoricosGraph = ({ historicosData, ultimoValor, ultimaFecha }) =>
         pointHoverBorderWidth: 8,
         pointRadius: 7,
         pointHitRadius: 15,
-        data: orderedHistoricos.map(({ valor }) => valor),
+        data: [...orderedHistoricos.map(({ valor }) => valor), ultimoValor],
       },
     ],
   };
-
-  data.datasets[0].data.push(ultimoValor);
 
 
   return <Line options={{ animation: false, animations: false, label: { display: false } }} data={data} />;

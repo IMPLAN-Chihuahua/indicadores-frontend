@@ -4,7 +4,7 @@ import DatagridTable from "../components/dashboard/common/DatagridTable";
 import { Box, Button, Dialog, IconButton, Link as MuiLink, Typography } from "@mui/material";
 import { showAlert } from "../utils/alert";
 import { toggleIndicadorStatus } from "../services/indicatorService";
-import { Link, useLocation, useSearchParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { intlFormat, parseISO } from 'date-fns'
 import PageHeader from "../components/dashboard/common/DataHeader";
 import FilterAltIcon from '@mui/icons-material/FilterAlt';

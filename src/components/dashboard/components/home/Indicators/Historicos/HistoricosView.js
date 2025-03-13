@@ -1,6 +1,6 @@
-import { Button, Container, Grid, IconButton, Paper, Stack } from '@mui/material';
+import { Button, Grid, IconButton, Paper, Stack } from '@mui/material';
 import { Box } from '@mui/system';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { useHistoricos, deleteHistorico } from '../../../../../../services/historicosService';
@@ -14,21 +14,16 @@ import FormDialog from '../../../../common/FormDialog';
 import FormHistoricos from './FormHistoricos';
 import PersonalLoader from '../../../../../common/PersonalLoader/PersonalLoader';
 import { getGlobalPerPage } from '../../../../../../utils/objects';
-import useIsMounted from '../../../../../../hooks/useIsMounted';
 import { showAlert } from '../../../../../../utils/alert';
 
 export const HistoricosView = () => {
-  const { id } = useParams();
-  let rowsHistoricos = [];
+  const { id: idIndicador } = useParams();
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(getGlobalPerPage);
-  const isMounted = useIsMounted();
 
   const [order, setOrder] = useState('desc');
   const [sortBy, setSortBy] = useState('id');
   const [clickInfo, setClickInfo] = useState([]);
-  const [total, setTotal] = useState(0);
-  const [rows, setRows] = useState([]);
 
 
   const [openModal, setOpenModal] = useState(false);
@@ -40,24 +35,13 @@ export const HistoricosView = () => {
     setOpenModal(false);
   };
 
-  const { historicosList, isLoading, mutate } = useHistoricos(
+  const { historicos, isLoading, mutate, latestIndicador, total } = useHistoricos(
     perPage,
     page,
-    id,
+    idIndicador,
     sortBy,
     order,
   );
-
-
-  useEffect(() => {
-    if (!historicosList) {
-      return;
-    }
-    if (isMounted()) {
-      setRows(historicosList.data);
-      setTotal(historicosList.total);
-    }
-  }, [historicosList, isMounted]);
 
   const handleDeleteHistorico = ({ id }) => {
     showAlert({
@@ -88,40 +72,6 @@ export const HistoricosView = () => {
         })
       });
   }
-
-  historicosList && (rowsHistoricos = historicosList.data);
-
-  let rowsHistoricosEdited = [];
-  useMemo(() => {
-    rowsHistoricos.map((data) => {
-      rowsHistoricosEdited = [
-        ...rowsHistoricosEdited,
-        {
-          id: data.id,
-          anio: data.anio,
-          valor: data.valor,
-          fuente: data.fuente,
-        },
-      ];
-    })
-  });
-
-  useEffect(() => {
-    if (historicosList) {
-      let rowsHistoricosEdited = [];
-      rowsHistoricos.map((data) => {
-        rowsHistoricosEdited = [
-          ...rowsHistoricosEdited,
-          {
-            id: data.id,
-            anio: data.anio,
-            valor: data.valor,
-            fuente: data.fuente,
-          },
-        ];
-      })
-    }
-  }, [historicosList]);
 
   const sortable = true;
 
@@ -187,16 +137,16 @@ export const HistoricosView = () => {
         sx={{
           flex: '1 1 auto',
           overflowY: 'scroll',
-          height: '500px'
+          height: '500px',
         }}>
-        <Grid container columnGap={2}>
+        <Grid container columnGap={2} minHeight='350px'>
           <Paper component={Grid} item xs={12} md={6} elevation={1} p={1}>
             {
-              historicosList.data.length > 0 && (
+              historicos.length > 0 && (
                 <HistoricosGraph
-                  historicosData={historicosList.data}
-                  ultimoValor={historicosList.indicadorLastValue}
-                  ultimaFecha={historicosList.indicadorLastUpdateDate}
+                  historicosData={historicos}
+                  ultimoValor={latestIndicador.ultimoValorDisponible}
+                  ultimaFecha={latestIndicador.updatedAt}
                 />
               )
             }
@@ -209,7 +159,11 @@ export const HistoricosView = () => {
             elevation={1}
             alignItems='center'
           >
-            <ActualValue value={historicosList.indicadorLastValue} date={historicosList.indicadorLastUpdateDate} />
+            {
+              latestIndicador && (
+                <ActualValue latestIndicador={latestIndicador} />
+              )
+            }
           </Paper>
         </Grid>
         <Box mt={1} mb={1} ml='auto'>
@@ -225,7 +179,7 @@ export const HistoricosView = () => {
         </Box>
         <div className='datagrid-container'>
           <DatagridTable
-            rows={rows}
+            rows={historicos}
             columns={columns}
             isLoading={isLoading}
             page={page}
