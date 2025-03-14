@@ -1,5 +1,6 @@
 import { protectedApi } from '.';
 import useSWR from 'swr';
+import qs from 'qs'
 
 const fetcher = (url) => protectedApi.get(url).then(res => res.data);
 
@@ -37,11 +38,9 @@ const getUsersThatDoesntHaveRelation = async (id) => {
   return protectedApi.get(`/relation/indicador/${id}/usuarios`);
 };
 
-const deleteRelation = async (selectedCheckboxes) => {
-
-  const queryParams = selectedCheckboxes.map((id) => `ids=${id}`).join('&');
-
-  return protectedApi.delete(`/relation?${queryParams}`);
+const deleteRelation = async (idIndicador, usuarios) => {
+  const queryParams = qs.stringify({ ids: usuarios }, { skipNulls: true })
+  return protectedApi.delete(`/indicadores/${idIndicador}/usuarios?${queryParams}`);
 };
 
 const updateRelation = async (id, data) => {

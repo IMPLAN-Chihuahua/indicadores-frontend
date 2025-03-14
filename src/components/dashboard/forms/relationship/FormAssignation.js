@@ -74,7 +74,7 @@ export const FormAssignation = ({
 
   }
 
-  const { users, isLoading, mutate } = useUsers({ perPage: 100, activo: 'SI' });
+  const { users, isLoading, mutate } = useUsers({ perPage: 100, activo: true });
 
   const handleDeleteIndicador = (id) => {
     setSelectedIndicadores(indicadores.filter((item) => item.id !== id));
