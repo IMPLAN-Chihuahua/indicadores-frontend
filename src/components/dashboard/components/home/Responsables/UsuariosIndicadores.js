@@ -10,15 +10,16 @@ import PersonalLoader from '../../../../common/PersonalLoader/PersonalLoader';
 import { parseDate } from '../../../../../utils/dateParser';
 import OwnerListDropdown from '../Indicators/Owner/OwnerList';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
+import { showAlert } from '../../../../../utils/alert';
 
 
 const UsuariosIndicadores = () => {
-  const { id } = useParams();
+  const { id: idIndicador } = useParams();
   const [usuarios, setUsuarios] = useState([]);
   const [newUsers, setNewUsers] = useState([]);
   const [clear, setClear] = useState(false);
   const [owner, setOwner] = useState(null);
-  const [selectedCheckboxes, setSelectedCheckboxes] = useState([]);
+  const [selectedUsuarios, setSelectedUsuarios] = useState([]);
   const [refresher, setRefresher] = useState(false);
   const isMounted = useIsMounted();
 
@@ -29,7 +30,7 @@ const UsuariosIndicadores = () => {
   })
 
   const usersFetcher = async () => {
-    const { data } = await getUsersThatDoesntHaveRelation(id);
+    const { data } = await getUsersThatDoesntHaveRelation(idIndicador);
     return data;
   };
 
@@ -41,7 +42,7 @@ const UsuariosIndicadores = () => {
   }, [isMounted]);
 
   const handleCheckboxChange = (idUsuario) => {
-    setSelectedCheckboxes((prevSelected) =>
+    setSelectedUsuarios((prevSelected) =>
       prevSelected.includes(idUsuario)
         ? prevSelected.filter((id) => id !== idUsuario)
         : [...prevSelected, idUsuario]
@@ -56,20 +57,35 @@ const UsuariosIndicadores = () => {
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Sí, eliminar',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        deleteRelation(selectedCheckboxes)
-          .then(_ => {
-            mutate()
-            setSelectedCheckboxes([])
-            setRefresher(!refresher)
-          })
-      }
     })
+      .then((result) => {
+        if (result.isConfirmed) {
+          return deleteRelation(idIndicador, selectedUsuarios)
+        }
+      })
+      .then(({ status }) => {
+        if (status === 204) {
+          showAlert({
+            title: 'Cambios guardados',
+            text: 'Los usuarios eliminados del equipo ya no tienen permiso para actualizar este indicador',
+            icon: 'success',
+          });
+          mutate();
+          setSelectedUsuarios([])
+          setRefresher(!refresher)
+        }
+      })
+      .catch(err => {
+        Swal.fire({
+          title: 'Hubo un error',
+          icon: 'error',
+          text: err
+        })
+      })
 
   }
 
-  const { indicador, isLoading, hasError, mutate } = useRelationUsers(id, 1, 20);
+  const { indicador, isLoading, hasError, mutate } = useRelationUsers(idIndicador, 1, 20);
 
   useEffect(() => {
     setUsers();
@@ -88,24 +104,35 @@ const UsuariosIndicadores = () => {
       icon: 'info',
       showCancelButton: true,
       confirmButtonText: 'Sí, agregar',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        createRelation(id, { ids })
-          .then(_ => {
-            mutate();
-            setClear(!clear);
-            setNewUsers([])
-            setUsuarios(usuarios.filter((user) => !ids.includes(user.id)))
-            setRefresher(!refresher);
-          })
-      }
     })
+      .then(result => {
+        if (result.isConfirmed) {
+          return createRelation(idIndicador, { ids })
+        }
+      })
+      .then(_ => {
+        showAlert({
+          title: 'Cambios guardados',
+          text: 'Los usuarios asignados ya pueden realizar cambios en este indicador',
+          icon: 'success',
+        });
+        mutate();
+        setClear(!clear);
+        setNewUsers([])
+        setUsuarios(usuarios.filter((user) => !ids.includes(user.id)))
+        setRefresher(!refresher);
+      })
+      .catch(err => {
+        Swal.fire({
+          title: 'Hubo un error',
+          icon: 'error',
+          text: err
+        })
+      })
   }
 
   const handleSubmitChangeOwner = (data) => {
-    const payload = {
-      idUsuario: data.owner
-    }
+    const payload = { idUsuario: data.owner };
 
     Swal.fire({
       title: '¿Estás seguro?',
@@ -113,14 +140,27 @@ const UsuariosIndicadores = () => {
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Sí, cambiar'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        changeOwner(id, payload)
-          .then(_ => {
-            mutate();
-          })
-      }
     })
+      .then((result) => {
+        if (result.isConfirmed) {
+          return changeOwner(idIndicador, payload)
+        }
+      })
+      .then(_ => {
+        showAlert({
+          title: 'Cambios guardados',
+          text: 'Se actualizó al responsable principal de este indicador',
+          icon: 'success',
+        });
+        mutate();
+      })
+      .catch((err) => {
+        Swal.fire({
+          title: 'Hubo un error',
+          icon: 'error',
+          text: err
+        })
+      })
   }
 
   const checkChangeOnOwner = (e, onChange) => {
@@ -199,7 +239,7 @@ const UsuariosIndicadores = () => {
                         <>
                           <FormControlLabel control={
                             <Checkbox
-                              onChange={() => handleCheckboxChange(data.id)}
+                              onChange={() => handleCheckboxChange(data.idUsuario)}
                             />
                           }
                             label={`${data.usuario.nombres} ${data.usuario.apellidoPaterno}`}
@@ -240,7 +280,7 @@ const UsuariosIndicadores = () => {
               }) => (
                 <OwnerListDropdown
                   type={2}
-                  id={id}
+                  id={idIndicador}
                   actualOwner={indicador.owner}
                   onChange={
                     (e) => {
@@ -270,7 +310,7 @@ const UsuariosIndicadores = () => {
           Guardar cambios
         </Button>
         <Button variant='contained' color='error'
-          disabled={selectedCheckboxes.length === 0}
+          disabled={selectedUsuarios.length === 0}
           onClick={handleDeleteUsersRelation}
         >
           Eliminar seleccionados
