@@ -35,12 +35,6 @@ export const useIndicadorWithSWR = (id) => {
 
 export const updateIndicator = async (id, data) => {
   return protectedApi.patch(`/indicadores/${id}`, data);
-  try {
-    const patch = await protectedApi.patch(`/indicadores/${id}`, data);
-    return patch;
-  } catch (error) {
-    throw (error);
-  }
 }
 
 export const setUsersToIndicator = async (id, data) => {

@@ -14,6 +14,7 @@ import { useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { useFormContext } from 'react-hook-form';
 import GradeIcon from '@mui/icons-material/Grade';
+import { showAlert } from '../../../../../../utils/alert';
 const FormDestacarIndicadorInObjetivo = React.lazy(() => import('../../../../forms/indicador/FormDestacarIndicadorInObjetivo'))
 
 /**Componente completamente robado de https://mui.com/material-ui/react-menu/ */
@@ -66,24 +67,38 @@ export default function CustomizedMenus() {
       text: '¿Estás seguro de que deseas continuar?',
       icon: 'info',
       showCancelButton: true,
-    }).then(async (result) => {
+    }).then(result => {
       if (result.isConfirmed) {
         switch (status) {
           case ARCHIVO:
             setValue('archive', !getValues('archive'))
-            await updateIndicator(id, {
+            return updateIndicator(id, {
               archive: getValues('archive')
             });
-            break;
           case ESTADO:
             setValue('activo', !getValues('activo'))
-            await updateIndicator(id, {
+            return updateIndicator(id, {
               activo: getValues('activo')
             });
-            break;
         }
       }
     })
+      .then(res => {
+        if (res) {
+          showAlert({
+            title: 'Cambios guardados',
+            text: 'Se actualizó el estado del indicador',
+            icon: 'success',
+          })
+        }
+      })
+      .catch(err => {
+        showAlert({
+          title: 'Hubo un error',
+          text: err,
+          icon: 'error'
+        })
+      })
   }
 
   const handleTitle = (status) => {
