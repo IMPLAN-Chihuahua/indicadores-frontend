@@ -1,29 +1,27 @@
 import React, { useEffect, useState } from 'react'
-import { Link as RouterLink, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import './indicator.css'
 import {
 	Grid,
 	Button,
 } from '@mui/material';
-import { Controller, FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import { Box } from '@mui/system';
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import Swal from 'sweetalert2';
 import { createIndicatorSchema } from '../../../../../utils/indicatorValidator';
 import { getIndicator, updateIndicator } from '../../../../../services/indicatorService';
-import { createHistoricos } from '../../../../../services/historicosService';
-import { useAuth } from '../../../../../contexts/AuthContext';
 import PersonalLoader from '../../../../common/PersonalLoader/PersonalLoader';
 import IndicatorValues from './GeneralViewComponents/IndicatorValues';
 import GeneralInformation from './GeneralViewComponents/GeneralInformation';
 import MoreInformation from './GeneralViewComponents/MoreInformation';
 import Header from './GeneralViewComponents/Header';
+import { showAlert } from '../../../../../utils/alert';
 
 export const GeneralView = () => {
 	const [isLoading, setLoading] = useState(true);
 	const { id: idIndicador } = useParams();
-	const { user } = useAuth();
 
 	const methods = useForm({
 		defaultValues: indicadorDefaultValues,
@@ -40,42 +38,11 @@ export const GeneralView = () => {
 		}).finally(_ => setLoading(false))
 	}, [idIndicador]);
 
-	const onSubmit = async (data, e) => {
+	const onSubmit = async (formData, e) => {
 		if (e === undefined) return;
 		if (e?.target?.id !== 'form-indicator') return;
 
-		let updatedVals = 0;
-
-		const { activo, definicion, fuente, temas, nombre, observaciones, owner, anioUltimoValorDisponible, idCobertura, idOds,
-			ultimoValorDisponible, periodicidad, archive, objetivo, objetivos, adornment, unidadMedida, elif } = data;
-
-		const indicadorData = {
-			nombre,
-			definicion,
-			observaciones,
-			ultimoValorDisponible,
-			activo,
-			fuente,
-			elif,
-			owner,
-			periodicidad,
-			adornment,
-			unidadMedida,
-			anioUltimoValorDisponible,
-			archive,
-			temas,
-			objetivos,
-			idCobertura: idCobertura?.id,
-			idOds: idOds?.id,
-			idObjetivo: objetivo?.id,
-		};
-
-		const historicoData = {
-			fuente,
-			valor: ultimoValorDisponible,
-			anio: anioUltimoValorDisponible,
-			idUsuario: user.id,
-		}
+		const indicadorValues = createRequestObject(formData)
 
 		Swal.fire({
 			title: '¿Deseas actualizar la información del indicador o sólo guardar los cambios?',
@@ -84,37 +51,32 @@ export const GeneralView = () => {
 			showCancelButton: true,
 			confirmButtonText: `Guardar cambios`,
 			denyButtonText: `Actualizar indicador`,
-		}).then(async (result) => {
-			if (result.isConfirmed || result.isDenied) {
-				console.log('innit')
-				return updateData(result, idIndicador, indicadorData, historicoData, updatedVals)
-			}
-		});
-
+		})
+			.then(result => {
+				if (result.isConfirmed) {
+					return updateIndicator(idIndicador, indicadorValues)
+				} else if (result.isDenied) {
+					return updateIndicator(idIndicador, { ...indicadorValues, createHistoricos: true })
+				}
+			})
+			.then(res => {
+				if (res?.status === 204) {
+					showAlert({
+						title: 'Cambios guardados',
+						indicador: 'El indicador ha sido actualizado',
+						icon: 'success'
+					})
+				}
+			})
+			.catch(err => {
+				showAlert({
+					title: 'Hubo un error',
+					text: err,
+					icon: 'error'
+				})
+			});
 	};
 
-	const updateData = async (result, idIndicador, indicadorData, historicoData, updatedVals) => {
-		if (result.isConfirmed) {
-			await updateIndicator(idIndicador, indicadorData).then(res => {
-				Swal.fire('Cambios guardados', '', 'success');
-			}).catch(err => {
-				Swal.fire('No se pudieron guardar los cambios', err, 'error');
-			})
-		} else if (result.isDenied) {
-			try {
-				await updateIndicator(idIndicador, indicadorData)
-				updatedVals++;
-				try {
-					await createHistoricos(idIndicador, historicoData);
-					updatedVals++;
-				} catch (err) {
-					Swal.fire('No se pudieron guardar los cambios', err, 'error');
-				}
-			} catch (error) {
-				Swal.fire('No se pudieron guardar los cambios', error, 'error');
-			}
-		}
-	}
 
 	if (isLoading) {
 		return (<PersonalLoader />)
@@ -185,4 +147,31 @@ const indicadorDefaultValues = {
 	urlImagen: '',
 	periodicidad: 0,
 	elif: '',
+}
+
+const createRequestObject = (formData) => {
+	const { activo, definicion, fuente, temas, nombre, observaciones, owner, anioUltimoValorDisponible, idCobertura, ods,
+		ultimoValorDisponible, periodicidad, archive, objetivo, objetivos, adornment, unidadMedida, elif } = formData;
+	const indicadorData = {
+		nombre,
+		definicion,
+		observaciones,
+		ultimoValorDisponible,
+		activo,
+		fuente,
+		elif,
+		owner,
+		periodicidad,
+		adornment,
+		unidadMedida,
+		anioUltimoValorDisponible,
+		archive,
+		temas,
+		objetivos,
+		idCobertura: idCobertura?.id,
+		idOds: ods.id,
+		idObjetivo: objetivo?.id,
+	};
+
+	return indicadorData;
 }
