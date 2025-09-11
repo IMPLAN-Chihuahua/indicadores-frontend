@@ -53,7 +53,7 @@ export const useTemas = (args) => {
     addQueryPrefix: true,
   });
 
-  const { data: res, error, mutate } = useSWRImmutable(`/temas${queryParams.toString()}`, fetcher);
+  const { data: res, error, mutate } = useSWRImmutable(`/me/temas${queryParams.toString()}`, fetcher);
   const [temas, setTemas] = useState([])
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(0);

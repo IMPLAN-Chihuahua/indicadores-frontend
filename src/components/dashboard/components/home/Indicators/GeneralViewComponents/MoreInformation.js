@@ -13,7 +13,7 @@ import { useTemas } from '../../../../../../services/temaService';
 
 const MoreInformation = () => {
   const { control, getValues } = useFormContext();
-  const { temas } = useTemas();
+  const { temas } = useTemas({ activo: true });
   const { objetivos } = useObjetivos();
   const { resources: ods } = useResourceList({ resource: 'ods' });
   const { resources: coberturas } = useResourceList({ resource: 'coberturas' });

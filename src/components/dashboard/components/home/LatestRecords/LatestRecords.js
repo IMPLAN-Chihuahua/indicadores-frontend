@@ -5,6 +5,7 @@ import { getlatestIndicators, getLatestTemas, getlatestUsers } from '../../../..
 import './latestRecords.css'
 import useSWR from 'swr'
 import { protectedApi } from '../../../../../services'
+import { useTemas } from '../../../../../services/temaService'
 
 
 function stringToColor(string) {
@@ -119,30 +120,31 @@ const LatestUsuarios = () => {
 
 
 const LatestTemas = () => {
-  const { data: temas, loading } = useSWR('/temas', fetcher)
-  if (loading) {
+  const { temas, isLoading } = useTemas({ page: 1, perPage: 3, sortBy: 'updatedAt', order: 'DESC' });
+
+  if (isLoading) {
     return <CircularProgress />
   }
 
   return (
     <>
       {
-        temas?.slice((temas.length - 3), temas.length).reverse().map((temas, i) => {
+        temas.map(tema => {
           return (
-            <Box key={temas.id}>
+            <Box key={tema.id}>
               <Paper className='latest-all-item' variant='outlined' style={{ borderRadius: '15px' }}>
                 <Box className='latest-all-left'>
                   <Box className='latest-picture'>
                     <Box className='latest-picture-item-temas'>
-                      <Avatar alt={temas.temaIndicador} src={temas.urlImagen} sx={{ height: 45, width: 45 }} className="latest-picture-hoverable" />
+                      <Avatar alt={tema.temaIndicador} src={tema.urlImagen} sx={{ height: 45, width: 45 }} className="latest-picture-hoverable" />
                     </Box>
                   </Box>
                   <Box className='latest-all-info'>
-                    <span className='latest-all-name'>{temas.temaIndicador}</span>
+                    <span className='latest-all-name'>{tema.temaIndicador}</span>
                   </Box>
                 </Box>
                 <Box className='latest-status'>
-                  <span className={`latest-code-text`}>{temas.codigo}</span>
+                  <span className={`latest-code-text`}>{tema.codigo}</span>
                 </Box>
               </Paper>
             </Box>
