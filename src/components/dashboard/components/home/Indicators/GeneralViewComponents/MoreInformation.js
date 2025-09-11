@@ -45,7 +45,7 @@ const MoreInformation = () => {
           control={control}
           name='cobertura'
           render={({ field: { value, onChange }, fieldState: { error } }) => (
-            <Autocomplete
+            < Autocomplete
               value={value}
               options={coberturas}
               getOptionLabel={(option) => option.tipo}
@@ -63,7 +63,7 @@ const MoreInformation = () => {
             <Autocomplete
               value={value}
               options={ods}
-              getOptionLabel={(option) => option.titulo}
+              getOptionLabel={(option) => `${option.id}. ${option.titulo}`}
               isOptionEqualToValue={(option, value) => option.id === value.id}
               onChange={(_, data) => onChange(data)}
               id='ods'
