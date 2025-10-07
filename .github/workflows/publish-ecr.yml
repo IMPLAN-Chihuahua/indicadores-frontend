@@ -30,6 +30,22 @@ jobs:
           aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | \
           docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
 
+      - name: Fetch secrets from AWS Secrets Manager
+        id: secrets
+        run: |
+          SECRET_ARN="arn:aws:secretsmanager:${{ secrets.AWS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:secret:indicadores-frontend/env-DfgMDk"
+
+          SECRET_JSON=$(aws secretsmanager get-secret-value \
+            --secret-id "$SECRET_ARN" \
+            --query SecretString --output text)
+
+          REACT_APP_LOCAL_URL=$(echo "$SECRET_JSON" | jq -r '.REACT_APP_LOCAL_URL')
+          REACT_APP_PROD_URL=$(echo "$SECRET_JSON" | jq -r '.REACT_APP_PROD_URL')
+
+          echo "REACT_APP_LOCAL_URL=$REACT_APP_LOCAL_URL" >> $GITHUB_ENV
+          echo "REACT_APP_PROD_URL=$REACT_APP_PROD_URL" >> $GITHUB_ENV
+
+
       - name: Build and push Docker image to ECR
         uses: docker/build-push-action@v4
         with:
@@ -38,5 +54,5 @@ jobs:
           push: true
           tags: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/indicadores-frontend:latest
           build-args: |
-            REACT_APP_LOCAL_URL=${{ secrets.REACT_APP_LOCAL_URL }}
-            REACT_APP_PROD_URL=${{ secrets.REACT_APP_PROD_URL }}
+            REACT_APP_LOCAL_URL=${{ env.REACT_APP_LOCAL_URL }}
+            REACT_APP_PROD_URL=${{ env.REACT_APP_PROD_URL }}
