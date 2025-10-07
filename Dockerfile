@@ -1,8 +1,14 @@
 # build application
 FROM node:lts-alpine3.15 AS base
 WORKDIR /home/node
+
+# Build args
 ARG REACT_APP_LOCAL_URL
+ARG REACT_APP_PROD_URL
+
+# Environment variables for build
 ENV REACT_APP_LOCAL_URL=$REACT_APP_LOCAL_URL
+ENV REACT_APP_PROD_URL=$REACT_APP_PROD_URL
 
 FROM base AS dev
 
