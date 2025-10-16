@@ -1,6 +1,6 @@
 import { DataGrid, esES } from '@mui/x-data-grid';
 import './common.css'
-import { setGlobalPerPage } from '../../../utils/objects';
+
 
 const DatagridTable = (props) => {
   const { columns, rows, handlePageChange,
@@ -17,10 +17,13 @@ const DatagridTable = (props) => {
       pageSize={perPage}
       page={page - 1}
       rowCount={total}
-      onPageChange={handlePageChange}
+      onPageChange={(page) => {
+        if (isNaN(parseInt(page))) return;
+        handlePageChange(parseInt(page) == 0 ? 1 : parseInt(page) + 1)
+      }}
       onPageSizeChange={size => {
-        setGlobalPerPage(size)
-        handlePageSizeChange(size)
+        if (isNaN(parseInt(size))) return;
+        handlePageSizeChange(parseInt(size))
       }}
       disableSelectionOnClick
       checkboxSelection

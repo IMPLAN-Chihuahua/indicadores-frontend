@@ -22,7 +22,7 @@ export const Indicators = () => {
   const { updateFilters, updatePage, updatePerPage, params } = useQueryParams()
   const { page, perPage, filters } = params;
   const { updateSearchQuery, searchQuery } = useSearch();
-  const { indicadores, isLoading, mutate, total } = useIndicadores({ page, perPage, searchQuery: searchQuery, ...filters });
+  const { indicadores, isLoading, mutate, total } = useIndicadores({ page, perPage, searchQuery, ...filters });
   const [selectedIndicadores, setSelectedIndicadores] = useState([]);
 
   const columns = [

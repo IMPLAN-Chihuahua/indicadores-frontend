@@ -6,40 +6,33 @@ import qs from 'qs'
 const useQueryParams = () => {
     const [searchParams, setSearchParams] = useSearchParams();
 
-    const updateFilters = useCallback((value) => {
-        setSearchParams(() => {
-            return new URLSearchParams(qs.stringify(value))
-        })
-    }, [searchParams])
+    const updateFilters = (values) => {
+        setSearchParams(qs.stringify(values))
+    }
 
+    const updatePage = page => {
+        setSearchParams((prev) => ({ ...qs.parse(prev.toString()), page }));
+    }
 
-    const updatePage = useCallback(page => {
-        setSearchParams((prev) => {
-            return new URLSearchParams({
-                ...Object.fromEntries(prev.entries()),
-                page: page + 1,
-            })
-        })
-    }, [searchParams]);
+    const updatePerPage = perPage => {
+        setSearchParams((prev) => ({ ...qs.parse(prev.toString()), perPage }));
+    }
 
-    const updatePerPage = useCallback(perPage => {
-        setSearchParams((prev) => {
-            return new URLSearchParams({
-                ...Object.fromEntries(prev.entries()),
-                perPage,
-            })
-        })
-    }, [searchParams]);
-
-
-    let { page, perPage, ...filters } = qs.parse(searchParams.toString())
-    page = parseInt(page) || 1;
-    perPage = parseInt(perPage) || 25;
-
+    const { page, perPage, ...filters } = qs.parse(searchParams.toString());
+    
+    let _page = parseInt(page);
+    let _perPage = parseInt(perPage);
+    if (isNaN(_page)) {
+        _page = 1;
+    }
+    if (isNaN(_perPage)) {
+        _perPage = 25;
+    }
+    
     return {
         params: {
-            page,
-            perPage,
+            page: _page,
+            perPage: _perPage,
             filters
         },
         updateFilters,
