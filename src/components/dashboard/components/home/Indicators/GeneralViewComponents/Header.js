@@ -1,5 +1,5 @@
-import { Box, Button, CircularProgress, Grid, IconButton, TextField, Typography } from '@mui/material'
-import React, { lazy, Suspense } from 'react'
+import { Box, Grid, IconButton, TextField, Typography } from '@mui/material'
+import React from 'react'
 import EditIcon from '@mui/icons-material/Edit';
 import { Controller, useFormContext } from 'react-hook-form';
 import CustomizedMenus from './MenuButton'
@@ -44,15 +44,16 @@ const Header = () => {
               }
             />
             :
-            <Typography variant='h4' fontWeight={300}>
+            <Typography variant='h4' fontWeight={400} my={1.3}>
               {nombre}
             </Typography>
         }
         <Box sx={{
-          display: edit ? 'block' : display
+          display: edit ? 'block' : display,
+          my: 'auto'
         }}>
-          <IconButton onClick={() => setEdit(!edit)}>
-            <EditIcon />
+          <IconButton onClick={() => setEdit(!edit)} size='large'>
+            <EditIcon fontSize='large' />
           </IconButton>
         </Box>
 

@@ -42,18 +42,14 @@ export const GeneralView = () => {
 		if (e === undefined) return;
 		if (e?.target?.id !== 'form-indicator') return;
 
-		const indicadorValues = createRequestObject(formData)
-		console.log('on submit')
-		console.log('on submit')
-		console.log('on submit')
-		console.log(formData)
+		const indicadorValues = createRequestObject(formData);
 		Swal.fire({
 			title: '¿Deseas actualizar la información del indicador o sólo guardar los cambios?',
 			text: "Al guardar la información del indicador no se generará un valor histórico. Si lo que quieres es actualizar el último valor disponible y generar un dato histórico, selecciona la segunda opción.",
 			showDenyButton: true,
 			showCancelButton: true,
-			confirmButtonText: `Guardar cambios`,
-			denyButtonText: `Actualizar indicador`,
+			confirmButtonText: 'Guardar cambios',
+			denyButtonText: 'Actualizar indicador',
 		})
 			.then(result => {
 				if (result.isConfirmed) {
@@ -106,7 +102,7 @@ export const GeneralView = () => {
 
 
 			<Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 2, gap: 3, position: 'absolute', bottom: 0, right: 0 }}>
-				<Button variant='contained'>
+				<Button variant='outlined'>
 					Cancelar
 				</Button>
 				<Button variant='contained' type='submit' form='form-indicator'>
@@ -153,8 +149,14 @@ const indicadorDefaultValues = {
 }
 
 const createRequestObject = (formData) => {
-	const { activo, definicion, fuente, temas, nombre, observaciones, owner, anioUltimoValorDisponible, idCobertura, ods,
-		ultimoValorDisponible, periodicidad, archive, objetivo, objetivos, adornment, unidadMedida, elif, cobertura } = formData;
+	const {
+		activo, definicion, fuente, temas,
+		nombre, observaciones, owner,
+		anioUltimoValorDisponible, ods, tendenciaActual,
+		ultimoValorDisponible, periodicidad,
+		archive, objetivo, objetivos,
+		adornment, unidadMedida, elif,
+		cobertura } = formData;
 
 	const indicadorData = {
 		nombre,
@@ -171,6 +173,7 @@ const createRequestObject = (formData) => {
 		anioUltimoValorDisponible,
 		archive,
 		temas,
+		tendenciaActual,
 		objetivos,
 		idCobertura: cobertura.id,
 		idOds: ods.id,

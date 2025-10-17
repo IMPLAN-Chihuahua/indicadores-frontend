@@ -19,7 +19,7 @@ const DatagridTable = (props) => {
       rowCount={total}
       onPageChange={(page) => {
         if (isNaN(parseInt(page))) return;
-        handlePageChange(parseInt(page) == 0 ? 1 : parseInt(page) + 1)
+        handlePageChange(parseInt(page) === 0 ? 1 : parseInt(page) + 1)
       }}
       onPageSizeChange={size => {
         if (isNaN(parseInt(size))) return;

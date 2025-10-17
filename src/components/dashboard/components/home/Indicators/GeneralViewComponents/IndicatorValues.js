@@ -3,22 +3,27 @@ import '../indicator.css'
 import {
   Grid, TextField,
   Typography, Checkbox, FormControlLabel, Box,
-  Divider
+  Divider,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
 } from '@mui/material';
-import { Controller, FormProvider, useForm, useFormContext } from 'react-hook-form';
+import { Controller, useFormContext } from 'react-hook-form';
 import { parseDate } from '../../../../../../utils/dateParser';
 
 const IndicatorValues = () => {
   const { control, getValues } = useFormContext();
+
   const updatedAt = getValues('updatedAt')
   return (
     <Grid container item xs={12} md={12} className='indicador-element' sx={{ display: 'flex', mb: 3 }}>
-      <Grid item xs={12} md={6} sx={{ p: 1 }}>
+      <Grid item xs={12} md={6.5} sx={{ p: 1 }}>
         <Typography variant='h5'>
           Último valor disponible
         </Typography>
-        <Box sx={{ display: 'flex' }}>
-          <Box sx={{ p: 2, width: '40%' }}>
+        <Grid container item xs={12} justifyContent='space-between' my={2}>
+          <Grid item xs={2}>
             <Controller
               name='ultimoValorDisponible'
               control={control}
@@ -28,7 +33,7 @@ const IndicatorValues = () => {
               }) => (
                 (
                   <TextField
-                    size='small'
+                    size='large'
                     label='Valor'
                     type='text'
                     required
@@ -42,8 +47,8 @@ const IndicatorValues = () => {
                 )
               )}
             />
-          </Box>
-          <Box sx={{ p: 2, width: '60%' }}>
+          </Grid>
+          <Grid item xs={2}>
             <Controller
               name='adornment'
               control={control}
@@ -53,7 +58,7 @@ const IndicatorValues = () => {
               }) => (
                 (
                   <TextField
-                    size='small'
+                    size='large'
                     label='Simbología'
                     type='text'
                     required
@@ -67,8 +72,8 @@ const IndicatorValues = () => {
                 )
               )}
             />
-          </Box>
-          <Box sx={{ p: 2, width: '100%' }}>
+          </Grid>
+          <Grid item xs={2}>
             <Controller
               name='unidadMedida'
               control={control}
@@ -78,7 +83,7 @@ const IndicatorValues = () => {
               }) => (
                 (
                   <TextField
-                    size='small'
+                    size='large'
                     label='Unidad de medida'
                     type='text'
                     required
@@ -92,8 +97,8 @@ const IndicatorValues = () => {
                 )
               )}
             />
-          </Box>
-          <Box sx={{ p: 2, width: '40%' }}>
+          </Grid>
+          <Grid item xs={2}>
             <Controller
               name="periodicidad"
               control={control}
@@ -102,7 +107,7 @@ const IndicatorValues = () => {
                 fieldState: { error }
               }) => (
                 <TextField
-                  size='small'
+                  size='large'
                   label='Periodicidad'
                   type='number'
                   placeholder='Tiempo entre actualizaciones'
@@ -114,28 +119,47 @@ const IndicatorValues = () => {
                 />
               )}
             />
-          </Box>
-        </Box>
+          </Grid>
+          <Grid item xs={2}>
+            <Controller
+              name='tendenciaActual'
+              control={control}
+              render={({
+                field: { onChange, value },
+                fieldState: { error }
+              }) => (
+                <FormControl fullWidth>
+                  <InputLabel id='tendencia-label'>Tendencia actual</InputLabel>
+                  <Select label='Tendencia actual' labelId='tendencia-label' value={value} onChange={onChange}>
+                    <MenuItem value="No aplica">No aplica</MenuItem>
+                    <MenuItem value="Ascendente">Ascendente</MenuItem>
+                    <MenuItem value="Descendente">Descendente</MenuItem>
+                  </Select>
+                </FormControl>
+              )}
+            />
+          </Grid>
+        </Grid>
       </Grid>
-      <Grid item xs={12} md={1} sx={{
+      <Grid item xs={12} md={.5} sx={{
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        p: 1
       }}>
         <Divider orientation='vertical' sx={{
           height: '60%',
         }} />
       </Grid>
       <Grid item xs={12} md={5} sx={{ p: 1 }}>
-        <Typography variant='h5' sx={{ pl: 2 }}>
+        <Typography variant='h5' >
           Año de la última actualización
         </Typography>
         <Box sx={{
+          my: 2,
           display: 'flex',
           alginItems: 'center',
         }}>
-          <Box sx={{ py: 2, px: 1 }}>
+          <Box>
             <Controller
               name='anioUltimoValorDisponible'
               control={control}
