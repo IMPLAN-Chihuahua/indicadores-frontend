@@ -43,10 +43,6 @@ export const GeneralView = () => {
 		if (e?.target?.id !== 'form-indicator') return;
 
 		const indicadorValues = createRequestObject(formData)
-		console.log('on submit')
-		console.log('on submit')
-		console.log('on submit')
-		console.log(formData)
 		Swal.fire({
 			title: '¿Deseas actualizar la información del indicador o sólo guardar los cambios?',
 			text: "Al guardar la información del indicador no se generará un valor histórico. Si lo que quieres es actualizar el último valor disponible y generar un dato histórico, selecciona la segunda opción.",

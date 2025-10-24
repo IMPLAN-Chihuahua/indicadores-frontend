@@ -225,7 +225,6 @@ export default function CustomizedMenus() {
             <FormDestacarIndicadorInObjetivo
               open={openDestacadoForm}
               handleClose={() => {
-                console.log('closing form')
                 handleClose();
               }}
               destacados={getValues('destacados')}

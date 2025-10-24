@@ -45,7 +45,6 @@ const FormVariable = (props) => {
 
 
   const onSubmit = (data) => {
-    console.log(data)
 
     showAlert({
       title: `¿Deseas agregar esta registro?`,
