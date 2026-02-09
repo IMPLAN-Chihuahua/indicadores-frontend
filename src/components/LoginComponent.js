@@ -25,6 +25,7 @@ const LoginComponent = () => {
 	const handleShowPassword = () => setPasswordIsVisible(prev => !prev);
 	const auth = useAuth();
 	const alert = useAlert();
+	console.log('test');
 
 	const onSubmit = data => {
 		auth.handleLogin(data,
