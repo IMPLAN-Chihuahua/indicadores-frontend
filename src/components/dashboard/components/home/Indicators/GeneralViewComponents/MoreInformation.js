@@ -28,14 +28,17 @@ const MoreInformation = () => {
         <Controller
           control={control}
           name='temas'
-          render={({ field: { value, onChange }, fieldState: { error } }) => (
+          render={({ field: { value, onChange } }) => (
             <Autocomplete
-              value={value}
-              options={temas}
-              getOptionLabel={(option) => option.temaIndicador}
-              isOptionEqualToValue={(option, value) => option.id === value.id}
-              onChange={(_, data) => onChange(data)}
               multiple
+              value={value || []}
+              options={temas}
+              getOptionLabel={(option) => option.temaIndicador || ''}
+              isOptionEqualToValue={(option, value) => option.id === value.id}
+              onChange={(_, data) => {
+                const lastSelected = data.length > 0 ? [data[data.length - 1]] : [];
+                onChange(lastSelected);
+              }}
               id='temas'
               renderInput={(params) => <TextField {...params} label='Temas' />}
             />
