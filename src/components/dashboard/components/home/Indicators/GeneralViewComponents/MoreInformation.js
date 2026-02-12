@@ -3,13 +3,26 @@ import '../indicator.css'
 import {
   Grid, TextField,
   Typography, Stack,
-  Autocomplete,
+  Autocomplete, MenuItem
 } from '@mui/material';
 import { Controller, FormProvider, useForm, useFormContext, useWatch } from 'react-hook-form';
 import { useResourceList } from '../../../../../../hooks/useResourceList';
 import { useObjetivos } from '../../../../../../services/objetivoService';
 import { useTemas } from '../../../../../../services/temaService';
 
+
+const MESES_OPTIONS = [
+  { label: 'Enero', value: 1 }, { label: 'Febrero', value: 2 }, { label: 'Marzo', value: 3 },
+  { label: 'Abril', value: 4 }, { label: 'Mayo', value: 5 }, { label: 'Junio', value: 6 },
+  { label: 'Julio', value: 7 }, { label: 'Agosto', value: 8 }, { label: 'Septiembre', value: 9 },
+  { label: 'Octubre', value: 10 }, { label: 'Noviembre', value: 11 }, { label: 'Diciembre', value: 12 }
+];
+
+const TENDENCIAS_OPTIONS = [
+  { value: 'ASCENDENTE', label: 'Ascendente' },
+  { value: 'DESCENDENTE', label: 'Descendente' },
+  { value: 'NO APLICA', label: 'No aplica' }
+];
 
 const MoreInformation = () => {
   const { control, getValues } = useFormContext();
@@ -25,6 +38,28 @@ const MoreInformation = () => {
     }}>
       <Stack gap={2} sx={{ p: 1, backgroundColor: 'white' }}>
         <Typography variant='h5' mb={2}>Más información</Typography>
+        <Controller
+          control={control}
+          name='tendenciaActual'
+          render={({ field, fieldState: { error } }) => (
+            <TextField
+              {...field}
+              select
+              label="Tendencia Actual"
+              fullWidth
+              error={!!error}
+              helperText={error ? error.message : ''}
+              value={field.value ? field.value.toUpperCase() : ''}
+            // --------------------------
+            >
+              {TENDENCIAS_OPTIONS.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </TextField>
+          )}
+        />
         <Controller
           control={control}
           name='temas'
@@ -95,6 +130,34 @@ const MoreInformation = () => {
             />
           )}
         />
+        <Controller
+          control={control}
+          name='meses'
+          render={({ field: { value, onChange }, fieldState: { error } }) => (
+            <Autocomplete
+              multiple
+              id='meses'
+              options={MESES_OPTIONS}
+              getOptionLabel={(option) => option.label}
+              isOptionEqualToValue={(option, val) => option.value === val.value}
+              value={Array.isArray(value)
+                ? value.map(v => MESES_OPTIONS.find(op => op.value === v) || v)
+                : []
+              }
+              onChange={(_, data) => onChange(data.map(d => d.value))}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label='Meses de actualización'
+                  placeholder='Selecciona meses'
+                  error={!!error}
+                  helperText={error ? error.message : ''}
+                />
+              )}
+            />
+          )}
+        />
+
       </Stack>
     </Grid>
   )

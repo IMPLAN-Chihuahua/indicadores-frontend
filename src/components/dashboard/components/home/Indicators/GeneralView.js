@@ -101,7 +101,13 @@ export const GeneralView = () => {
 			</Grid>
 
 
-			<Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 2, gap: 3, position: 'absolute', bottom: 0, right: 0 }}>
+			<Box sx={{
+				display: 'flex',
+				justifyContent: 'flex-end',
+				p: 2,
+				gap: 3,
+				mt: 3
+			}}>
 				<Button variant='contained'>
 					Cancelar
 				</Button>
@@ -140,17 +146,18 @@ const indicadorDefaultValues = {
 	idOds: '',
 	objetivos: [],
 	observaciones: '',
-	tendenciaActual: '',
+	tendenciaActual: 'No aplica',
 	updatedAt: '',
 	updatedBy: '',
 	urlImagen: '',
 	periodicidad: 0,
 	elif: '',
+	meses: [],
 }
 
 const createRequestObject = (formData) => {
 	const { activo, definicion, fuente, temas, nombre, observaciones, owner, anioUltimoValorDisponible, idCobertura, ods,
-		ultimoValorDisponible, periodicidad, archive, objetivo, objetivos, adornment, unidadMedida, elif, cobertura } = formData;
+		ultimoValorDisponible, periodicidad, archive, objetivo, objetivos, adornment, unidadMedida, elif, cobertura, meses, tendenciaActual } = formData;
 
 	const indicadorData = {
 		nombre,
@@ -171,6 +178,8 @@ const createRequestObject = (formData) => {
 		idCobertura: cobertura.id,
 		idOds: ods.id,
 		idObjetivo: objetivo?.id,
+		meses,
+		tendenciaActual
 	};
 
 	return indicadorData;
