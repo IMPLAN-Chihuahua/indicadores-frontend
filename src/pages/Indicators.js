@@ -129,9 +129,8 @@ export const Indicators = () => {
     const selectedData = ids.map(id => indicadores.find(row => row.id === id));
     setSelectedIndicadores(selectedData);
   }
-  const { owner = null, objetivos = [], temas = [], usuarios = [] } = filters;
-  const hasActiveFilters = owner !== null || [objetivos, temas, usuarios].some(arr => arr.length > 0)
-
+  const { owner, objetivos = [], temas = [], usuarios = [] } = filters;
+  const hasActiveFilters = !!owner || [objetivos, temas, usuarios].some(arr => arr?.length > 0);
   return (
     <Box display='flex' flexDirection='column' p={2} height='100%'>
       <PageHeader

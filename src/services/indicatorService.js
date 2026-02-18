@@ -88,38 +88,26 @@ export const createMapa = (id, mapa) => {
 
 
 export const useIndicadores = ({ perPage, page, searchQuery, ...filters }) => {
-  const queryParams = useMemo(() => qs.stringify({
-    perPage,
-    page,
-    searchQuery,
-    ...filters
-  }, {
-    skipNulls: true,
-    addQueryPrefix: true,
-  }), [searchQuery, page, perPage, filters])
-  const { data: res, error, mutate } = useSWRImmutable(`/indicadores${queryParams.toString()}`, fetcher)
-
-  const [total, setTotal] = useState(0)
-  const [totalPages, setTotalPages] = useState(0)
-  const [indicadores, setIndicadores] = useState([])
-
-  useEffect(() => {
-    if (!res) return;
-    setIndicadores(res.data);
-    setTotal(res.total);
-    setTotalPages(res.totalPages);
-  }, [res])
+  const queryParams = useMemo(() => {
+    return qs.stringify(
+      { perPage, page, searchQuery, ...filters },
+      { skipNulls: true, addQueryPrefix: true }
+    );
+  }, [perPage, page, searchQuery, JSON.stringify(filters)]);
+  const { data: res, error, mutate, isLoading } = useSWRImmutable(
+    `/indicadores${queryParams}`,
+    fetcher
+  );
 
   return {
-    indicadores,
-    isLoading: !error && !res,
-    hasError: error,
-    total,
-    totalPages,
+    indicadores: res?.data || [],
+    total: res?.total || 0,
+    totalPages: res?.totalPages || 0,
+    isLoading,
+    error,
     mutate
-  }
+  };
 };
-
 
 export const getObjetivosStatus = async (idIndicador) => {
   const res = await protectedApi.get(`/indicadores/${idIndicador}/objetivos/status`)

@@ -1,40 +1,48 @@
-import { useCallback, useReducer, useState } from "react";
+import { useCallback, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import qs from 'qs'
-
+import qs from 'qs';
 
 const useQueryParams = () => {
     const [searchParams, setSearchParams] = useSearchParams();
 
     const updateFilters = useCallback((value) => {
-        setSearchParams(() => {
-            return new URLSearchParams(qs.stringify(value))
-        })
-    }, [searchParams])
+        const current = qs.parse(searchParams.toString());
 
+        const newState = {
+            ...value,
+            page: 1,
+            perPage: current.perPage || 25
+        };
+
+        const queryStr = qs.stringify(newState, { skipNulls: true });
+        setSearchParams(queryStr);
+    }, [searchParams, setSearchParams]);
 
     const updatePage = useCallback(page => {
-        setSearchParams((prev) => {
-            return new URLSearchParams({
-                ...Object.fromEntries(prev.entries()),
-                page: page + 1,
-            })
-        })
-    }, [searchParams]);
+        const current = qs.parse(searchParams.toString());
+        const newState = {
+            ...current,
+            page: page + 1,
+        };
+        setSearchParams(qs.stringify(newState, { skipNulls: true }));
+    }, [searchParams, setSearchParams]);
 
     const updatePerPage = useCallback(perPage => {
-        setSearchParams((prev) => {
-            return new URLSearchParams({
-                ...Object.fromEntries(prev.entries()),
-                perPage,
-            })
-        })
-    }, [searchParams]);
+        const current = qs.parse(searchParams.toString());
+        const newState = {
+            ...current,
+            perPage,
+            page: 1,
+        };
+        setSearchParams(qs.stringify(newState, { skipNulls: true }));
+    }, [searchParams, setSearchParams]);
 
 
-    let { page, perPage, ...filters } = qs.parse(searchParams.toString())
-    page = parseInt(page) || 1;
-    perPage = parseInt(perPage) || 25;
+    let parsedParams = qs.parse(searchParams.toString());
+    let page = parseInt(parsedParams.page) || 1;
+    let perPage = parseInt(parsedParams.perPage) || 25;
+
+    const { page: _p, perPage: _pp, ...filters } = parsedParams;
 
     return {
         params: {
@@ -61,5 +69,4 @@ const useSearch = () => {
 }
 
 export default useQueryParams;
-
 export { useSearch };
