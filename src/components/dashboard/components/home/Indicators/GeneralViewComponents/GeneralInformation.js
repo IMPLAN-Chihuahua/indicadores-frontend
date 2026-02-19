@@ -94,7 +94,7 @@ const GeneralInformation = () => {
             fieldState: { error }
           }) => (
             <TextField
-              label='ELI5'
+              label='Explicación rápida'
               type='text'
               placeholder='Explícame este concepto como si tuviera 5 años'
               multiline
