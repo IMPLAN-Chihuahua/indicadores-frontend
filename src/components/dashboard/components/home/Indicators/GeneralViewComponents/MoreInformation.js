@@ -100,7 +100,7 @@ const MoreInformation = () => {
           render={({ field: { value, onChange }, fieldState: { error } }) => (
             <Autocomplete
               value={value}
-              options={ods}
+              options={ods ? ods.filter(item => item.id !== 18) : []}
               getOptionLabel={(option) => `${option.id}. ${option.titulo}`}
               isOptionEqualToValue={(option, value) => option.id === value.id}
               onChange={(_, data) => onChange(data)}

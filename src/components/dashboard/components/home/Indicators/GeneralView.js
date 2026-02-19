@@ -18,9 +18,11 @@ import GeneralInformation from './GeneralViewComponents/GeneralInformation';
 import MoreInformation from './GeneralViewComponents/MoreInformation';
 import Header from './GeneralViewComponents/Header';
 import { showAlert } from '../../../../../utils/alert';
+import ErrorContent from '../../../forms/indicador/ErrorContent';
 
 export const GeneralView = () => {
 	const [isLoading, setLoading] = useState(true);
+	const [error, setError] = useState(null);
 	const { id: idIndicador } = useParams();
 
 	const methods = useForm({
@@ -31,11 +33,20 @@ export const GeneralView = () => {
 
 	useEffect(() => {
 		getIndicator(idIndicador).then(res => {
+			if (!res || res.status === 404 || Object.keys(res).length === 0) {
+				setError("El indicador que buscas no existe o fue eliminado.");
+				return;
+			}
+
 			const { objetivos, adornment, ...values } = res;
-			const destacados = objetivos.filter(o => o.destacado)
+			const destacados = objetivos ? objetivos.filter(o => o.destacado) : [];
 			const _adornment = adornment ? adornment : '';
 			methods.reset({ ...values, objetivos, destacados, adornment: _adornment });
-		}).finally(_ => setLoading(false))
+		})
+			.catch(err => {
+				setError("Ocurrió un problema al cargar el indicador.");
+			})
+			.finally(_ => setLoading(false))
 	}, [idIndicador]);
 
 	const onSubmit = async (formData, e) => {
@@ -79,6 +90,10 @@ export const GeneralView = () => {
 
 	if (isLoading) {
 		return (<PersonalLoader />)
+	}
+
+	if (error) {
+		return <ErrorContent error="El indicador que buscas no existe o fue eliminado." />
 	}
 
 	return (
