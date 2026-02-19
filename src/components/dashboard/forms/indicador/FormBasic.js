@@ -21,7 +21,7 @@ export const FormBasic = () => {
   const { objetivos, isLoading: isObjetivosLoading } = useObjetivos();
   const { temas, isLoading: isTemasLoading } = useTemas();
   const { resources: ods, isLoading: isOdsLoading } = useResourceList({ resource: 'ods' });
-  
+
 
   useEffect(() => {
     if (indicador.nombre === '') return;
@@ -211,9 +211,9 @@ export const FormBasic = () => {
             defaultValue={[]}
             render={({ field: { value, onChange }, fieldState: { error } }) => (
               <Autocomplete
-                value={value}
-                onChange={(_, data) => onChange(data)}
-                multiple
+                value={value && value.length > 0 ? value[0] : null}
+
+                onChange={(_, data) => onChange(data ? [data] : [])}
                 options={temas}
                 loading={isTemasLoading}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
@@ -223,10 +223,10 @@ export const FormBasic = () => {
                     {...params}
                     variant='outlined'
                     required
-                    placeholder="Selecciona al menos un tema"
+                    placeholder="Selecciona un tema"
                     error={!!error}
                     helperText={error ? error.message : ''}
-                    label='Temas de interés'
+                    label='Tema de interés'
                   />
                 )}
               />
@@ -245,7 +245,7 @@ export const FormBasic = () => {
               <Autocomplete
                 value={value}
                 onChange={(_, data) => onChange(data)}
-                options={ods}
+                options={ods ? ods.filter(item => item.id !== 18) : []}
                 loading={isOdsLoading}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
                 getOptionLabel={option => option.titulo}
