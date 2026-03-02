@@ -12,6 +12,7 @@ import AutoCompleteInput from '../../../../../common/AutoCompleteInput';
 import { parseDate } from '../../../../../../utils/dateParser';
 import { getObjetivosGeneralInfo } from '../../../../../../services/dimensionService';
 import { getTemas } from '../../../../../../services/temaService';
+import CharCounter from '../../../../../common/CharCounter';
 
 const temasFetcher = async () => {
   let temas = await
@@ -54,7 +55,9 @@ const GeneralInformation = () => {
               required
               autoComplete='off'
               error={!!error}
-              helperText={error ? error.message : null}
+              helperText={
+                <CharCounter error={error} value={value} />
+              }
               onChange={onChange}
               value={value}
               fullWidth
@@ -79,7 +82,9 @@ const GeneralInformation = () => {
               size='small'
               fullWidth
               error={!!error}
-              helperText={error ? error.message : null}
+              helperText={
+                <CharCounter error={error} value={value} />
+              }
               onChange={onChange}
               value={value}
             />
@@ -102,7 +107,9 @@ const GeneralInformation = () => {
               size='small'
               fullWidth
               error={!!error}
-              helperText={error ? error.message : null}
+              helperText={
+                <CharCounter error={error} value={value} />
+              }
               onChange={onChange}
               value={value}
             />
@@ -120,14 +127,19 @@ const GeneralInformation = () => {
               type='text'
               placeholder='Fuente: DDUE (2020). Vuelo aéreo de la Dirección de Desarrollo Urbano y Ecología 2020 en SADRE.'
               required
+              multiline
+              rows={4}
               autoComplete='off'
               sx={{ width: '100%' }}
               error={!!error}
-              helperText={error ? error.message : null}
+              helperText={
+                <CharCounter error={error} value={value} />
+              }
               variant='outlined'
               onChange={onChange}
               value={value}
               className='indicador-info-input'
+
             />
           )
           }

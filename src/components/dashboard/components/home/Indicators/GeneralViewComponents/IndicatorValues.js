@@ -11,6 +11,7 @@ import { parseDate } from '../../../../../../utils/dateParser';
 const IndicatorValues = () => {
   const { control, getValues } = useFormContext();
   const updatedAt = getValues('updatedAt')
+  const createdAt = getValues('createdAt')
   return (
     <Grid container item xs={12} md={12} className='indicador-element' sx={{ display: 'flex', mb: 3 }}>
       <Grid item xs={12} md={6} sx={{ p: 1 }}>
@@ -93,7 +94,7 @@ const IndicatorValues = () => {
               )}
             />
           </Box>
-          <Box sx={{ p: 2, width: '40%' }}>
+          <Box sx={{ p: 2, width: '100%' }}>
             <Controller
               name="periodicidad"
               control={control}
@@ -103,7 +104,7 @@ const IndicatorValues = () => {
               }) => (
                 <TextField
                   size='small'
-                  label='Periodicidad'
+                  label='Periodicidad (en meses)'
                   type='number'
                   placeholder='Tiempo entre actualizaciones'
                   error={!!error}
@@ -168,7 +169,7 @@ const IndicatorValues = () => {
           }}>
             <Box sx={{ lineHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
               <Typography variant='caption' sx={{ color: 'text.secondary' }}>
-                Fecha de actualización
+                Fecha de mantenimiento
               </Typography>
               <Typography>
                 {parseDate(updatedAt)}
@@ -179,7 +180,7 @@ const IndicatorValues = () => {
                 Fecha de creación
               </Typography>
               <Typography>
-                {parseDate(updatedAt)}
+                {parseDate(createdAt)}
               </Typography>
             </Box>
           </Box>

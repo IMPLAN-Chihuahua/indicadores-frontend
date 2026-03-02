@@ -20,6 +20,7 @@ import ErrorContent from "../../../../forms/indicador/ErrorContent";
 import { IndicadorProvider } from "../../../../../../contexts/IndicadorContext";
 import { showAlert } from "../../../../../../utils/alert";
 import PersonalLoader from "../../../../../common/PersonalLoader/PersonalLoader";
+import CharCounter from "../../../../../common/CharCounter";
 
 const VariableTable = (props) => {
 
@@ -289,6 +290,9 @@ const FormulaView = () => {
                             multiline
                             label='Descripción'
                             rows={3}
+                            helperText={
+                              <CharCounter error={error} value={value} />
+                            }
                           />
                         )
                       }}
@@ -325,6 +329,9 @@ const FormulaView = () => {
                             label='Otros medios'
                             placeholder='Describe el lugar de donde proviene la información'
                             rows={2}
+                            helperText={
+                              <CharCounter error={error} value={value} />
+                            }
                           />)
                       }
                     />
