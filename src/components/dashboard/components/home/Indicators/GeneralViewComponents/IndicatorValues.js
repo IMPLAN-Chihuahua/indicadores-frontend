@@ -105,12 +105,18 @@ const IndicatorValues = () => {
                 <TextField
                   size='small'
                   label='Periodicidad (en meses)'
-                  type='number'
+                  type='text'
+                  inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                   placeholder='Tiempo entre actualizaciones'
                   error={!!error}
                   fullWidth
                   helperText={error ? error.message : null}
-                  onChange={onChange}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (/^\d*$/.test(val)) {
+                      onChange(val);
+                    }
+                  }}
                   value={value}
                 />
               )}
